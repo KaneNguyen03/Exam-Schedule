@@ -8,17 +8,20 @@ import PasswordReset from "./pages/PasswordReset";
 import ResetPassword from "./pages/ResetPassword";
 import Unauthorized from "./pages/Unauthorized";
 import Page404 from "./pages/Page404";
+import Dashboard from "./pages/Dashboard";
 function App() {
   return (
     <div className="App">
       {/* public routes */}
       {/* <Routes element={<ProtectedAuth routeProtected={false} />}> */}
+      
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forget_password" element={<PasswordReset />} />
         <Route path="/reset_password" element={<ResetPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/dashboard" element={<Dashboard />} />
 
         {/* catch all */}
         <Route path="*" element={<Page404 />} />
