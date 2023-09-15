@@ -1,6 +1,7 @@
 import "./App.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -14,13 +15,16 @@ function App() {
     <div className="App">
       {/* public routes */}
       {/* <Routes element={<ProtectedAuth routeProtected={false} />}> */}
-      
+      <Header />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forget_password" element={<PasswordReset />} />
         <Route path="/reset_password" element={<ResetPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+     
+     
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* catch all */}
@@ -44,6 +48,7 @@ function App() {
           />
         </Route>
       </Route> */}
+      <Footer />
     </div>
   );
 }
