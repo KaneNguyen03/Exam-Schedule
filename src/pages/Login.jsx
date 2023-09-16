@@ -6,24 +6,24 @@ const Login = () => {
       <h1 className=" text-lg  transition  ">Login</h1>
       <form className="">
         <div className="relative text-start bg-lightgray ">
-          <label className="">Email Adress</label>
+          <label className="">Email Address</label>
           <input
             type="email"
-            className="block w-full px-4 py-2 text-sm rounded-xl"
+            className="block w-full px-4 py-2 text-sm rounded-xl border border-gray " placeholder =" @gmail.com"
           ></input>
 
           <label className="">Password</label>
           <input
             type="password"
-            className="block w-full px-4 py-2 text-sm rounded-xl"
+            className="block w-full px-4 py-2 text-sm rounded-xl border border-gray"
           />
         </div>
         <div className="ml-32 text-sm hover:dark:text-blue-700">
           <a href="../forget_password">Forget Password</a>
         </div>
 
-        <button type="button" className="bg-slate-300 rounded-2xl w-24 h-8 mt-7">
-          Login 
+        <button type="button" className="bg-slate-300 rounded-2xl w-24 h-8 mt-7 " >
+          <a href="./dashboard">Login </a>
         </button>
         </form>
         

@@ -1,17 +1,17 @@
 const Footer = () => {
   return (
     <div>
-      <footer className="bg-white rounded-lg shadow dark:bg-gray-900 m-4 mb-0 ">
+      <footer className="bg-white  shadow dark:bg-gray-900  mb-0 ">
         <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
           <div className="sm:flex sm:items-center sm:justify-between">
             <a
-              href="http://localhost:5173/login"
+              href="./login"
               className="flex items-center mb-4 sm:mb-0"
             >
               <img
                 src="https://png.pngtree.com/template/20190316/ourmid/pngtree-books-logo-image_79143.jpg"
                 className="h-8 mr-3"
-                alt="Flowbite Logo"
+                alt="ESM"
               />
               <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
                 Exam Schedule Manage
