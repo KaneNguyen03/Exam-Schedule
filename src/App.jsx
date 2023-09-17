@@ -9,7 +9,9 @@ import PasswordReset from "./pages/PasswordReset";
 import ResetPassword from "./pages/ResetPassword";
 import Unauthorized from "./pages/Unauthorized";
 import Page404 from "./pages/Page404";
-import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import StudentDashboard from "./pages/StudentDashboard";
 function App() {
   return (
     <div className="App">
@@ -25,7 +27,9 @@ function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
      
      
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admindashboard" element={<AdminDashboard />} />
+        <Route path="/teacherdashboard" element={<TeacherDashboard />} />
+        <Route path="/studentdashboard" element={<StudentDashboard />} />
 
         {/* catch all */}
         <Route path="*" element={<Page404 />} />
