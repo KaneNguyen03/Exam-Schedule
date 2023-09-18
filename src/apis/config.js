@@ -6,12 +6,12 @@ export const USER_ID = "user_id"
 export const REFRESH_TOKEN_ID = "refresh_token_id"
 
 const apiInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_SECRET,
+  baseURL: import.meta.env.VITE_API_SECRET,
 })
 
 apiInstance.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem("claritas_token")
+    const token = localStorage.getItem("examskd_token")
     if (token) {
       config.headers["Authorization"] = ` bearer ${token}`
     }

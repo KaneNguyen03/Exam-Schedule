@@ -1,11 +1,34 @@
+// hooks
+import useAuth from "../hooks/useAuth"
+
+import { useState } from "react"
+
+import userApi from "../apis/user"
 
 const Login = () => {
+  const { loading } = useAuth()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [inputError, setInputError] = useState({
+    email: false,
+    password: false,
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    userApi.signIn(email.trim().toLowerCase(), password.trim())
+  }
+  const onHandleKeydown = (e) => {
+    if (e.which === 32 && e.target.selectionStart === 0) {
+      return false
+    }
+  }
+
   return (
     <div>
-    {/* <img src={bg1} className="w-full "></img> */}
+      {/* <img src={bg1} className="w-full "></img> */}
       <div className=" mt-40 mb-40 mr-64 ml-64  flex justify-center items-center flex-col text-center ">
-        <h1 className=" text-lg  transition  ">Login</h1>
-        <form className="">
+        {/* <form className="">
           <div className="relative text-start bg-lightgray ">
             <label className="">Email Address</label>
             <input
@@ -30,6 +53,73 @@ const Login = () => {
           >
             <a href="./dashboard">Login </a>
           </button>
+        </form> */}
+
+        <form onSubmit={handleSubmit} className="px-10 pt-4 pb-4 mb-4">
+          <p className="my-5 text-3xl font-bold">Sign in to your account</p>
+          <div className="mb-4">
+            <label
+              className="block mb-2 text-sm font-bold text-gray-700"
+              htmlFor="username"
+            >
+              User name
+            </label>
+            <input
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+              id="username"
+              type="text"
+              placeholder="Username"
+              value={email}
+              onChange={(e) =>
+                setEmail(e.currentTarget.value.trimStart().toLowerCase())
+              }
+              onKeyDown={(e) => onHandleKeydown(e)}
+            />
+            {inputError.email && (
+              <p className="text-xs italic text-red-500">
+                Please input a valid username
+              </p>
+            )}
+          </div>
+          <div className="mb-6">
+            <label
+              className="block mb-2 text-sm font-bold text-gray-700"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <div className="flex items-center w-full px-3 py-2 bg-white leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline">
+              <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                className="h-full w-full border-0 outline-none"
+                name="password"
+                onChange={(e) => setPassword(e.currentTarget.value)}
+              />
+            </div>
+            {inputError.email && (
+              <p className="text-xs italic text-red-500">
+                Please input a valid password
+              </p>
+            )}
+          </div>
+          <div className="flex items-center justify-between">
+            <button
+              className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+              type="submit"
+              disabled={loading}
+            >
+              Sign In
+            </button>
+
+            <a
+              className="inline-block text-sm font-bold text-blue-500 align-baseline hover:text-blue-800"
+              href="/forget_password"
+            >
+              Forgot Password?
+            </a>
+          </div>
         </form>
 
         <div className="px-6 sm:px-0 max-w-sm mt-3">
@@ -57,7 +147,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

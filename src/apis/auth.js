@@ -1,4 +1,4 @@
-import apiInstance from './config'
+import apiInstance from "./config"
 
 // export const setAuthHeader = (token = localStorage.getItem(TOKEN_KEY)) => {
 //   if (token)
@@ -20,23 +20,23 @@ const refreshToken = async (user_id, refresh_token_id, refresh_token) => {
     const dataRefresh = {
       user_id: Number(user_id),
       refresh_token_id: Number(refresh_token_id),
-      refresh_token
+      refresh_token,
     }
-    const resp = await apiInstance.post('user/refresh', dataRefresh)
+    const resp = await apiInstance.post("user/refresh", dataRefresh)
     return resp.data
   } catch (e) {
-    console.log('Error', e)
+    console.log("Error", e)
   }
 }
 const changePassword = async (data) => {
   try {
-    const resp = await apiInstance.patch('user/change-password', data)
+    const resp = await apiInstance.patch("user/change-password", data)
     return resp
   } catch (e) {
     if (e.response) {
       throw new Error(e.response.data.message)
     } else {
-      throw new Error('Error when getting list of buildings')
+      throw new Error("Error when getting list of buildings")
     }
   }
 }
@@ -44,7 +44,7 @@ const changePassword = async (data) => {
 const authApi = {
   logOut,
   changePassword,
-  refreshToken
+  refreshToken,
 }
 
 export default authApi

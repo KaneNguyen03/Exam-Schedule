@@ -19,8 +19,6 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
   const [loadingInitial, setLoadingInitial] = useState(true)
-  const [closeRangeDefectId, setCloseRangeDefectId] = useState()
-  const [closeRangeImage, setCloseRangeImage] = useState(null)
   const location = useLocation()
 
   useEffect(() => {
@@ -74,21 +72,8 @@ export const AuthProvider = ({ children }) => {
       signIn,
       // signUp,
       logout,
-      closeRangeDefectId,
-      setCloseRangeDefectId,
-      closeRangeImage,
-      setCloseRangeImage,
     }),
-    [
-      user,
-      closeRangeDefectId,
-      setCloseRangeDefectId,
-      closeRangeImage,
-      setCloseRangeImage,
-      loading,
-      loadingInitial,
-      error,
-    ]
+    [user, loading, loadingInitial, error]
   )
   return (
     <AuthContext.Provider value={memoedValue}>
