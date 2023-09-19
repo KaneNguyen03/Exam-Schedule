@@ -1,7 +1,7 @@
 const Header = () => {
   return (
     <div>
-      <div className="flex p-6  rgb(59 130 246 / 0.5); justify-between items-center  dark:bg-gray-900">
+      <div className="flex p-6  rgb(59 130 246 / 0.5); justify-between items-center  bg-gray-900">
       <div></div>
         <div className="flex space-x-3">
           <img
