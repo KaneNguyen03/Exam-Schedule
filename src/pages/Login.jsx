@@ -14,9 +14,13 @@ const Login = () => {
     password: false,
   })
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    userApi.signIn(email.trim().toLowerCase(), password.trim())
+    const response = await userApi.signIn(
+      email.trim().toLowerCase(),
+      password.trim()
+    )
+    console.log("🚀 Kha ne ~ file: Login.jsx:20 ~ response:", response)
   }
   const onHandleKeydown = (e) => {
     if (e.which === 32 && e.target.selectionStart === 0) {
