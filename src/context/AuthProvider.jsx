@@ -35,10 +35,10 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true)
       const data = await userApi.signIn(email, password)
-      localStorage.setItem(TOKEN_KEY, data.token)
-      localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token)
-      localStorage.setItem(USER_ID, data.user.user_id)
-      localStorage.setItem(REFRESH_TOKEN_ID, data.user.refresh_token_id)
+      localStorage.setItem(TOKEN_KEY, data)
+      // localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token)
+      // localStorage.setItem(USER_ID, data.user.user_id)
+      // localStorage.setItem(REFRESH_TOKEN_ID, data.user.refresh_token_id)
       setSignInSuccess(true)
       setLoading(false)
     } catch (error) {

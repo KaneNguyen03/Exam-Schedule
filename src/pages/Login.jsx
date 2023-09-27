@@ -6,7 +6,10 @@ import { useState } from "react"
 import userApi from "../apis/user"
 
 const Login = () => {
-  const { loading } = useAuth()
+  const { loading, user } = useAuth()
+  console.log("🚀 Kha ne ~ file: Login.jsx:10 ~ useAuth:", useAuth())
+  console.log("🚀 Kha ne ~ file: Login.jsx:10 ~ user:", user)
+  console.log("🚀 Kha ne ~ file: Login.jsx:10 ~ loading:", loading)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [inputError, setInputError] = useState({
