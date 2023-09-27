@@ -1,10 +1,10 @@
-// import { TOKEN_KEY } from "./config"
+import { TOKEN_KEY } from "./config"
 import apiInstance from "./config"
 
-const signIn = async (email, password) => {
+const signIn = async (username, password) => {
   try {
-    const { data } = await apiInstance.post("api/Accounts/SignIn", {
-      email,
+    const { data } = await apiInstance.post("api/Auth/login", {
+      username,
       password,
     })
     return data
@@ -14,7 +14,7 @@ const signIn = async (email, password) => {
 }
 
 const signUp = async (email, username, password) => {
-  const { data } = await apiInstance.post("api/Accounts/SignUp", {
+  const { data } = await apiInstance.post("api/Auth/register", {
     email,
     username,
     password,
@@ -22,9 +22,19 @@ const signUp = async (email, username, password) => {
   return data
 }
 
+const getCurrentUser = async (token = localStorage.getItem(TOKEN_KEY)) => {
+  try {
+    const { data } = await apiInstance.get("api/Auth")
+    return data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const userApi = {
   signIn,
   signUp,
+  getCurrentUser,
 }
 
 export default userApi

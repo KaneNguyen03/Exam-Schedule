@@ -1,7 +1,7 @@
 export const role = [
-  { id: 1, value: "Admin" },
-  { id: 2, value: "Testing Admin" },
-  { id: 3, value: "Testing Staff" },
-  { id: 4, value: "Lecturer" },
-  { id: 5, value: "Student" },
+  { id: 1, value: "AD" },
+  { id: 2, value: "TA" },
+  { id: 3, value: "TS" },
+  { id: 4, value: "LT" },
+  { id: 5, value: "ST" },
 ]

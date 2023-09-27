@@ -3,9 +3,9 @@ import { useLocation } from "react-router-dom"
 // import { toast } from "react-toastify"
 
 import {
-  REFRESH_TOKEN_KEY,
+  // REFRESH_TOKEN_KEY,
   TOKEN_KEY,
-  USER_ID,
+  // USER_ID,
   REFRESH_TOKEN_ID,
 } from "../apis/config"
 import userApi from "../apis/user"
@@ -35,7 +35,8 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true)
       const data = await userApi.signIn(email, password)
-      localStorage.setItem(TOKEN_KEY, data)
+      console.log("🚀 Kha ne ~ file: AuthProvider.jsx:38 ~ data:", data)
+      localStorage.setItem(TOKEN_KEY, data.token)
       // localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token)
       // localStorage.setItem(USER_ID, data.user.user_id)
       // localStorage.setItem(REFRESH_TOKEN_ID, data.user.refresh_token_id)
