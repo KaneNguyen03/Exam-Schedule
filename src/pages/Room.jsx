@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react"
 import Sidebar from "../components/Layout/Sidebar"
-import { getAllClassrooms, updateClassroom } from "../store/thunks/classroom"
+import {
+  deleteClassroom,
+  getAllClassrooms,
+  updateClassroom,
+} from "../store/thunks/classroom"
 import classroomTypes from "../constants/classroomTypes"
 import { useDispatch, useSelector } from "react-redux"
 import Actionbt from "../components/Layout/Actionbt"
@@ -10,12 +14,15 @@ const Room = () => {
   const [openModal, setOpenModal] = useState(false)
   const [currentClassroom, setCurrentClassroom] = useState({})
   const datacl = useSelector((state) => state.classroom)
-  console.log("🚀 Kha ne ~ file: Room.jsx:13 ~ datacl:", datacl)
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data
 
   const SaveClassroom = () => {
     dispatch(updateClassroom(currentClassroom))
     setOpenModal(false)
+  }
+
+  const onDeleteClassroom = (data) => {
+    dispatch(deleteClassroom(data))
   }
   useEffect(() => {
     dispatch(getAllClassrooms())
@@ -83,8 +90,15 @@ const Room = () => {
             </div>
           </header>
 
-          <div className=" text-slate-800 font-semibold text-3xl">
-            DashBoard
+          <div className="flex justify-around text-slate-800 font-semibold text-3xl p-12">
+            <div className="justify-center w-full">Classroom Management</div>
+            <button
+              type="button"
+              id="Delete"
+              className="focus:outline-none text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
+            >
+              Add
+            </button>
           </div>
 
           <div className="grid  gap-4 pt-7 m-1">
@@ -106,10 +120,10 @@ const Room = () => {
                       {openModal ? (
                         <div className="modal absolute top-5 w-[30%]">
                           <div className="modal-content ">
-                            <div className="relative bg-white rounded-lg shadow bg-gray-700">
+                            <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
-                                className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
+                                className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
                                 data-modal-hide="authentication-modal"
                                 onClick={() => setOpenModal(false)}
                               >
@@ -128,16 +142,16 @@ const Room = () => {
                                 <span className="sr-only">Close modal</span>
                               </button>
                               <div className="px-6 py-6 lg:px-8">
-                                <h3 className="mb-4 text-xl font-medium text-gray-900 text-white">
+                                <h3 className="mb-4 text-xl font-medium  text-white">
                                   Edit Classroom
                                 </h3>
                                 <div>
-                                  <label className="mb-2 text-sm font-medium text-gray-900 text-white flex">
+                                  <label className="mb-2 text-sm font-medium  text-white flex">
                                     Classroom Id
                                   </label>
                                   <input
                                     defaultValue={currentClassroom?.classroomId}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                    className=" border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                     placeholder=""
                                     readOnly
                                   />
@@ -163,6 +177,12 @@ const Room = () => {
                                   </label>
                                   <input
                                     value={currentClassroom?.capacity}
+                                    onChange={(e) =>
+                                      setCurrentClassroom({
+                                        ...currentClassroom,
+                                        capacity: e.target.value,
+                                      })
+                                    }
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
@@ -204,14 +224,8 @@ const Room = () => {
                         <button
                           type="button"
                           id="Delete"
-                          className="focus:outline-none text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
-                        >
-                          Add
-                        </button>
-                        <button
-                          type="button"
-                          id="Delete"
                           className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
+                          onClick={() => onDeleteClassroom(classroom)}
                         >
                           Delete
                         </button>

@@ -1,5 +1,7 @@
 const classroomTypes = {
   GET_CLASSROOMS: "GET_CLASSROOMS",
   UPDATE_CLASSROOM: "UPDATE_CLASSROOM",
-};
-export default classroomTypes;
+  DELETE_CLASSROOM: "DELETE_CLASSROOM",
+  CREATE_CLASSROOM: "CREATE_CLASSROOM",
+}
+export default classroomTypes

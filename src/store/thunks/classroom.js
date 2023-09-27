@@ -25,3 +25,15 @@ export const updateClassroom = createAsyncThunk(
     }
   }
 )
+
+export const deleteClassroom = createAsyncThunk(
+  classroomTypes.DELETE_CLASSROOM,
+  async (data) => {
+    try {
+      const result = await classroom.deleteClassroom(data)
+      return result
+    } catch (error) {
+      return isRejectedWithValue(error)
+    }
+  }
+)
