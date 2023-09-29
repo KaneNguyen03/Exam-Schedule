@@ -23,6 +23,7 @@ const classroomSlice = createSlice({
     [getAllClassrooms.fulfilled]: (state, { payload }) => {
       state.loadings[classroomTypes.GET_CLASSROOMS] = false
       state.contents[classroomTypes.GET_CLASSROOMS] = payload
+      state.paginations[classroomTypes.GET_CLASSROOMS] = payload.data.pagination
     },
     [getAllClassrooms.rejected]: (state, { payload }) => {
       state.loadings[classroomTypes.GET_CLASSROOMS] = false
@@ -39,8 +40,10 @@ const classroomSlice = createSlice({
       state.contents[classroomTypes.UPDATE_CLASSROOM] = payload.meta.arg
       const index = state.contents[
         classroomTypes.GET_CLASSROOMS
-      ].data.findIndex((c) => c.classroomId === payload.meta.arg.classroomId)
-      state.contents[classroomTypes.GET_CLASSROOMS].data[index] =
+      ].data.data.findIndex(
+        (c) => c.classroomId === payload.meta.arg.classroomId
+      )
+      state.contents[classroomTypes.GET_CLASSROOMS].data.data[index] =
         payload.meta.arg
     },
     [updateClassroom.rejected]: (state, { payload }) => {
@@ -58,8 +61,10 @@ const classroomSlice = createSlice({
       state.contents[classroomTypes.UPDATE_CLASSROOM] = payload.meta.arg
       const index = state.contents[
         classroomTypes.GET_CLASSROOMS
-      ].data.findIndex((c) => c.classroomId === payload.meta.arg.classroomId)
-      state.contents[classroomTypes.GET_CLASSROOMS].data.splice(index, 1)
+      ].data.data.findIndex(
+        (c) => c.classroomId === payload.meta.arg.classroomId
+      )
+      state.contents[classroomTypes.GET_CLASSROOMS].data.data.splice(index, 1)
     },
     [deleteClassroom.rejected]: (state, { payload }) => {
       state.loadings[classroomTypes.UPDATE_CLASSROOM] = false
@@ -67,7 +72,6 @@ const classroomSlice = createSlice({
     },
 
     // Create a new classroom
-    
   },
 })
 export default classroomSlice.reducer

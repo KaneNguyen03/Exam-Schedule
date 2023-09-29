@@ -4,9 +4,9 @@ import classroom from "../../apis/classroom"
 
 export const getAllClassrooms = createAsyncThunk(
   classroomTypes.GET_CLASSROOMS,
-  async () => {
+  async (data) => {
     try {
-      const result = await classroom.getAllClassrooms()
+      const result = await classroom.getAllClassrooms(data)
       return result
     } catch (error) {
       return isRejectedWithValue(error)

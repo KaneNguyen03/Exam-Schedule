@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Sidebar from "../components/Layout/Sidebar"
 import {
   deleteClassroom,
@@ -7,13 +7,30 @@ import {
 } from "../store/thunks/classroom"
 import classroomTypes from "../constants/classroomTypes"
 import { useDispatch, useSelector } from "react-redux"
+import { Pagination } from "react-headless-pagination"
+
+// assets
+import PreIcon from "../assets/pagination_pre.png"
+import NextIcon from "../assets/pagination_next.png"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import { sizeOptions } from "../constants/commons/commons"
 
 const Room = () => {
   const dispatch = useDispatch()
   const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
+  const [param, setParam] = useState({
+    page: 1,
+    pageSize: 10,
+    keyword: "",
+  })
+
   const [currentClassroom, setCurrentClassroom] = useState({})
   const datacl = useSelector((state) => state.classroom)
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data
+  const pagination = datacl?.paginations[classroomTypes.GET_CLASSROOMS]
+
+  const popupSelect = useRef(null)
 
   const SaveClassroom = () => {
     dispatch(updateClassroom(currentClassroom))
@@ -22,14 +39,16 @@ const Room = () => {
 
   const onDeleteClassroom = (data) => {
     dispatch(deleteClassroom(data))
+    setTimeout(() => dispatch(getAllClassrooms(param)), 2000)
   }
   useEffect(() => {
-    dispatch(getAllClassrooms())
-  }, [dispatch])
+    dispatch(getAllClassrooms(param))
+  }, [dispatch, param])
   return (
     <div className="relative">
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
+
         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
           <header className="header bg-white shadow py-4 px-4">
             <div className="header-content flex items-center flex-row">
@@ -52,6 +71,12 @@ const Room = () => {
                     name="search"
                     className="text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-300 w-full h-10 focus:outline-none focus:border-indigo-400"
                     placeholder="Search..."
+                    onChange={(e) =>
+                      setParam({
+                        ...param,
+                        keyword: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="flex md:hidden">
@@ -98,6 +123,36 @@ const Room = () => {
             >
               Add
             </button>
+
+            <div
+              className="text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
+              onClick={() => setIsShowSelect(!isShowSelect)}
+            >
+              <span className="pl-4">Show {pagination?.pageSize} item</span>
+              <img
+                src={DropdownSelectIcon}
+                className="pointer-events-none leading-[16px] md:leading-[20px] md:mr-4"
+                alt="drop icon"
+              />
+            </div>
+            {isShowSelect && (
+              <ul ref={popupSelect} className="text-left cursor-pointer">
+                {sizeOptions.map((item) => {
+                  return (
+                    <li
+                      className="px-4 py-2 text-xs md:text-sm hover:bg-gray-100 first:rounded-t-lg last:rounded-b-lg  border-b last:border-b-0"
+                      onClick={() => {
+                        setParam({ ...param, pageSize: Number(item.value) })
+                        setIsShowSelect(false)
+                      }}
+                      key={item.value}
+                    >
+                      Show {item.value} items
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
           </div>
 
           <div className="grid  gap-4 pt-7 m-1">
@@ -111,7 +166,7 @@ const Room = () => {
                 </tr>
               </thead>
               <tbody>
-                {classrooms?.map((classroom) => (
+                {classrooms?.data?.map((classroom) => (
                   <tr key={classroom.classroomId}>
                     <td>{classroom.classroomId}</td>
                     <td>
@@ -245,6 +300,56 @@ const Room = () => {
                 ))}
               </tbody>
             </table>
+            {classrooms?.data?.length ? (
+              <Pagination
+                currentPage={pagination.currentPage - 1}
+                setCurrentPage={(page) => {
+                  setParam({ ...param, page: page + 1 })
+                }}
+                totalPages={pagination.totalPage}
+                edgePageCount={3}
+                middlePagesSiblingCount={1}
+                className="flex items-center justify-center mt-4"
+                truncableText="..."
+                truncableClassName=""
+              >
+                <Pagination.PrevButton
+                  className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
+                    pagination.currentPage > 0
+                      ? "cursor-pointer "
+                      : "cursor-default hidden"
+                  }`}
+                >
+                  {" "}
+                  <img src={PreIcon} className="h-3 w-3" alt="arrPrev" />
+                </Pagination.PrevButton>
+
+                <div className="flex items-center justify-center mx-6">
+                  {classrooms?.data?.length > 0 ? (
+                    <Pagination.PageButton
+                      activeClassName="bg-blue-button border-0 text-white "
+                      inactiveClassName="border"
+                      className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium"
+                    />
+                  ) : (
+                    <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
+                      1
+                    </div>
+                  )}
+                </div>
+
+                <Pagination.NextButton
+                  className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
+                    page
+                  ) =>
+                    page > classrooms?.data?.length
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed"}`}
+                >
+                  <img src={NextIcon} className="h-3 w-3" alt="arrNext" />
+                </Pagination.NextButton>
+              </Pagination>
+            ) : null}
           </div>
         </main>
       </div>

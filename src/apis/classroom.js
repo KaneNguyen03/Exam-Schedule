@@ -1,8 +1,9 @@
 import apiInstance from "./config"
 
-const getAllClassrooms = async () => {
+const getAllClassrooms = async (data) => {
+  const url = "?" + new URLSearchParams(data).toString()
   try {
-    const data = await apiInstance.get("api/Classroom")
+    const data = await apiInstance.get(`api/Classroom${url}`)
     return data
   } catch (error) {
     throw new Error("Error geting classroom")
