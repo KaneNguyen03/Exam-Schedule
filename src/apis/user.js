@@ -1,5 +1,6 @@
 import { TOKEN_KEY } from "./config"
 import apiInstance from "./config"
+import authApi from "./auth"
 
 const signIn = async (username, password) => {
   try {
@@ -31,10 +32,16 @@ const getCurrentUser = async (token = localStorage.getItem(TOKEN_KEY)) => {
   }
 }
 
+const logOutApp = async () => {
+  await localStorage.clear()
+  await window.location.reload()
+}
+
 const userApi = {
   signIn,
   signUp,
   getCurrentUser,
+  logOutApp,
 }
 
 export default userApi

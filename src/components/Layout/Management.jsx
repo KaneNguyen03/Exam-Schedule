@@ -3,7 +3,7 @@ import Layout from "./Layout"
 
 const Management = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className=" bg-white">
       <Layout>
         <Outlet />
       </Layout>

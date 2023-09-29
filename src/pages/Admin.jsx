@@ -58,7 +58,7 @@ const AdminDashboard = () => {
     <div>
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
-        <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
+        <div className="main min-h-screen flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in max-h-screen">
           <header className="header bg-white shadow py-4 px-4">
             <div className="header-content flex items-center flex-row">
               <form action="#">
@@ -126,7 +126,7 @@ const AdminDashboard = () => {
             majors={majors}
             semesters={semesters}
           />
-        </main>
+        </div>
       </div>
     </div>
   )

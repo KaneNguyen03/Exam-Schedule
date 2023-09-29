@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types"
 
 const Dashboard = ({
   classrooms,
@@ -9,13 +9,12 @@ const Dashboard = ({
   examslots,
   majors,
   semesters,
-
 }) => {
   return (
-    <div>
+    <div className="h-full p-8">
       <div className=" text-slate-800 font-semibold text-3xl">DashBoard</div>
-      <div className="grid grid-cols-2 gap-4 pt-7 m-1">
-        <div className="border  border-black rounded-lg cursor-pointer w-64 font-medium text-base ">
+      <div className="grid grid-cols-2 gap-8 justify-items-center p-24">
+        <div className=" border  border-black rounded-lg cursor-pointer w-64 font-medium text-base ">
           <div className="flex">
             <span className="flex items-center justify-center text-lg text-gray-400 p-1">
               <svg
@@ -162,8 +161,8 @@ const Dashboard = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 Dashboard.propTypes = {
   classrooms: PropTypes.array,
   courses: PropTypes.array,
@@ -173,6 +172,6 @@ Dashboard.propTypes = {
   examslots: PropTypes.array,
   majors: PropTypes.array,
   semesters: PropTypes.array,
-};
+}
 
-export default Dashboard;
+export default Dashboard

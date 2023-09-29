@@ -24,7 +24,6 @@ function App() {
   const { user } = useAuth()
   return (
     <div className="App">
-      <Header />
       <Routes>
         {/* public routes */}
         <Route element={<ProtectedAuth routeProtected={false} />}>
@@ -68,7 +67,6 @@ function App() {
         <Route path="*" element={<Page404 />} />
         {/* </Route> */}
       </Routes>
-      <Footer />
     </div>
   )
 }

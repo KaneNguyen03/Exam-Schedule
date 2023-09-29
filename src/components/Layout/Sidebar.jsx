@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom" // Import Link from react-router-dom
+import user from "../../apis/user"
 
 const Sidebar = () => {
+  const handleLogout = async () => {
+    await user.logOutApp()
+  }
   return (
     <div>
       <aside className="sidebar w-64 md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in bg-gray-800">
@@ -19,7 +23,7 @@ const Sidebar = () => {
           <ul className="flex flex-col w-full">
             <li className="my-px">
               <Link
-                to="/admin"
+                to="/"
                 className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700"
               >
                 <span className="flex items-center justify-center text-lg text-gray-400">
@@ -239,11 +243,8 @@ const Sidebar = () => {
                 <span className="ml-3">Settings</span>
               </Link>
             </li>
-            <li className="my-px">
-              <Link
-                to="/login"
-                className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700"
-              >
+            <li className="my-px" onClick={() => handleLogout()}>
+              <a className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700">
                 <span className="flex items-center justify-center text-lg text-red-400">
                   <svg
                     fill="none"
@@ -255,7 +256,7 @@ const Sidebar = () => {
                   </svg>
                 </span>
                 <span className="ml-3">Logout</span>
-              </Link>
+              </a>
             </li>
           </ul>
         </div>

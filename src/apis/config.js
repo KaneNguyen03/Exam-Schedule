@@ -1,5 +1,5 @@
 import axios from "axios"
-import authApi from "./auth"
+
 export const TOKEN_KEY = "examskd_token"
 export const REFRESH_TOKEN_KEY = "examskd_refresh_token"
 export const USER_ID = "user_id"
@@ -22,13 +22,7 @@ apiInstance.interceptors.request.use(
   }
 )
 
-const logOutApp = async () => {
-  const resp = await authApi.logOut(localStorage.getItem(REFRESH_TOKEN_ID))
-  if (resp.msg === "logout") {
-    localStorage.clear()
-    window.location.reload()
-  }
-}
+
 
 // apiInstance.interceptors.response.use(
 //   (response) => {

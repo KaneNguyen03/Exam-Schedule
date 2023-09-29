@@ -2,6 +2,8 @@
 import useAuth from "../hooks/useAuth"
 
 import { useState } from "react"
+import Footer from "../components/Layout/Footer"
+import Header from "../components/Layout/Header"
 
 // import userApi from "../apis/user"
 
@@ -26,6 +28,7 @@ const Login = () => {
 
   return (
     <div>
+      <Header />
       {/* <img src={bg1} className="w-full "></img> */}
       <div className="my-5 md:my-40 flex justify-center items-center flex-col text-center ">
         <form
@@ -114,6 +117,7 @@ const Login = () => {
           </div> */}
         </form>
       </div>
+      <Footer />
     </div>
   )
 }
