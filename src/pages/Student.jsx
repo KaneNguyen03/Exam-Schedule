@@ -16,7 +16,9 @@ const StudentDashboard = () => {
   return (
     <div>
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
-        <Sidebar></Sidebar>
+        <Sidebar>
+          
+        </Sidebar>
         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
           <SubHeader></SubHeader>
           {/* <div className="main-content flex flex-col flex-grow p-4">
