@@ -1,18 +1,18 @@
-import { useDispatch, useSelector } from "react-redux";
-import Sidebar from "../components/Layout/Sidebar";
-import { useEffect } from "react";
-import SubHeader from "../components/Layout/SubHeader";
-import { getAllStudents } from "../store/thunks/student";
-import studentTypes from "../constants/studentTypes";
-import Actionbt from "../components/Layout/Actionbt";
+import { useDispatch, useSelector } from "react-redux"
+import Sidebar from "../components/Layout/Sidebar"
+import { useEffect } from "react"
+import SubHeader from "../components/Layout/SubHeader"
+import { getAllStudents } from "../store/thunks/student"
+import studentTypes from "../constants/studentTypes"
+import Actionbt from "../components/Layout/Actionbt"
 const StudentDashboard = () => {
-  const dispatch = useDispatch();
-  const datate = useSelector((state) => state.student);
-  const students = datate?.contents[studentTypes.GET_STUDENTS]?.payload?.data;
+  const dispatch = useDispatch()
+  const datate = useSelector((state) => state.student)
+  const students = datate?.contents[studentTypes.GET_STUDENTS]?.payload?.data
 
   useEffect(() => {
-    dispatch(getAllStudents());
-  }, []);
+    dispatch(getAllStudents())
+  }, [])
   return (
     <div>
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
@@ -73,7 +73,7 @@ const StudentDashboard = () => {
           <div className=" text-slate-800 font-semibold text-3xl">
             DashBoard
           </div>
-      
+
           <div className="grid gap-4 pt-7 m-1">
             <table className=" table-auto">
               <tr>
@@ -88,7 +88,7 @@ const StudentDashboard = () => {
                   <td>{students.studentId}</td>
                   <td>{students.courseId}</td>
                   <td>
-                  <Actionbt></Actionbt>
+                    <Actionbt></Actionbt>
                   </td>
                 </tr>
               ))}
@@ -97,7 +97,7 @@ const StudentDashboard = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default StudentDashboard;
+export default StudentDashboard

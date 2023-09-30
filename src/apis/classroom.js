@@ -37,10 +37,24 @@ const deleteClassroom = async (data) => {
   }
 }
 
+const createClassroom = async (data) => {
+  try {
+    const response = await apiInstance.post(`api/Classroom`, {
+      ClassroomId: data.classroomId,
+      name: data.name,
+      capacity: data.capacity,
+    })
+    return response
+  } catch (error) {
+    throw new Error("Error create classroom")
+  }
+}
+
 const classroomApi = {
   getAllClassrooms,
   updateClassroom,
   deleteClassroom,
+  createClassroom,
 }
 
 export default classroomApi

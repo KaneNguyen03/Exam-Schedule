@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 import {
+  createClassroom,
   deleteClassroom,
   getAllClassrooms,
   updateClassroom,
@@ -72,6 +73,21 @@ const classroomSlice = createSlice({
     },
 
     // Create a new classroom
+    [createClassroom.pending]: (state) => {
+      state.loadings[classroomTypes.CREATE_CLASSROOM] = true
+      state.errors[classroomTypes.CREATE_CLASSROOM] = ""
+    },
+    [createClassroom.fulfilled]: (state, payload) => {
+      state.loadings[classroomTypes.CREATE_CLASSROOM] = false
+      state.contents[classroomTypes.CREATE_CLASSROOM] = payload.meta.arg
+      state.contents[classroomTypes.GET_CLASSROOMS].data.data.pop(
+        payload.meta.arg
+      )
+    },
+    [createClassroom.rejected]: (state, { payload }) => {
+      state.loadings[classroomTypes.CREATE_CLASSROOM] = false
+      state.errors[classroomTypes.CREATE_CLASSROOM] = payload
+    },
   },
 })
 export default classroomSlice.reducer
