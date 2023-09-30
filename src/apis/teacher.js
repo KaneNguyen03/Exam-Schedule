@@ -1,16 +1,61 @@
 import apiInstance from "./config";
 
-const getAllTeachers = async() => {
+const getAllTeachers = async(data) => {
+   const url = "?" + new URLSearchParams(data).toString()
  try {
-    const data  = await apiInstance.get("api/Proctoring")
+    const data  = await apiInstance.get(`api/Proctoring${url}`)
       return data
  } catch (error) {
     throw new Error("Error geting teacher")
  }
 }
+const updateTeacher = async (data) => {
+   try {
+     const response = await apiInstance.put(
+       `api/Proctoring/${data.proctoringId}`,
+       {
+        proctoringId: data.proctoringId,
+         proctoringName: data.proctoringName ,
+         proctoringLocation: data.proctoringLocation,
+         compemsation: data.compensation,
+       }
+     )
+     return response
+   } catch (error) {
+     throw new Error("Error update proctoring")
+   }
+ }
+ 
+ const deleteTeacher = async (data) => {
+   try {
+     const response = await apiInstance.delete(
+       `api/Proctoring/${data.proctoringId}`
+     )
+     return response
+   } catch (error) {
+     throw new Error("Error delete proctoring")
+   }
+ }
+ 
+ const createTeacher = async (data) => {
+   try {
+     const response = await apiInstance.post(`api/Proctoring`, {
+      proctoringId: data.proctoringId,
+       proctoringName: data.proctoringName ,
+       proctoringLocation: data.proctoringLocation,
+       compensation: data.compensation,
+     })
+     return response
+   } catch (error) {
+     throw new Error("Error create proctoring")
+   }
+ }
 
 const teacherApi = {
-    getAllTeachers
+    getAllTeachers,
+    updateTeacher,
+    deleteTeacher,
+    createTeacher,
   }
   
   export default teacherApi

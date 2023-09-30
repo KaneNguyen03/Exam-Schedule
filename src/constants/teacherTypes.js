@@ -1,5 +1,7 @@
 const teacherTypes = {
     GET_TEACHERS: 'GET_TEACHERS',
-
+    UPDATE_TEACHER: 'UPDATE_TEACHER',
+    DELETE_TEACHER: 'DELETE_TEACHER',
+    CREATE_TEACHER: 'CREATE_TEACHER',
 }
 export default teacherTypes

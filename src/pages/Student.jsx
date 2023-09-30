@@ -7,8 +7,8 @@ import studentTypes from "../constants/studentTypes"
 import Actionbt from "../components/Layout/Actionbt"
 const StudentDashboard = () => {
   const dispatch = useDispatch()
-  const datate = useSelector((state) => state.student)
-  const students = datate?.contents[studentTypes.GET_STUDENTS]?.payload?.data
+  const datast = useSelector((state) => state.student)
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.payload?.data
 
   useEffect(() => {
     dispatch(getAllStudents())

@@ -34,12 +34,11 @@ const AdminDashboard = () => {
   const datase = useSelector((state) => state.semester)
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data
   const courses = dataco?.contents[courseTypes.GET_COURSES]?.payload?.data
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.payload?.data
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
+
   const students = datast?.contents[studentTypes.GET_STUDENTS]?.payload?.data
-  const examschedules =
-    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
-  const examslots =
-    dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.payload?.data
+  const examschedules = dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.payload?.data
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.payload?.data
   const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.payload?.data
 
