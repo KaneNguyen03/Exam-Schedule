@@ -16,7 +16,7 @@ const updateClassroom = async (data) => {
       `api/Classroom/${data.classroomId}`,
       {
         ClassroomId: data.classroomId,
-        name: data.name,
+        name: data.name ,
         capacity: data.capacity,
       }
     )
