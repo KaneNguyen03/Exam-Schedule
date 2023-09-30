@@ -75,35 +75,56 @@ const ExamscheduleDashboard = () => {
           <div className=" text-slate-800 font-semibold text-3xl">
             DashBoard
           </div>
-      
           <div className="grid gap-4 pt-7 m-1">
-            <table className=" table-auto">
-              <tr>
-                <th>Exam Schedule Id</th>
-                <th>Course Id</th>
-                <th>Exam Slot Id</th>
-                <th> classroomId</th>
-                <th> Date</th>
-                <th> Starttime </th>
-                <th> End time</th>
-                <th>Action</th>
-              </tr>
+            <table className="w-full text-sm text-left text-gray-500 text-gray-400">
+              <thead className="text-xs text-gray-300 uppercase bg-gray-50 bg-gray-700">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    Exam Schedule Id
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Course Id
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Exam Slot Id
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Classroom Id
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Date
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Start time
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    End time
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Action
+                  </th>
+                </tr>
+              </thead>
               {examschedules?.map((examschedules) => (
-                <tr key={examschedules.examScheduleId}>
-                  <td>{examschedules.examScheduleId}</td>
-                  <td>{examschedules.courseId}</td>
-                  <td>{examschedules.examSlotId}</td>
-                  <td>{examschedules.classroomId}</td>
-                  <td>{examschedules.date}</td>
-                  <td>{examschedules.startTime}</td>
-                  <td>{examschedules.endTime}</td>
+                <tr
+                  className="bg-white border-b bg-gray-800 border-gray-700"
+                  key={examschedules.examscheduleId}
+                >
+                  <td className="px-6 py-4">{examschedules.examScheduleId}</td>
+                  <td className="px-6 py-4">{examschedules.courseId}</td>
+                  <td className="px-6 py-4">{examschedules.examSlotId}</td>
+                  <td className="px-6 py-4">{examschedules.classroomId}</td>
+                  <td className="px-6 py-4">{examschedules.date}</td>
+                  <td className="px-6 py-4">{examschedules.startTime}</td>
+                  <td className="px-6 py-4">{examschedules.endTime}</td>
                   <td>
-                  <Actionbt></Actionbt>
+                    <Actionbt></Actionbt>
                   </td>
                 </tr>
               ))}
             </table>
           </div>
+          
         </main>
       </div>
         </div>

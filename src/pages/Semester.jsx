@@ -75,8 +75,43 @@ const SemesterDashboard = () => {
           <div className=" text-slate-800 font-semibold text-3xl">
             DashBoard
           </div>
-      
           <div className="grid gap-4 pt-7 m-1">
+            <table className="w-full text-sm text-left text-gray-500 text-gray-400">
+              <thead className="text-xs text-gray-300 uppercase bg-gray-50 bg-gray-700">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    Semester Id
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Semester Name
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                     Major Id
+                  </th>
+                  
+                  
+                  <th scope="col" className="px-6 py-3">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              {semesters?.map((semesters) => (
+                <tr
+                  className="bg-white border-b bg-gray-800 border-gray-700"
+                  key={semesters.semesterId}
+                >
+                  <td className="px-6 py-4">{semesters.semesterId}</td>
+                  <td className="px-6 py-4">{semesters.semesterName}</td>
+                  <td className="px-6 py-4">{semesters.majorId}</td>
+                  
+                  <td>
+                    <Actionbt></Actionbt>
+                  </td>
+                </tr>
+              ))}
+            </table>
+          </div>
+          {/* <div className="grid gap-4 pt-7 m-1">
             <table className=" table-auto">
               <tr>
                 <th>Semester Id</th>
@@ -95,7 +130,7 @@ const SemesterDashboard = () => {
                 </tr>
               ))}
             </table>
-          </div>
+          </div> */}
         </main>
       </div>
         </div>

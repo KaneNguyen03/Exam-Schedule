@@ -15,6 +15,7 @@ import CourseDashboard from "./pages/Course"
 import ExamscheduleDashboard from "./pages/ExamSchedule"
 import MajorDashboard from "./pages/Major"
 import SemesterDashboard from "./pages/Semester"
+import Profile from "./pages/Profile"
 import ExamslotDashboard from "./pages/ExamSlot"
 import ProtectedAuth from "./components/ProtectedAuth"
 import { makeRoles } from "./utils/common"
@@ -50,9 +51,9 @@ function App() {
                 )
               }
             />
- 
+            
             <Route path="/room" element={<Room />} />
-            <Route path="/room" element={<Room />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/proctoring" element={<TeacherDashboard />} />
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/course" element={<CourseDashboard />} />

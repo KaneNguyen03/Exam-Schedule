@@ -73,8 +73,44 @@ const TeacherDashboard = () => {
           <div className=" text-slate-800 font-semibold text-3xl">
             DashBoard
           </div>
-      
           <div className="grid gap-4 pt-7 m-1">
+            <table className="w-full text-sm text-left text-gray-500 text-gray-400">
+              <thead className="text-xs text-gray-300 uppercase bg-gray-50 bg-gray-700">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    Proctoring Id
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Proctoring Name
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Proctoring Location
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                  Compensation
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              {teachers?.map((teachers) => (
+                <tr
+                  className="bg-white border-b bg-gray-800 border-gray-700"
+                  key={teachers.teacherId}
+                >
+                  <td className="px-6 py-4">{teachers.proctoringId}</td>
+                  <td className="px-6 py-4">{teachers.proctoringName}</td>
+                  <td className="px-6 py-4">{teachers.proctoringLocation}</td>
+                  <td className="px-6 py-4">{teachers.compensation}</td>
+                  <td>
+                    <Actionbt></Actionbt>
+                  </td>
+                </tr>
+              ))}
+            </table>
+          </div>
+          {/* <div className="grid gap-4 pt-7 m-1">
             <table className=" table-auto">
               <tr>
                 <th>proctoring Id</th>
@@ -95,7 +131,7 @@ const TeacherDashboard = () => {
                 </tr>
               ))}
             </table>
-          </div>
+          </div> */}
         </main>
       </div>
     </div>

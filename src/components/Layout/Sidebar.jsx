@@ -6,8 +6,8 @@ const Sidebar = () => {
     await user.logOutApp()
   }
   return (
-    <div>
-      <aside className="sidebar w-64 md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in bg-gray-800">
+    <div className="min-h-screen">
+      <aside className="sidebar w-64 md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in bg-gray-800 h-full">
         <div className="sidebar-header flex items-center justify-center py-4">
           <div className="inline-flex">
             <Link to="/" className="inline-flex flex-row items-center">

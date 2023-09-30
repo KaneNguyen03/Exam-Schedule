@@ -75,25 +75,37 @@ const MajorDashboard = () => {
           <div className=" text-slate-800 font-semibold text-3xl">
             DashBoard
           </div>
-      
           <div className="grid gap-4 pt-7 m-1">
-            <table className=" table-auto">
-              <tr>
-                <th>Major Id</th>
-                <th>Major Name</th>
-                <th>Action</th>
-              </tr>
+            <table className="w-full text-sm text-left text-gray-500 text-gray-400">
+              <thead className="text-xs text-gray-300 uppercase bg-gray-50 bg-gray-700">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    Major Id
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Major Name
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Action
+                  </th>
+                </tr>
+              </thead>
               {majors?.map((majors) => (
-                <tr key={majors.majorId}>
-                  <td>{majors.majorId}</td>
-                  <td>{majors.majorName}</td>
+                <tr
+                  className="bg-white border-b bg-gray-800 border-gray-700"
+                  key={majors.majorId}
+                >
+                  <td className="px-6 py-4">{majors.majorId}</td>
+                  <td className="px-6 py-4">{majors.majorName}</td>
+                  
                   <td>
-                  <Actionbt></Actionbt>
+                    <Actionbt></Actionbt>
                   </td>
                 </tr>
               ))}
             </table>
           </div>
+          
         </main>
       </div>
         </div>
