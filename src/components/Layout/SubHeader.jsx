@@ -2,7 +2,6 @@ import useAuth from "../../hooks/useAuth"
 
 const SubHeader = () => {
   const { user } = useAuth()
-  console.log("🚀 Kha ne ~ file: SubHeader.jsx:5 ~ user:", user)
   return (
     <div>
       <header className="header bg-white shadow py-4 px-4">

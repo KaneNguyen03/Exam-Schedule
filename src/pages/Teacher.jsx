@@ -38,8 +38,8 @@ const TeacherDashboard = () => {
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
     proctoringId: "",
-    protoringName: "",
-    protoringLocation: "",
+    proctoringName: "",
+    proctoringLocation: "",
     compensation: 0,
   });
   const [loadings, setLoading] = useState(true);
@@ -56,6 +56,7 @@ const TeacherDashboard = () => {
 
   const AddTeacher = () => {
     dispatch(createTeacher(addData));
+    setOpenModalAdd(false);
   };
 
   const onDeleteTeacher = (data) => {
@@ -314,18 +315,23 @@ const TeacherDashboard = () => {
                                               option.value === selectedOption
                                           )
                                         : null
-                                      }
-    onChange={(selectedOption) => {
-      // Update the proctoringLocation in the currentTeacher state
-      setCurrentTeacher((prevTeacher) => ({
-        ...prevTeacher,
-        proctoringLocation: selectedOption ? selectedOption.value : null,
-      }));
+                                    }
+                                    onChange={(selectedOption) => {
+                                      // Update the proctoringLocation in the currentTeacher state
+                                      setCurrentTeacher((prevTeacher) => ({
+                                        ...prevTeacher,
+                                        proctoringLocation: selectedOption
+                                          ? selectedOption.value
+                                          : null,
+                                      }));
 
-      // Update the selectedOption state
-      setSelectedOption(selectedOption ? selectedOption.value : null);
-    }}
-                                    
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      );
+                                    }}
                                   />
                                 </div>
                                 <div>
@@ -430,14 +436,23 @@ const TeacherDashboard = () => {
                                   <label className="mb-2 text-sm font-medium  text-white flex">
                                     proctoringLocation
                                   </label>
-                                  <input
-                                    onChange={(e) =>
+                                  <ReactSelect
+                                    options={options}
+                                    isMulti={false}
+                                    onChange={(data) => {
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      );
                                       setAddData({
                                         ...addData,
-                                        proctoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                        proctoringLocation: data.value,
+                                      });
+                                    }}
+
+                                    ////////////////////////////////
                                   />
                                 </div>
                                 <div>
@@ -482,7 +497,7 @@ const TeacherDashboard = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{teacher.proctoringLocation}</td>
-                    <td className="px-6 py-4">{teacher.compensation}</td>
+                    <td className="px-6 py-4">{teacher.compensation}$</td>
                     <td>
                       <div className="">
                         {" "}

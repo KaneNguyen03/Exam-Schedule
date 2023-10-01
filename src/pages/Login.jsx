@@ -19,7 +19,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const response = await signIn(email.trim().toLowerCase(), password.trim())
-    console.log(response)
   }
   
   const onHandleKeydown = (e) => {
