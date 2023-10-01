@@ -54,12 +54,12 @@ const classroomSlice = createSlice({
 
     // Delete a classroom
     [deleteClassroom.pending]: (state) => {
-      state.loadings[classroomTypes.UPDATE_CLASSROOM] = true
-      state.errors[classroomTypes.UPDATE_CLASSROOM] = ""
+      state.loadings[classroomTypes.DELETE_CLASSROOM] = true
+      state.errors[classroomTypes.DELETE_CLASSROOM] = ""
     },
     [deleteClassroom.fulfilled]: (state, payload) => {
-      state.loadings[classroomTypes.UPDATE_CLASSROOM] = false
-      state.contents[classroomTypes.UPDATE_CLASSROOM] = payload.meta.arg
+      state.loadings[classroomTypes.DELETE_CLASSROOM] = false
+      state.contents[classroomTypes.DELETE_CLASSROOM] = payload.meta.arg
       const index = state.contents[
         classroomTypes.GET_CLASSROOMS
       ].data.data.findIndex(
@@ -68,8 +68,8 @@ const classroomSlice = createSlice({
       state.contents[classroomTypes.GET_CLASSROOMS].data.data.splice(index, 1)
     },
     [deleteClassroom.rejected]: (state, { payload }) => {
-      state.loadings[classroomTypes.UPDATE_CLASSROOM] = false
-      state.errors[classroomTypes.UPDATE_CLASSROOM] = payload
+      state.loadings[classroomTypes.DELETE_CLASSROOM] = false
+      state.errors[classroomTypes.DELETE_CLASSROOM] = payload
     },
 
     // Create a new classroom
@@ -80,10 +80,16 @@ const classroomSlice = createSlice({
     [createClassroom.fulfilled]: (state, payload) => {
       state.loadings[classroomTypes.CREATE_CLASSROOM] = false
       state.contents[classroomTypes.CREATE_CLASSROOM] = payload.meta.arg
-      state.contents[classroomTypes.GET_CLASSROOMS].data.data.pop(
+      state.contents[classroomTypes.GET_CLASSROOMS].data.data.push(
         payload.meta.arg
       )
+      
+      state.contents[classroomTypes.GET_CLASSROOMS].data.data.sort((a,b) =>{
+        return a.classroomId.localeCompare(b.classroomId);
+      });
     },
+
+
     [createClassroom.rejected]: (state, { payload }) => {
       state.loadings[classroomTypes.CREATE_CLASSROOM] = false
       state.errors[classroomTypes.CREATE_CLASSROOM] = payload
