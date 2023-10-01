@@ -7,7 +7,7 @@ export const REFRESH_TOKEN_ID = "refresh_token_id";
 
 const apiInstance = axios.create({
   // baseURL: import.meta.env.VITE_API_SECRET,
-  baseURL: import.meta.env.VITE_API_SECRET_URL,
+  baseURL: import.meta.env.VITE_API_SECRET,
 });
 
 apiInstance.interceptors.request.use(
