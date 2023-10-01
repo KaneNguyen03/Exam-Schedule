@@ -22,7 +22,6 @@ const teacherSlice = createSlice({
     [getAllTeachers.fulfilled]: (state, {payload}) => {
       state.loadings[teacherTypes.GET_TEACHERS] = false;
       state.contents[teacherTypes.GET_TEACHERS] = payload;
-      console.log(payload)
       state.paginations[teacherTypes.GET_TEACHERS] = payload.data.pagination;
     },
     [getAllTeachers.rejected]: (state, { payload }) => {

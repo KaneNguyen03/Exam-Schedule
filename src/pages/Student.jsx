@@ -26,7 +26,6 @@ const Student = () => {
     pageSize: 10,
     keyword: "",
   })
-  console.log(param)
 
   const [currentStudent, setCurrentStudent] = useState({})
   const datast = useSelector((state) => state.student)

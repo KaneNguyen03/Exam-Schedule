@@ -10,7 +10,6 @@ import Actionbt from '../components/Layout/Actionbt';
 const ExamslotDashboard = () => {
     const dispatch = useDispatch();
   const dataexsl = useSelector((state) => state.examslot);
-  console.log(dataexsl)
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.payload?.data.data;
   useEffect(() => {
     dispatch(getAllExamslots());
