@@ -1,5 +1,7 @@
 const studentTypes = {
     GET_STUDENTS: 'GET_STUDENTS',
-
+    UPDATE_STUDENT: 'UPDATE_STUDENT',
+    DELETE_STUDENT: 'DELETE_STUDENT',
+    CREATE_STUDENT: 'CREATE_STUDENT',
 }
 export default studentTypes

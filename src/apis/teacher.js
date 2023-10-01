@@ -17,7 +17,7 @@ const updateTeacher = async (data) => {
         proctoringId: data.proctoringId,
          proctoringName: data.proctoringName ,
          proctoringLocation: data.proctoringLocation,
-         compemsation: data.compensation,
+         compensation: data.compensation,
        }
      )
      return response

@@ -4,12 +4,48 @@ import student from "../../apis/student";
 
 export const getAllStudents = createAsyncThunk(
   studentTypes.GET_STUDENTS,
-  async () => {
+  async (data) => {
     try {
-      const result = await student.getAllStudents();
+      const result = await student.getAllStudents(data);
       return result;
     } catch (error) {
       return isRejectedWithValue(error);
     }
   }
-);
+)
+export const updateStudent = createAsyncThunk(
+ studentTypes.UPDATE_STUDENT,
+  async (data) => {
+    try {
+      const result = await student.updateStudent(data)
+      return result
+    } catch (error) {
+      return isRejectedWithValue(error)
+    }
+  }
+)
+
+export const deleteStudent = createAsyncThunk(
+  studentTypes.DELETE_STUDENT,
+  async (data) => {
+    try {
+      const result = await student.deleteStudent(data)
+      return result
+    } catch (error) {
+      return isRejectedWithValue(error)
+    }
+  }
+)
+
+export const createStudent = createAsyncThunk(
+  studentTypes.CREATE_STUDENT,
+  async (data) => {
+    try {
+      const result = await student.createStudent(data)
+      return result
+    } catch (error) {
+      return isRejectedWithValue(error)
+    }
+  }
+)
+
