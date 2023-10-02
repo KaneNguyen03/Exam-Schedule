@@ -36,7 +36,7 @@ const AdminDashboard = () => {
   const courses = dataco?.contents[courseTypes.GET_COURSES]?.payload?.data
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
 
-  const students = datast?.contents[studentTypes.GET_STUDENTS]?.payload?.data
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data
   const examschedules = dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.payload?.data
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data

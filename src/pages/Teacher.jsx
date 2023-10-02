@@ -8,12 +8,15 @@ import {
   getAllTeachers,
   updateTeacher,
 } from "../store/thunks/teacher";
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
 
 import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
 import useAuth from "../hooks/useAuth";
 import { sizeOptions } from "../constants/commons/commons";
 import { Pagination } from "react-headless-pagination";
+import { getAllClassrooms } from "../store/thunks/classroom";
+import classroomTypes from "../constants/classroomTypes";
+import ReactSelect from "react-select";
 
 const TeacherDashboard = () => {
   const dispatch = useDispatch();
@@ -27,17 +30,23 @@ const TeacherDashboard = () => {
   });
   const [currentTeacher, setCurrentTeacher] = useState({});
   const datate = useSelector((state) => state.teacher);
+  console.log(datate);
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data;
   const pagination = datate?.paginations[teacherTypes.GET_TEACHERS];
   const popupSelect = useRef(null);
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
     proctoringId: "",
-    protoringName: "",
-    protoringLocation: "",
+    proctoringName: "",
+    proctoringLocation: "",
     compensation: 0,
   });
   const [loadings, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const options = classrooms?.map((classroom) => ({
+    value: classroom.classroomId,
+    label: classroom.classroomId + " : " + classroom.name,
+  }));
 
   const UpdateTeacher = () => {
     dispatch(updateTeacher(currentTeacher));
@@ -46,6 +55,7 @@ const TeacherDashboard = () => {
 
   const AddTeacher = () => {
     dispatch(createTeacher(addData));
+    setOpenModalAdd(false);
   };
 
   const onDeleteTeacher = (data) => {
@@ -67,7 +77,7 @@ const TeacherDashboard = () => {
     const delayDebounceFn = setTimeout(() => {
       dispatch(getAllTeachers(param));
     }, 500);
-
+    dispatch(getAllClassrooms({ page: 1, pageSize: 999 }));
     return () => clearTimeout(delayDebounceFn);
   }, [param.keyword, dispatch, param]);
   return (
@@ -284,7 +294,7 @@ const TeacherDashboard = () => {
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     proctoring Location
                                   </label>
-                                  <input
+                                  {/* <input
                                     value={currentTeacher?.protoringLocation}
                                     onChange={(e) =>
                                       setCurrentTeacher({
@@ -293,6 +303,34 @@ const TeacherDashboard = () => {
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                  /> */}
+                                  <ReactSelect
+                                    options={options}
+                                    isMulti={false}
+                                    defaultValue={
+                                      selectedOption
+                                        ? options.find(
+                                            (option) =>
+                                              option.value === selectedOption
+                                          )
+                                        : null
+                                    }
+                                    onChange={(selectedOption) => {
+                                      // Update the proctoringLocation in the currentTeacher state
+                                      setCurrentTeacher((prevTeacher) => ({
+                                        ...prevTeacher,
+                                        proctoringLocation: selectedOption
+                                          ? selectedOption.value
+                                          : null,
+                                      }));
+
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      );
+                                    }}
                                   />
                                 </div>
                                 <div>
@@ -397,25 +435,34 @@ const TeacherDashboard = () => {
                                   <label className="mb-2 text-sm font-medium  text-white flex">
                                     proctoringLocation
                                   </label>
-                                  <input
-                                    onChange={(e) =>
+                                  <ReactSelect
+                                    options={options}
+                                    isMulti={false}
+                                    onChange={(data) => {
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      );
                                       setAddData({
                                         ...addData,
-                                    proctoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                        proctoringLocation: data.value,
+                                      });
+                                    }}
+
+                                    ////////////////////////////////
                                   />
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                   compensation
+                                    compensation
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                    compensation: e.target.value,
+                                        compensation: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -449,7 +496,7 @@ const TeacherDashboard = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{teacher.proctoringLocation}</td>
-                    <td className="px-6 py-4">{teacher.compensation}</td>
+                    <td className="px-6 py-4">{teacher.compensation}$</td>
                     <td>
                       <div className="">
                         {" "}
@@ -466,8 +513,9 @@ const TeacherDashboard = () => {
                           id="Edit"
                           className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                           onClick={() => {
-                            setOpenModal(!openModal)
-                            setCurrentTeacher(teacher)
+                            setOpenModal(!openModal);
+                            setCurrentTeacher(teacher);
+                            setSelectedOption(teacher.proctoringLocation);
                           }}
                         >
                           Edit
@@ -483,7 +531,7 @@ const TeacherDashboard = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
