@@ -15,7 +15,7 @@ const studentSlice = createSlice({
       state.loadings[studentTypes.GET_STUDENTS] = true;
       state.errors[studentTypes.GET_STUDENTS] = "";
     },
-    [getAllStudents.fulfilled]: (state, payload) => {
+    [getAllStudents.fulfilled]: (state, {payload}) => {
       state.loadings[studentTypes.GET_STUDENTS] = false;
       state.contents[studentTypes.GET_STUDENTS] = payload;
     },

@@ -450,6 +450,7 @@ const Room = () => {
                 ))}
               </tbody>
             </table>
+            {/**Data */}
             <div className="sticky bottom-0 bg-white p-2">
               {classrooms?.data?.length ? (
                 <Pagination
