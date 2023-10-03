@@ -16,7 +16,7 @@ import {
   updateSemester,
   deleteSemester,
 } from "../store/thunks/semester";
-import Actionbt from "../components/Layout/Actionbt";
+
 import majorTypes from "../constants/majorTypes";
 import { getAllMajors } from "../store/thunks/major";
 const SemesterDashboard = () => {
@@ -41,10 +41,6 @@ const SemesterDashboard = () => {
     keywords: [],
   });
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data;
-  const [currentMajor, setCurrentMajor] = useState({
-    majorId: "",
-    majorName: "",
-  });
   const popupSelector = useState(null);
   const [loadings, setLoading] = useState(true);
   const options = majors?.map((major) => ({
@@ -53,9 +49,10 @@ const SemesterDashboard = () => {
   }));
 
   const pagination = datase?.paginations[semesterTypes.GET_SEMESTERS];
+
   const popupSelect = useRef(null);
-  const semesters =
-    datase?.contents[semesterTypes.GET_SEMESTERS]?.payload?.data.data;
+  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
+
   const UpdateSemester = () => {
     dispatch(updateSemester(currentSemester));
     setOpenModal(false);
@@ -77,7 +74,6 @@ const SemesterDashboard = () => {
       datase?.loadings[semesterTypes.UPDATE_SEMESTER] ||
       datase?.loadings[semesterTypes.DELETE_SEMESTER] ||
       datase?.loadings[semesterTypes.CREATE_SEMESTER]
-      // eslint-disable-next-line
     )
       setLoading(true);
     else setLoading(false);
@@ -100,6 +96,7 @@ const SemesterDashboard = () => {
   }, [param.keyword, dispatch, param]);
   return (
     <div className="relative">
+      {loadings && <LoadingSpinner />}
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar></Sidebar>
         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
@@ -278,9 +275,6 @@ const SemesterDashboard = () => {
               </div>
             </div>
           </div> */}
-          <div className=" text-slate-800 font-semibold text-3xl">
-            DashBoard
-          </div>
           <div className="grid gap-4 pt-7 m-1">
             <table className="w-full text-sm text-left text-gray-500 text-gray-400">
               <thead className="text-xs text-gray-300 uppercase bg-gray-50 bg-gray-700">
@@ -356,7 +350,7 @@ const SemesterDashboard = () => {
                                   <input
                                     value={currentSemester.semesterName}
                                     onChange={(e) =>
-                                      setCurrentMajor({
+                                      setCurrentSemester({
                                         ...currentSemester,
                                         semesterName: e.target.value,
                                       })
@@ -573,6 +567,7 @@ const SemesterDashboard = () => {
                           onClick={() => {
                             setOpenModal(!openModal);
                             setCurrentSemester(semesters);
+                            setSelectedOption(semesters.majorId);
                           }}
                         >
                           Edit
@@ -583,98 +578,78 @@ const SemesterDashboard = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-
-          {/* <div className="grid gap-4 pt-7 m-1">
-            <table className=" table-auto">
-              <tr>
-                <th>Semester Id</th>
-                <th>Semester Name</th>
-                <th>Major Id</th>
-                <th>Action</th>
-              </tr>
-              {semesters?.map((semesters) => (
-                <tr key={semesters.semesterId}>
-                  <td>{semesters.semesterId}</td>
-                  <td>{semesters.semesterName}</td>
-                  <td>{semesters.majorId}</td>
-                  <td>
-                  <Actionbt></Actionbt>
-                  </td>
-                </tr>
-              ))}
-            </table>
-          </div> */}
-          <div className="sticky bottom-0 bg-white p-2">
-            {semesters?.data?.length ? (
-              <Pagination
-                currentPage={pagination.currentPage - 1}
-                setCurrentPage={(page) => {
-                  setParam({ ...param, page: page + 1 });
-                }}
-                totalPages={pagination.totalPage}
-                edgePageCount={3}
-                middlePagesSiblingCount={1}
-                className="flex items-center justify-center mt-4"
-                truncableText="..."
-                truncableClassName=""
-              >
-                <Pagination.PrevButton
-                  className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
-                    pagination.currentPage > 0
-                      ? "cursor-pointer "
-                      : "cursor-default hidden"
-                  }`}
+            {/**show page */}
+            <div className="sticky bottom-0 bg-white p-2">
+              {semesters?.length ? (
+                <Pagination
+                  currentPage={pagination.currentPage - 1}
+                  setCurrentPage={(page) => {
+                    setParam({ ...param, page: page + 1 });
+                  }}
+                  totalPages={pagination.totalPage}
+                  edgePageCount={3}
+                  middlePagesSiblingCount={1}
+                  className="flex items-center justify-center mt-4"
+                  truncableText="..."
+                  truncableClassName=""
                 >
-                  {" "}
-                  <div className="w-full h-full flex justify-center items-center">
-                    <svg
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
-                    </svg>
-                  </div>
-                  {/* <img src={PreIcon} className="h-3 w-3" alt="arrPrev" /> */}
-                </Pagination.PrevButton>
-
-                <div className="flex items-center justify-center mx-6 list-none ">
-                  {semesters?.data?.length > 0 ? (
-                    <Pagination.PageButton
-                      activeClassName="bg-blue-button border-0 text-white "
-                      inactiveClassName="border"
-                      className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
-                    />
-                  ) : (
-                    <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
-                      1
+                  <Pagination.PrevButton
+                    className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
+                      pagination.currentPage > 0
+                        ? "cursor-pointer "
+                        : "cursor-default hidden"
+                    }`}
+                  >
+                    {" "}
+                    <div className="w-full h-full flex justify-center items-center">
+                      <svg
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                      </svg>
                     </div>
-                  )}
-                </div>
+                    {/* <img src={PreIcon} className="h-3 w-3" alt="arrPrev" /> */}
+                  </Pagination.PrevButton>
 
-                <Pagination.NextButton
-                  className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
-                    page
-                  ) =>
-                    page > semesters?.data?.length
-                      ? "cursor-pointer"
-                      : "cursor-not-allowed"}`}
-                >
-                  <div className="w-full h-full flex justify-center items-center">
-                    <svg
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-6 h-6 "
-                    >
-                      <path d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
-                    </svg>
+                  <div className="flex items-center justify-center mx-6 list-none ">
+                    {semesters?.length > 0 ? (
+                      <Pagination.PageButton
+                        activeClassName="bg-blue-button border-0 text-white "
+                        inactiveClassName="border"
+                        className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
+                      />
+                    ) : (
+                      <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
+                        1
+                      </div>
+                    )}
                   </div>
-                </Pagination.NextButton>
-              </Pagination>
-            ) : null}
+
+                  <Pagination.NextButton
+                    className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
+                      page
+                    ) =>
+                      page > semesters?.length
+                        ? "cursor-pointer"
+                        : "cursor-not-allowed"}`}
+                  >
+                    <div className="w-full h-full flex justify-center items-center">
+                      <svg
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        className="w-6 h-6 "
+                      >
+                        <path d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                      </svg>
+                    </div>
+                  </Pagination.NextButton>
+                </Pagination>
+              ) : null}
+            </div>
           </div>
         </main>
       </div>

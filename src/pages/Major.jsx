@@ -41,13 +41,8 @@ const MajorDashboard = () => {
   const datamj = useSelector((state) => state.major);
   const datase = useSelector((state) => state.semester);
   //const datasep = useSelector((state) => state.semesters);
-  const [currentSeptember, setCurrentSeptember] = useState({
-    semesterId: "",
-    semesterName: "",
-  });
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data;
-  const semesters =
-    datase?.contents[semesterTypes.GET_SEMESTERS]?.payload.data.data;
+
   const pagination = datamj?.paginations[majorTypes.GET_MAJORS];
   const popupSelect = useRef(null);
   const [openModalAdd, setOpenModalAdd] = useState(false);
@@ -60,10 +55,6 @@ const MajorDashboard = () => {
 
   const [loadings, setLoading] = useState(true);
 
-  const options = semesters?.map((semester) => ({
-    value: semester.semesterId,
-    label: semester.semesterId + " : " + semester.semesterName,
-  }));
   const UpdateMajor = () => {
     dispatch(updateMajor(currentMajor));
     setOpenModal(false);
@@ -77,12 +68,6 @@ const MajorDashboard = () => {
   const onDeleteMajor = (data) => {
     dispatch(deleteMajor(data));
     setTimeout(() => dispatch(getAllMajors(param)), 2000);
-  };
-  const formatOptionLabel = (option) => {
-    if (Array.isArray(option)) {
-      return option.map((item) => item.label).join(", ");
-    }
-    return option.label;
   };
 
   useEffect(() => {
@@ -454,7 +439,6 @@ const MajorDashboard = () => {
                                   </label>
                                   <input
                                     className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    placeholder="Major Id"
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,

@@ -19,10 +19,12 @@ const semesterSlice = createSlice({
     [getAllSemesters.pending]: (state) => {
       state.loadings[semesterTypes.GET_SEMESTERS ] = true;
       state.errors[semesterTypes.GET_SEMESTERS ] = "";
+
     },
-    [getAllSemesters.fulfilled]: (state, payload) => {
+    [getAllSemesters.fulfilled]: (state, {payload}) => {
       state.loadings[semesterTypes.GET_SEMESTERS ] = false;
       state.contents[semesterTypes.GET_SEMESTERS ] = payload;
+      state.paginations[semesterTypes.GET_SEMESTERS] = payload.data.pagination
     },
     [getAllSemesters.rejected]: (state, { payload }) => {
       state.loadings[semesterTypes.GET_SEMESTERS ] = false;
@@ -38,10 +40,10 @@ const semesterSlice = createSlice({
       state.contents[semesterTypes.UPDATE_SEMESTER] = payload.meta.arg
       const index = state.contents[
         semesterTypes.GET_SEMESTERS
-      ].payload.data.data.findIndex(
+      ].data.data.findIndex(
         (c) => c.semesterId === payload.meta.arg.semesterId
       )
-      state.contents[semesterTypes.GET_SEMESTERS].payload.data.data[index] 
+      state.contents[semesterTypes.GET_SEMESTERS].data.data[index] 
       = payload.meta.arg
     },
     [updateSemester.rejected]: (state, { payload }) => {
@@ -58,10 +60,10 @@ const semesterSlice = createSlice({
       state.contents[semesterTypes.DELETE_SEMESTER] = payload.meta.arg
       const index = state.contents[
         semesterTypes.GET_SEMESTERS
-      ].payload.data.data.findIndex(
+      ].data.data.findIndex(
         (c) => c.semesterId === payload.meta.arg.semesterId
       )
-      state.contents[semesterTypes.GET_SEMESTERS].payload.data.data.splice(index, 1)
+      state.contents[semesterTypes.GET_SEMESTERS].data.data.splice(index, 1)
     },
     [deleteSemester.rejected]: (state, { payload }) => {
       state.loadings[semesterTypes.DELETE_SEMESTER] = false;
@@ -75,11 +77,11 @@ const semesterSlice = createSlice({
     [createSemester.fulfilled]: (state, payload) => {
       state.loadings[semesterTypes.CREATE_SEMESTER] = false;
       state.contents[semesterTypes.CREATE_SEMESTER] = payload.meta.arg
-      state.contents[semesterTypes.GET_SEMESTERS].payload.data.data.push(
+      state.contents[semesterTypes.GET_SEMESTERS].data.data.push(
         payload.meta.arg
       )
       // Sort the array by semesterId
-      state.contents[semesterTypes.GET_SEMESTERS].payload.data.data.sort((a, b) => {
+      state.contents[semesterTypes.GET_SEMESTERS].data.data.sort((a, b) => {
         return a.semesterId.localeCompare(b.semesterId);
     });
     },

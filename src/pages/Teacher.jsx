@@ -30,6 +30,8 @@ const TeacherDashboard = () => {
   });
   const [currentTeacher, setCurrentTeacher] = useState({});
   const datate = useSelector((state) => state.teacher);
+  const datacl = useSelector((state) => state.classroom);
+  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data;
   const pagination = datate?.paginations[teacherTypes.GET_TEACHERS];
   const popupSelect = useRef(null);
@@ -42,6 +44,7 @@ const TeacherDashboard = () => {
   });
   const [loadings, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
+
   const options = classrooms?.map((classroom) => ({
     value: classroom.classroomId,
     label: classroom.classroomId + " : " + classroom.name,

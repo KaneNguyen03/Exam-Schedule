@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import examscheduleTypes from "../../constants/examscheduleTypes";
-import { getAllExamchedules } from "../thunks/examschedule";
+import { getAllExamschedules } from "../thunks/examschedule";
 
 const examscheduleSlice = createSlice({
   name: "examSchedule",
@@ -12,16 +12,16 @@ const examscheduleSlice = createSlice({
     paginations: {},
   },
   extraReducers: {
-    [getAllExamchedules.pending]: (state) => {
+    [getAllExamschedules.pending]: (state) => {
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULES ] = true;
       state.errors[examscheduleTypes.GET_EXAMSCHEDULES] = "";
     },
-    [getAllExamchedules.fulfilled]: (state, payload) => {
+    [getAllExamschedules.fulfilled]: (state, payload) => {
 
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULES] = false;
       state.contents[examscheduleTypes.GET_EXAMSCHEDULES] = payload;
     },
-    [getAllExamchedules.rejected]: (state, { payload }) => {
+    [getAllExamschedules.rejected]: (state, { payload }) => {
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULES] = false;
       state.errors[examscheduleTypes.GET_EXAMSCHEDULES] = payload;
     },
