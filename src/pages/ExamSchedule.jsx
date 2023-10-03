@@ -3,7 +3,7 @@ import SubHeader from '../components/Layout/SubHeader';
 import Sidebar from '../components/Layout/Sidebar';
 import { useDispatch, useSelector } from 'react-redux';
 import examscheduleTypes from '../constants/examscheduleTypes';
-import { getAllExamchedules } from '../store/thunks/examschedule';
+import { getAllExamschedules } from '../store/thunks/examschedule';
 import { useEffect } from 'react';
 import Actionbt from '../components/Layout/Actionbt';
 
@@ -13,7 +13,7 @@ const ExamscheduleDashboard = () => {
   const examschedules = dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
 
   useEffect(() => {
-    dispatch(getAllExamchedules());
+    dispatch(getAllExamschedules());
   }, []);
     return (
         <div>

@@ -52,12 +52,12 @@ const teacherSlice = createSlice({
     },
     //dELETE
     [deleteTeacher.pending]: (state) => {
-      state.loadings[teacherTypes.UPDATE_TEACHER] = true;
-      state.errors[teacherTypes.UPDATE_TEACHER] = "";
+      state.loadings[teacherTypes.DELETE_TEACHER] = true;
+      state.errors[teacherTypes.DELETE_TEACHER] = "";
     },
     [deleteTeacher.fulfilled]: (state, payload) => {
-      state.loadings[teacherTypes.UPDATE_TEACHER] = false;
-      state.contents[teacherTypes.UPDATE_TEACHER] = payload.meta.arg;
+      state.loadings[teacherTypes.DELETE_TEACHER] = false;
+      state.contents[teacherTypes.DELETE_TEACHER] = payload.meta.arg;
       const index = state.contents[
         teacherTypes.GET_TEACHERS
       ].data.data.findIndex(
@@ -66,8 +66,8 @@ const teacherSlice = createSlice({
       state.contents[teacherTypes.GET_TEACHERS].data.data.splice(index, 1);
     },
     [deleteTeacher.rejected]: (state, { payload }) => {
-      state.loadings[teacherTypes.UPDATE_TEACHER] = false;
-      state.errors[teacherTypes.UPDATE_TEACHER] = payload;
+      state.loadings[teacherTypes.DELETE_TEACHER] = false;
+      state.errors[teacherTypes.DELETE_TEACHER] = payload;
     },
 
     //Create

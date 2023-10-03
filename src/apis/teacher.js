@@ -44,6 +44,7 @@ const updateTeacher = async (data) => {
        proctoringName: data.proctoringName ,
        proctoringLocation: data.proctoringLocation,
        compensation: data.compensation,
+       examSlots: data.examSlots,
      })
      return response
    } catch (error) {

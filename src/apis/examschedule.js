@@ -1,6 +1,6 @@
 import apiInstance from "./config";
 
-const getAllExamchedules = async() => {
+const getAllExamschedules = async() => {
  try {
     const data  = await apiInstance.get("api/ExamSchedule")
       return data
@@ -10,7 +10,7 @@ const getAllExamchedules = async() => {
 }
 
 const examscheduleApi = {
-    getAllExamchedules
+    getAllExamschedules
   }
   
   export default examscheduleApi

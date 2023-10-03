@@ -1,4 +1,5 @@
 import PropTypes from "prop-types"
+import LoadingSpinner from "../../constants/commons/loading-spinner/LoadingSpinner"
 
 const Dashboard = ({
   classrooms,
@@ -9,9 +10,11 @@ const Dashboard = ({
   examslots,
   majors,
   semesters,
+  loadings
 }) => {
   return (
     <div className="h-full p-8">
+      {loadings && <LoadingSpinner />}
       <div className=" text-slate-800 font-semibold text-3xl">DashBoard</div>
       <div className="grid grid-cols-2 gap-8 justify-items-center p-24">
         <div className=" border  border-black rounded-lg cursor-pointer w-64 font-medium text-base ">
