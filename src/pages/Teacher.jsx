@@ -30,7 +30,6 @@ const TeacherDashboard = () => {
   });
   const [currentTeacher, setCurrentTeacher] = useState({});
   const datate = useSelector((state) => state.teacher);
-  console.log(datate);
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data;
   const pagination = datate?.paginations[teacherTypes.GET_TEACHERS];
   const popupSelect = useRef(null);
