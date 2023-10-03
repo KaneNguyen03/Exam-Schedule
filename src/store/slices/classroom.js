@@ -60,12 +60,12 @@ const classroomSlice = createSlice({
     [deleteClassroom.fulfilled]: (state, payload) => {
       state.loadings[classroomTypes.DELETE_CLASSROOM] = false
       state.contents[classroomTypes.DELETE_CLASSROOM] = payload.meta.arg
-      const index = state.contents[
-        classroomTypes.GET_CLASSROOMS
-      ].data.data.findIndex(
-        (c) => c.classroomId === payload.meta.arg.classroomId
-      )
-      state.contents[classroomTypes.GET_CLASSROOMS].data.data.splice(index, 1)
+      // const index = state.contents[
+      //   classroomTypes.GET_CLASSROOMS
+      // ].data.data.findIndex(
+      //   (c) => c.classroomId === payload.meta.arg.classroomId
+      // )
+      // state.contents[classroomTypes.GET_CLASSROOMS].data.data.splice(index, 1)
     },
     [deleteClassroom.rejected]: (state, { payload }) => {
       state.loadings[classroomTypes.DELETE_CLASSROOM] = false
@@ -83,12 +83,11 @@ const classroomSlice = createSlice({
       state.contents[classroomTypes.GET_CLASSROOMS].data.data.push(
         payload.meta.arg
       )
-      
-      state.contents[classroomTypes.GET_CLASSROOMS].data.data.sort((a,b) =>{
-        return a.classroomId.localeCompare(b.classroomId);
-      });
-    },
 
+      state.contents[classroomTypes.GET_CLASSROOMS].data.data.sort((a, b) => {
+        return a.classroomId.localeCompare(b.classroomId)
+      })
+    },
 
     [createClassroom.rejected]: (state, { payload }) => {
       state.loadings[classroomTypes.CREATE_CLASSROOM] = false
