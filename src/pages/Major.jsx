@@ -71,6 +71,7 @@ const MajorDashboard = () => {
 
   const AddMajor = () => {
     dispatch(createMajor(addData));
+    setOpenModalAdd(false);
   };
 
   const onDeleteMajor = (data) => {
@@ -297,9 +298,6 @@ const MajorDashboard = () => {
                     MajorName
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    semesters
-                  </th>
-                  <th scope="col" className="px-6 py-3">
                     Action
                   </th>
                 </tr>
@@ -370,10 +368,6 @@ const MajorDashboard = () => {
                                   />
                                 </div>
                                 <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    Semester
-                                  </label>
-
                                   {/**
                                    * Select the semester
                                    *
@@ -398,47 +392,6 @@ const MajorDashboard = () => {
                                     </option>
                                   ))}
                                 </select> */}
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={true}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentSeptember((prevSemesper) => ({
-                                        ...prevSemesper,
-                                        proctoringLocation: selectedOption
-                                          ? selectedOption
-                                              .map((item) => item.value)
-                                              .join(", ")
-                                          : null,
-                                      }));
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.map(
-                                              (item) => item.value
-                                            )
-                                          : null
-                                      );
-
-                                      setCurrentMajor({
-                                        ...currentMajor,
-                                        semesters: selectedOption
-                                          ? selectedOption.map(
-                                              (item) => item.value
-                                            )
-                                          : [],
-                                      });
-                                    }}
-                                  />
                                 </div>
 
                                 <div className="flex justify-between">
@@ -501,7 +454,7 @@ const MajorDashboard = () => {
                                   </label>
                                   <input
                                     className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    placeholder="C-XXX"
+                                    placeholder="Major Id"
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
@@ -522,53 +475,6 @@ const MajorDashboard = () => {
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Semester
-                                  </label>
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={true}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentSeptember((prevSemesper) => ({
-                                        ...prevSemesper,
-                                        proctoringLocation: selectedOption
-                                          ? selectedOption
-                                              .map((item) => item.value)
-                                              .join(", ")
-                                          : null,
-                                      }));
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.map(
-                                              (item) => item.value
-                                            )
-                                          : null
-                                      );
-
-                                      setCurrentMajor({
-                                        ...currentMajor,
-                                        semesters: selectedOption
-                                          ? selectedOption.map(
-                                              (item) => item.value
-                                            )
-                                          : [],
-                                      });
-                                    }}
-                                    formatOptionLabel={formatOptionLabel} // Sử dụng hàm formatOptionLabel ở đây
                                   />
                                 </div>
 
@@ -600,25 +506,6 @@ const MajorDashboard = () => {
                       )}
                     </td>
 
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {major.semesters}
-                            {major.proctoringLocation
-                              ? ` (${major.proctoringLocation})`
-                              : null}
-                          </div>
-                        </div>
-                      </div>
-                      {/**
-                       * {major.semesters.map((semesters) => semesters.semesterId)}
-                       * semesters?.map(semester => ({
-    value: semester.semesterId,
-    label: semester.semesterId + " : " + semester.semesterName 
-  }))
-                       */}
-                    </td>
                     <td>
                       <div className="">
                         {" "}

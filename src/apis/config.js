@@ -1,29 +1,30 @@
-import axios from "axios"
+import axios from "axios";
 
-export const TOKEN_KEY = "examskd_token"
-export const REFRESH_TOKEN_KEY = "examskd_refresh_token"
-export const USER_ID = "user_id"
-export const REFRESH_TOKEN_ID = "refresh_token_id"
-
+export const TOKEN_KEY = "examskd_token";
+export const REFRESH_TOKEN_KEY = "examskd_refresh_token";
+export const USER_ID = "user_id";
+export const REFRESH_TOKEN_ID = "refresh_token_id";
+ 
 const apiInstance = axios.create({
+
   //baseURL: import.meta.env.VITE_API_SECRET,
   baseURL: import.meta.env.VITE_API_SECRET_URL,
 })
 
+ 
+
 apiInstance.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem("examskd_token")
+    const token = localStorage.getItem("examskd_token");
     if (token) {
-      config.headers["Authorization"] = ` bearer ${token}`
+      config.headers["Authorization"] = ` bearer ${token}`;
     }
-    return config
+    return config;
   },
   (error) => {
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
-
-
+);
 
 // apiInstance.interceptors.response.use(
 //   (response) => {
@@ -66,4 +67,4 @@ apiInstance.interceptors.request.use(
 //   }
 // )
 
-export default apiInstance
+export default apiInstance;

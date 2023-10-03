@@ -20,11 +20,8 @@ const studentSlice = createSlice({
       state.loadings[studentTypes.GET_STUDENTS] = true;
       state.errors[studentTypes.GET_STUDENTS] = "";
     },
-<<<<<<< HEAD
-    [getAllStudents.fulfilled]: (state, {payload}) => {
-=======
+
     [getAllStudents.fulfilled]: (state, { payload }) => {
->>>>>>> main
       state.loadings[studentTypes.GET_STUDENTS] = false;
       state.contents[studentTypes.GET_STUDENTS] = payload;
       state.paginations[studentTypes.GET_STUDENTS] = payload.data.pagination;
