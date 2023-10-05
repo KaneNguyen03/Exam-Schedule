@@ -36,7 +36,7 @@ const MajorDashboard = () => {
   const [currentMajor, setCurrentMajor] = useState({});
 
   const datamj = useSelector((state) => state.major);
-  console.log(datamj)
+
   // const datase = useSelector((state) => state.semester);
   // const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data;
@@ -52,7 +52,6 @@ const MajorDashboard = () => {
   const [addData, setAddData] = useState({
     majorId: "",
     majorName: "",
-    semesters: [],
   });
 
   const [loadings, setLoading] = useState(true);
@@ -293,10 +292,7 @@ const MajorDashboard = () => {
                   <th scope="col" className="px-6 py-3">
                     MajorName
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                    Semesters
-                  </th>
-                  <th scope="col" className="px-6 py-3">
+                   <th scope="col" className="px-6 py-3">
                     Status
                   </th>
                   <th scope="col" className="px-6 py-3">
@@ -369,45 +365,7 @@ const MajorDashboard = () => {
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                <div>
-                                  {/**
-                                   * Select the semester
-                                   *
-                                   */}
-                                  {/* <select
-                                  value={currentSeptember?.semesterId}
-                                  onChange={(e) =>
-                                    setCurrentMajor({
-                                      ...currentSeptember,
-                                      semesters : e.target.value,
-                                    })
-                                  }
-                                  className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                >
-                                  
-                                  {semesters?.data?.map((semester) => (
-                                    <option
-                                      key={semester.semesterId}
-                                      value={semester.semesterId}
-                                    >
-                                      {semester.semesterName}
-                                    </option>
-                                  ))}
-                                </select> */}
-                                <label className="mb-2 text-sm font-medium text-white flex">
-                                    Semester
-                                  </label>
-                                  <input
-                                    value={currentMajor.semesters}
-                                    onChange={(e) =>
-                                      setCurrentMajor({
-                                        ...currentMajor,
-                                        semesters: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
+                               
 
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
@@ -491,20 +449,7 @@ const MajorDashboard = () => {
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Semester
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        semesters: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
+                                
 
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
@@ -592,7 +537,7 @@ const MajorDashboard = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-6 py-4">{major.semesters}</td>
+                    
                     <td>
                       <>
                         {major.status === "Active" ? (

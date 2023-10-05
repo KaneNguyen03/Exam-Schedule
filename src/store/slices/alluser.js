@@ -42,7 +42,7 @@ const alluserSlice =createSlice({
         const index = state.contents[
           alluserTypes.GET_ALLUSERS
         ].data.data.findIndex(
-          (c) => c.classroomId === payload.meta.arg.classroomId
+          (c) => c.username === payload.meta.arg.username
         )
         state.contents[alluserTypes.GET_ALLUSERS].data.data[index] =
           payload.meta.arg

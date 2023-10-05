@@ -16,9 +16,7 @@ const updateMajor = async (data) => {
        {
          majorId: data.majorId,
          majorName: data.majorName,
-          
-         semesters: data.semesters,
-        status: "Active",
+         status: "Active",
        }
      )
      return response
@@ -48,8 +46,6 @@ const updateMajor = async (data) => {
      const response = await apiInstance.post(`api/Major`, {
        majorId: data.majorId,
        majorName: data.majorName,
-        
-       semesters:data.semesters,
       status: "Active",
      })
      return response

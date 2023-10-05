@@ -16,12 +16,8 @@ const updateAlluser = async (data) => {
        {
         username: data.username,
         roleId: data.roleId,
-        passwordHash: data.passwordHash,
-        passwordSalt: data.passwordSalt,
-        refreshToken: data.refreshToken,
-        tokenCreated: data.tokenCreated,
-        tokenExpires: data.tokenExpires,
-        role : data?.role,
+        // email: data.email,
+        status:"Active",
         
        }
      )
@@ -52,12 +48,7 @@ const updateAlluser = async (data) => {
      const response = await apiInstance.post(`api/api/Auth/AllUser`, {
         username: data.username,
         roleId: data.roleId,
-        passwordHash: data.passwordHash,
-        passwordSalt: data.passwordSalt,
-        refreshToken: data.refreshToken,
-        tokenCreated: data.tokenCreated,
-        tokenExpires: data.tokenExpires,
-        role : data?.role,
+        // email: data.email,
         status: "Active"
      })
      return response

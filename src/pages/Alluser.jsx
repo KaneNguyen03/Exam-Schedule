@@ -22,7 +22,9 @@ const AlluserDashboard = () => {
     });
     const [currentAlluser, setCurrentAlluser] = useState({});
   const datauser = useSelector((state) => state.alluser);
+  
   const allusers = datauser?.contents[alluserTypes.GET_ALLUSERS]?.data;
+
   const pagination = datauser?.paginations[alluserTypes.GET_ALLUSERS];
   const popupSelect = useRef(null);
   const [openModalAdd, setOpenModalAdd] = useState(false);
@@ -30,12 +32,7 @@ const AlluserDashboard = () => {
   const [addData, setAddData] = useState({
     username: "",
     roleId: "",
-    passwordHash: "",
-    passwordSalt: "",
-    refreshToken: "",
-    tokenCreated: "",
-    tokenExpires: "",
-    role: ""
+    // email:""
 });
   const [loadings, setLoading] = useState(true);
 
@@ -223,23 +220,9 @@ const AlluserDashboard = () => {
                     roleId
                   </th>
                   <th scope="col" className="px-6 py-3">
-                  passwordHash
+                    Email
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                  passwordSalt
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                  refreshToken
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                  tokenCreated
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                  tokenExpires
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                  role
-                  </th>
+                  
                   <th scope="col" className="px-6 py-3">
                     Status
                   </th>
@@ -311,96 +294,22 @@ const AlluserDashboard = () => {
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                <div>
+                                {/* <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                  passwordHash
+                                  Email
                                   </label>
                                   <input
-                                    value={currentAlluser?.passwordHash}
+                                    value={currentAlluser?.email}
                                     onChange={(e) =>
                                       setCurrentAlluser({
                                         ...currentAlluser,
-                                        passwordHash: e.target.value,
+                                        email: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                  passwordSalt
-                                  </label>
-                                  <input
-                                    value={currentAlluser?.passwordSalt}
-                                    onChange={(e) =>
-                                      setCurrentAlluser({
-                                        ...currentAlluser,
-                                        passwordSalt: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                  refreshToken
-                                  </label>
-                                  <input
-                                    value={currentAlluser?.refreshToken}
-                                    onChange={(e) =>
-                                      setCurrentAlluser({
-                                        ...currentAlluser,
-                                        refreshToken: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                  tokenCreated
-                                  </label>
-                                  <input
-                                    value={currentAlluser?.tokenCreated}
-                                    onChange={(e) =>
-                                      setCurrentAlluser({
-                                        ...currentAlluser,
-                                        tokenCreated: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                  tokenExpires
-                                  </label>
-                                  <input
-                                    value={currentAlluser?.tokenExpires}
-                                    onChange={(e) =>
-                                      setCurrentAlluser({
-                                        ...currentAlluser,
-                                        tokenExpires: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                  role
-                                  </label>
-                                  <input
-                                    value={currentAlluser?.role}
-                                    onChange={(e) =>
-                                      setCurrentAlluser({
-                                        ...currentAlluser,
-                                       role: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
+                                </div> */}
+                                
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -484,90 +393,21 @@ const AlluserDashboard = () => {
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                <div>
+                                {/* <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                  passwordHash
+                                  email
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        passwordHash: e.target.value,
+                                        email: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                  passwordSalt
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        passwordSalt: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                  refreshToken
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        refreshToken: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                  tokenCreated
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        tokenCreated: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                  tokenExpires
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        tokenExpires: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                  role
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        role: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
+                                </div> */}
+                                
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -654,12 +494,8 @@ const AlluserDashboard = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-6 py-4">{alluser.passwordHash}</td>
-                    <td className="px-6 py-4">{alluser.passwordSalt}</td>
-                    <td className="px-6 py-4">{alluser.refreshToken}</td>
-                    <td className="px-6 py-4">{alluser.tokenCreated}</td>
-                    <td className="px-6 py-4">{alluser.tokenExpires}</td>
-                    <td className="px-6 py-4">{alluser.role}</td>
+                    
+                    {/* <td className="px-6 py-4">{alluser.email}</td> */}
                     <td>
                       <>
                         {alluser.status === "Active" ? (

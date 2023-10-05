@@ -35,8 +35,8 @@ const AdminDashboard = () => {
   const dataexsl = useSelector((state) => state.examslot);
   const datamj = useSelector((state) => state.major);
   const datase = useSelector((state) => state.semester);
-  const datauser = useSelector((state) => state.datauser);
-  const allusers =datauser?.contents[alluserTypes.GET_ALLUSERS]?.data.data
+  const datauser = useSelector((state) => state.alluser);
+  const allusers =datauser?.contents[alluserTypes.GET_ALLUSERS]?.data.data;
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data;
@@ -44,7 +44,7 @@ const AdminDashboard = () => {
   const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data;
   const examschedules =dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data;
-  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data?.data;
+  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
   const [loadings, setLoading] = useState(true);
   useEffect(() => {
     if (
@@ -193,7 +193,7 @@ const AdminDashboard = () => {
             </div>
           </header>
           <Dashboard
-            alluser={allusers}
+            allusers={allusers}
             classrooms={classrooms}
             courses={courses}
             teachers={teachers}

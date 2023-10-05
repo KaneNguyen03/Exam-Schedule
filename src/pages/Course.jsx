@@ -49,7 +49,7 @@ const Course = () => {
     value: semester.semesterId,
     label: semester.semesterId + " : " + semester.semesterName,
   }));
-  console.log(semesters);
+
 
   const UpdateCourse = () => {
     dispatch(updateCourse(currentCourse));
