@@ -17,7 +17,7 @@ const updateStudent = async (data) => {
         studentListId: data.studentListId,
          studentId: data.studentId ,
          courseId: data.courseId,
-         
+         status: "Active"
        }
      )
      return response
@@ -43,7 +43,7 @@ const updateStudent = async (data) => {
       studentListId: data.studentListId,
        studentId: data.studentId ,
        courseId: data.courseId,
-       
+       status: "Active"
      })
      return response
    } catch (error) {

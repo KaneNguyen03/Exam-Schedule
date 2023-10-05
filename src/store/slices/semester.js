@@ -7,7 +7,7 @@ import { getAllSemesters,
 import semesterTypes from "../../constants/semesterTypes";
 
 const semesterSlice = createSlice({
-  name: "Semester",
+  name: "semester",
   initialState: {
     loadings: {},
     errors: {},
@@ -58,12 +58,12 @@ const semesterSlice = createSlice({
     [deleteSemester.fulfilled]: (state, payload) => {
       state.loadings[semesterTypes.DELETE_SEMESTER] = false;
       state.contents[semesterTypes.DELETE_SEMESTER] = payload.meta.arg
-      const index = state.contents[
-        semesterTypes.GET_SEMESTERS
-      ].data.data.findIndex(
-        (c) => c.semesterId === payload.meta.arg.semesterId
-      )
-      state.contents[semesterTypes.GET_SEMESTERS].data.data.splice(index, 1)
+      // const index = state.contents[
+      //   semesterTypes.GET_SEMESTERS
+      // ].data.data.findIndex(
+      //   (c) => c.semesterId === payload.meta.arg.semesterId
+      // )
+      // state.contents[semesterTypes.GET_SEMESTERS].data.data.splice(index, 1)
     },
     [deleteSemester.rejected]: (state, { payload }) => {
       state.loadings[semesterTypes.DELETE_SEMESTER] = false;

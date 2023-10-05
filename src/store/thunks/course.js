@@ -12,7 +12,7 @@ export const getAllCourses = createAsyncThunk(
       return isRejectedWithValue(error);
     }
   }
-);
+)
 export const updateCourse = createAsyncThunk(
   courseTypes.UPDATE_COURSE,
   async (data) => {

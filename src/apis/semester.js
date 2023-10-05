@@ -18,6 +18,8 @@ const updateSemester = async (data) => {
          semesterId: data.semesterId,
          semesterName: data.semesterName,
          majorId: data.majorId,   
+         course: data.course,
+         status: "Active"
        }
      )
      return response
@@ -28,8 +30,13 @@ const updateSemester = async (data) => {
  
  const deleteSemester = async (data) => {
    try {
-     const response = await apiInstance.delete(
-       `api/Semester/${data.semesterId}`
+     const response = await apiInstance.put(
+       `api/Semester/${data.semesterId}`,
+       {
+        ...data,
+        majorId: data.majorId,
+        status: data.status
+       }
      )
      return response
    } catch (error) {
@@ -43,6 +50,8 @@ const updateSemester = async (data) => {
        semesterId: data.semesterId,
        semesterName: data.semesterName,
        majorId: data.majorId,
+       course: data.course,
+       status:"Active"
      })
      return response
    } catch (error) {

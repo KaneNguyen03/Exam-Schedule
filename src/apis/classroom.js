@@ -18,6 +18,7 @@ const updateClassroom = async (data) => {
         ClassroomId: data.classroomId,
         name: data.name,
         capacity: data.capacity,
+        status: "Active"
       }
     )
     return response
@@ -48,6 +49,7 @@ const createClassroom = async (data) => {
       ClassroomId: data.classroomId,
       name: data.name,
       capacity: data.capacity,
+      status : "Active"
     })
     return response
   } catch (error) {

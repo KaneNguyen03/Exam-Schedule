@@ -1,109 +1,92 @@
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
-
 import { useEffect, useRef, useState } from "react";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { sizeOptions } from "../constants/commons/commons";
-import { Pagination } from "react-headless-pagination";
-import ReactSelect from "react-select";
-import teacherTypes from "../constants/teacherTypes";
-import examslotTypes from "../constants/examslotTypes";
-import { createExamslot, deleteExamslot, getAllExamslots, updateExamslot } from "../store/thunks/examslot";
-
 import Sidebar from "../components/Layout/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllTeachers } from "../store/thunks/teacher";
+import alluserTypes from "../constants/alluserTypes";
+import { useDispatch,useSelector } from "react-redux";
+import useAuth from "../hooks/useAuth";
+import { Pagination } from "react-headless-pagination";
 import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
-
-
-const ExamSlot = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
-  const [param, setParam] = useState({
-    page: 1,
-    pageSize: 10,
-    keyword: "",
-  });
-  const [currentExamslot, setCurrentExamslot] = useState({});
-  const dataexsl = useSelector((state) => state.examslot)
-  const datate = useSelector((state) => state.teacher);
-
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
-
-  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import { sizeOptions } from "../constants/commons/commons";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import { createAlluser, deleteAlluser, getAllusers, updateAlluser } from "../store/thunks/alluser";
+const AlluserDashboard = () => {
+    const dispatch = useDispatch();
+    const { user } = useAuth();
+    const [openModal, setOpenModal] = useState(false);
+    const [isShowSelect, setIsShowSelect] = useState(false);
+    const [param, setParam] = useState({
+      page: 1,
+      pageSize: 10,
+      keyword: "",
+    });
+    const [currentAlluser, setCurrentAlluser] = useState({});
+  const datauser = useSelector((state) => state.alluser);
+  const allusers = datauser?.contents[alluserTypes.GET_ALLUSERS]?.data;
+  const pagination = datauser?.paginations[alluserTypes.GET_ALLUSERS];
   const popupSelect = useRef(null);
   const [openModalAdd, setOpenModalAdd] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [addData, setAddData] = useState({
-    examSlotId: "",
-    examSlotName: "",
-    proctoringId:"",
-    proctoringLocation: "",
-    date:"",
-    startTime:"",
-    endTime:"",
-    examSchedules: [],
-    proctoring:"",
-  });
+    username: "",
+    roleId: "",
+    passwordHash: "",
+    passwordSalt: "",
+    refreshToken: "",
+    tokenCreated: "",
+    tokenExpires: "",
+    role: ""
+});
   const [loadings, setLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(null);
-  
-  const options = teachers?.map((teacher) => ({
-    value: teacher.proctoringId,
-    label: teacher.proctoringId + " : " + teacher.proctoringName,
-  }));
 
-  const UpdateExamslot = () => {
-    dispatch(updateExamslot(currentExamslot));
+  const UpdateAlluser = () => {
+    dispatch(updateAlluser(currentAlluser));
     setOpenModal(false);
   };
 
-  const AddExamslot= () => {
-    dispatch(createExamslot(addData));
+  const AddAlluser = () => {
+    dispatch(createAlluser(addData));
     setOpenModalAdd(false);
   };
 
-  const onDeleteExamslot = (data) => {
-    const req={
+  const onDeleteAlluser = (data) => {
+    const req = {
       ...data,
-      status:"Inactive"
-    }
-    dispatch(deleteExamslot(req));
+      status: "Inactive",
+    };
+    dispatch(deleteAlluser(req));
     setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
+    setTimeout(() => dispatch(getAllusers(param)), 1000);
   };
-  const restoreExamslot = (data) => {
+  const restoreAlluser = (data) => {
     const req = {
       ...data,
       status: "Active",
     };
-    dispatch(deleteExamslot(req));
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
+    dispatch(deleteAlluser(req));
+    setTimeout(() => dispatch(getAllusers(param)), 1000);
   };
-  useEffect(() => {
-    if (
-      dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
-      dataexsl?.loadings[examslotTypes.CREATE_EXAMSLOT] ||
-      dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
-      dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
-    )
-    setLoading(true);
-    else setLoading(false);
-  }, [dataexsl, param]);
 
   useEffect(() => {
+    if (
+      datauser?.loadings[alluserTypes.GET_ALLUSERS] ||
+      datauser?.loadings[alluserTypes.CREATE_ALLUSER] ||
+      datauser?.loadings[alluserTypes.UPDATE_ALLUSER] ||
+      datauser?.loadings[alluserTypes.DELETE_ALLUSER]
+    )
+      setLoading(true);
+    else setLoading(false);
+  }, [datauser, param]);
+  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllExamslots(param));
+      dispatch(getAllusers(param));
     }, 500);
-    dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
+
     return () => clearTimeout(delayDebounceFn);
   }, [param.keyword, dispatch, param]);
-  return (
-    <div className="relative">
+
+    return (
+        <div className="relative">
       {loadings && <LoadingSpinner />}
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
@@ -180,11 +163,11 @@ const ExamSlot = () => {
                   </span>
                 </a>
               </div>
-              <div></div>
             </div>
           </header>
+
           <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
-            <div className="justify-center w-full">Examslot Management</div>
+            <div className="justify-center w-full">User Management</div>
             <button
               type="button"
               id="Add"
@@ -228,33 +211,34 @@ const ExamSlot = () => {
               )}
             </div>
           </div>
+          {/* table */}
           <div className="grid gap-4 pt-7 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
             <table className=" text-sm text-left text-gray-400 ">
               <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
                 <tr>
                   <th scope="col" className="px-6 py-3">
-                    examSlotId
+                    username
                   </th>
                   <th scope="col" className="px-6 py-3">
-                  examSlotName
+                    roleId
                   </th>
                   <th scope="col" className="px-6 py-3">
-                  proctoringId
+                  passwordHash
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    date
+                  passwordSalt
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Start Time
+                  refreshToken
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    End Time
+                  tokenCreated
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    examSchedules
+                  tokenExpires
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Proctoring
+                  role
                   </th>
                   <th scope="col" className="px-6 py-3">
                     Status
@@ -265,16 +249,16 @@ const ExamSlot = () => {
                 </tr>
               </thead>
               <tbody>
-                {examslots?.data?.map((examslot) => (
+                {allusers?.data?.map((alluser) => (
                   <tr
                     className="bg-white border-b  border-gray-700"
-                    key={examslot.examSlotId}
+                    key={alluser.username}
                   >
-                    <td className="px-6 py-4">{examslot.examSlotId}</td>
+                    <td className="px-6 py-4">{alluser.username}</td>
                     <td className="px-6 py-4">
-                      {examslot.examSlotName}
+                      {alluser.roleId}
                       {openModal ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
+                        <div className="modal absolute top-5 w-[30%]">
                           <div className="modal-content ">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
@@ -299,14 +283,14 @@ const ExamSlot = () => {
                               </button>
                               <div className="px-6 py-6 lg:px-8">
                                 <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Edit examslot
+                                  Edit user
                                 </h3>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Examslot Id
+                                    Username
                                   </label>
                                   <input
-                                    defaultValue={currentExamslot?.examSlotId}
+                                    defaultValue={currentAlluser?.username}
                                     className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                     placeholder=""
                                     readOnly
@@ -314,14 +298,14 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    Examslot Name
+                                    roleId
                                   </label>
                                   <input
-                                    value={currentExamslot?.examSlotName}
+                                    value={currentAlluser?.roleId}
                                     onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                       examSlotName: e.target.value,
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                        roleId: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -329,60 +313,14 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    proctoring id
-                                  </label>
-                                  {/* <input
-                                    value={currentTeacher?.protoringLocation}
-                                    onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        protoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                      
-                                     
-                                    }
-                                    
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentExamslot((prevExamslot) => ({
-                                        ...prevExamslot,
-                                        proctoringId: selectedOption
-                                          ? selectedOption.value
-                                          : null,
-                                      }));
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                    }}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    Date
+                                  passwordHash
                                   </label>
                                   <input
-                                    value={currentExamslot?.date}
+                                    value={currentAlluser?.passwordHash}
                                     onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        date: e.target.value,
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                        passwordHash: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -390,14 +328,14 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    Start time
+                                  passwordSalt
                                   </label>
                                   <input
-                                    value={currentExamslot?.startTime}
+                                    value={currentAlluser?.passwordSalt}
                                     onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        startTime: e.target.value,
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                        passwordSalt: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -405,14 +343,14 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    End Time
+                                  refreshToken
                                   </label>
                                   <input
-                                    value={currentExamslot?.endTime}
+                                    value={currentAlluser?.refreshToken}
                                     onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        endTime: e.target.value,
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                        refreshToken: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -420,14 +358,14 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    examSchedules
+                                  tokenCreated
                                   </label>
                                   <input
-                                    value={currentExamslot?.endTime}
+                                    value={currentAlluser?.tokenCreated}
                                     onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                       examSchedules: e.target.value,
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                        tokenCreated: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -435,14 +373,29 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    Proctoring
+                                  tokenExpires
                                   </label>
                                   <input
-                                    value={currentExamslot?.endTime}
+                                    value={currentAlluser?.tokenExpires}
                                     onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        proctoring: e.target.value,
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                        tokenExpires: e.target.value,
+                                      })
+                                    }
+                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="mb-2 text-sm font-medium text-white flex">
+                                  role
+                                  </label>
+                                  <input
+                                    value={currentAlluser?.role}
+                                    onChange={(e) =>
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                       role: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -455,7 +408,7 @@ const ExamSlot = () => {
                                   <button
                                     type="submit"
                                     className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                    onClick={() => UpdateExamslot()}
+                                    onClick={() => UpdateAlluser()}
                                   >
                                     Save
                                   </button>
@@ -475,7 +428,7 @@ const ExamSlot = () => {
                         <></>
                       )}
                       {openModalAdd ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
+                        <div className="modal absolute top-5 w-[30%]">
                           <div className="modal-content ">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
@@ -500,69 +453,32 @@ const ExamSlot = () => {
                               </button>
                               <div className="px-6 py-6 lg:px-8 flex flex-col gap-y-4">
                                 <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Add examslot
+                                  Add User
                                 </h3>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Examslot Id
+                                    username
                                   </label>
                                   <input
                                     className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    placeholder="C-XXX"
+                                    placeholder=""
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        examSlotId: e.target.value,
+                                        username: e.target.value,
                                       })
                                     }
                                   />
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Examslot Name
+                                  roleId
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        examSlotName: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    proctoringId
-                                  </label>
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    onChange={(data) => {
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                      setAddData({
-                                        ...addData,
-                                        proctoringId: data.value,
-                                      });
-                                    }}
-
-                                    ////////////////////////////////
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    date
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        date: e.target.value,
+                                        roleId: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -570,13 +486,13 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    startTime
+                                  passwordHash
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        startTime: e.target.value,
+                                        passwordHash: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -584,13 +500,13 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    End Time
+                                  passwordSalt
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        endTime: e.target.value,
+                                        passwordSalt: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -598,13 +514,13 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    examschedules
+                                  refreshToken
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        eexamSchedules: e.target.value,
+                                        refreshToken: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -612,13 +528,41 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                   Proctoring
+                                  tokenCreated
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        proctoring: e.target.value,
+                                        tokenCreated: e.target.value,
+                                      })
+                                    }
+                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="mb-2 text-sm font-medium  text-white flex">
+                                  tokenExpires
+                                  </label>
+                                  <input
+                                    onChange={(e) =>
+                                      setAddData({
+                                        ...addData,
+                                        tokenExpires: e.target.value,
+                                      })
+                                    }
+                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="mb-2 text-sm font-medium  text-white flex">
+                                  role
+                                  </label>
+                                  <input
+                                    onChange={(e) =>
+                                      setAddData({
+                                        ...addData,
+                                        role: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -631,7 +575,7 @@ const ExamSlot = () => {
                                   <button
                                     type="submit"
                                     className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                    onClick={() => AddExamslot()}
+                                    onClick={() => AddAlluser()}
                                   >
                                     Add
                                   </button>
@@ -681,14 +625,14 @@ const ExamSlot = () => {
                                 <div className="p-10 text-center">
                                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                                     Are you sure you want to delete this
-                                    exam slot?
+                                    user?
                                   </h3>
                                   <button
                                     data-modal-hide="popup-modal"
                                     type="button"
                                     className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
                                     onClick={() =>
-                                      onDeleteExamslot(currentExamslot)
+                                      onDeleteAlluser(currentAlluser)
                                     }
                                   >
                                     Delete
@@ -710,21 +654,21 @@ const ExamSlot = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-6 py-4">{examslot.proctoringId}</td>
-                    <td className="px-6 py-4">{examslot.date}</td>
-                    <td className="px-6 py-4">{examslot.startTime}</td>
-                    <td className="px-6 py-4">{examslot.endTime}</td>
-                    <td className="px-6 py-4">{examslot.examSchedules}</td>
-                    <td className="px-6 py-4">{examslot.proctoring}</td>
+                    <td className="px-6 py-4">{alluser.passwordHash}</td>
+                    <td className="px-6 py-4">{alluser.passwordSalt}</td>
+                    <td className="px-6 py-4">{alluser.refreshToken}</td>
+                    <td className="px-6 py-4">{alluser.tokenCreated}</td>
+                    <td className="px-6 py-4">{alluser.tokenExpires}</td>
+                    <td className="px-6 py-4">{alluser.role}</td>
                     <td>
                       <>
-                        {examslot.status === "Active" ? (
+                        {alluser.status === "Active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) :examslot?.status=== "Inactive" ? (
+                        ) : alluser.status === "Inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -736,8 +680,8 @@ const ExamSlot = () => {
                       </>
                     </td>
                     <td>
-                    <div className="">
-                        {examslot.status === "Active" ? (
+                      <div className="">
+                        {alluser.status === "Active" ? (
                           <>
                             {" "}
                             <button
@@ -745,9 +689,9 @@ const ExamSlot = () => {
                               id="Delete"
                               className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
                               onClick={() =>
-                                // onDeleteClassroom(classroom)
+                                // onDeleteAlluser(alluser)
                                 {
-                                  setCurrentExamslot(examslot);
+                                  setCurrentAlluser(alluser);
                                   setOpenModalConfirm(true);
                                 }
                               }
@@ -760,8 +704,7 @@ const ExamSlot = () => {
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
                                 setOpenModal(!openModal);
-                                setSelectedOption(examslot.proctoringId)
-                                setCurrentExamslot(examslot);
+                                setCurrentAlluser(alluser);
                               }}
                             >
                               Edit
@@ -769,7 +712,7 @@ const ExamSlot = () => {
                           </>
                         ) : (
                           <button
-                            onClick={() => restoreExamslot(examslot)}
+                            onClick={() => restoreAlluser(alluser)}
                             className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-400 hover:bg-gray-500 focus:ring-gray-600"
                           >
                             <svg
@@ -791,8 +734,9 @@ const ExamSlot = () => {
                 ))}
               </tbody>
             </table>
+            {/**Data */}
             <div className="sticky bottom-0 bg-white p-2">
-              {examslots?.data?.length ? (
+              {allusers?.data?.length ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
@@ -827,7 +771,7 @@ const ExamSlot = () => {
                   </Pagination.PrevButton>
 
                   <div className="flex items-center justify-center mx-6 list-none ">
-                    {examslots?.data?.length > 0 ? (
+                    {allusers?.data?.length > 0 ? (
                       <Pagination.PageButton
                         activeClassName="bg-blue-button border-0 text-white "
                         inactiveClassName="border"
@@ -844,7 +788,7 @@ const ExamSlot = () => {
                     className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
                       page
                     ) =>
-                      page > examslots?.data?.length
+                      page > allusers?.data?.length
                         ? "cursor-pointer"
                         : "cursor-not-allowed"}`}
                   >
@@ -866,7 +810,7 @@ const ExamSlot = () => {
         </main>
       </div>
     </div>
-  );
+    );
 };
 
-export default ExamSlot;
+export default AlluserDashboard;

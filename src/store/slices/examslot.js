@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createExamslot, deleteExamslot, getAllExamslots, updateExamslot } from "../thunks/examslot";
+import { createExamslot, 
+         deleteExamslot, 
+         getAllExamslots, 
+         updateExamslot
+         } from "../thunks/examslot";
 import examslotTypes from "../../constants/examslotTypes";
 
 const examslotSlice = createSlice({
@@ -55,12 +59,12 @@ const examslotSlice = createSlice({
     [deleteExamslot.fulfilled]: (state, payload) => {
       state.loadings[examslotTypes.DELETE_EXAMSLOT] = false;
       state.contents[examslotTypes.DELETE_EXAMSLOT] = payload.meta.arg;
-      const index = state.contents[
-        examslotTypes.GET_EXAMSLOTS
-      ].data.data.findIndex(
-        (c) => c.examSlotId === payload.meta.arg.examSlotId
-      );
-      state.contents[examslotTypes.GET_EXAMSLOTS].data.data.splice(index, 1);
+      // const index = state.contents[
+      //   examslotTypes.GET_EXAMSLOTS
+      // ].data.data.findIndex(
+      //   (c) => c.examSlotId === payload.meta.arg.examSlotId
+      // );
+      // state.contents[examslotTypes.GET_EXAMSLOTS].data.data.splice(index, 1);
     },
     [deleteExamslot.rejected]: (state, { payload }) => {
       state.loadings[examslotTypes.DELETE_EXAMSLOT] = false;

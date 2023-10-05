@@ -18,6 +18,7 @@ const updateTeacher = async (data) => {
          proctoringName: data.proctoringName ,
          proctoringLocation: data.proctoringLocation,
          compensation: data.compensation,
+         status:"Active",
        }
      )
      return response
@@ -28,8 +29,13 @@ const updateTeacher = async (data) => {
  
  const deleteTeacher = async (data) => {
    try {
-     const response = await apiInstance.delete(
-       `api/Proctoring/${data.proctoringId}`
+     const response = await apiInstance.put(
+       `api/Proctoring/${data.proctoringId}`,
+       {
+        ...data,
+        proctoringId: data.proctoringId,
+        status: data.status
+       }
      )
      return response
    } catch (error) {
@@ -40,11 +46,12 @@ const updateTeacher = async (data) => {
  const createTeacher = async (data) => {
    try {
      const response = await apiInstance.post(`api/Proctoring`, {
-      proctoringId: data.proctoringId,
+       proctoringId: data.proctoringId,
        proctoringName: data.proctoringName ,
        proctoringLocation: data.proctoringLocation,
        compensation: data.compensation,
        examSlots: data.examSlots,
+       status: "Active"
      })
      return response
    } catch (error) {

@@ -1,5 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createCourse, deleteCourse, getAllCourses, updateCourse } from "../thunks/course";
+import { createCourse, 
+        deleteCourse, 
+        getAllCourses, 
+        updateCourse } from "../thunks/course";
 import courseTypes from "../../constants/courseTypes";
 
 const courseSlice = createSlice({
@@ -15,7 +18,7 @@ const courseSlice = createSlice({
       state.loadings[courseTypes.GET_COURSES] = true;
       state.errors[courseTypes.GET_COURSES] = "";
     },
-    [getAllCourses.fulfilled]: (state, payload) => {
+    [getAllCourses.fulfilled]: (state, {payload}) => {
 
       state.loadings[courseTypes.GET_COURSES] = false;
       state.contents[courseTypes.GET_COURSES] = payload;
@@ -57,12 +60,12 @@ const courseSlice = createSlice({
     [deleteCourse.fulfilled]: (state, payload) => {
       state.loadings[courseTypes.DELETE_COURSE] = false;
       state.contents[courseTypes.DELETE_COURSE] = payload.meta.arg;
-      const index = state.contents[
-        courseTypes.GET_COURSES
-      ].data.data.findIndex(
-        (c) => c.courseId === payload.meta.arg.courseId
-      );
-      state.contents[courseTypes.GET_COURSES].data.data.splice(index, 1);
+      // const index = state.contents[
+      //   courseTypes.GET_COURSES
+      // ].data.data.findIndex(
+      //   (c) => c.courseId === payload.meta.arg.courseId
+      // );
+      // state.contents[courseTypes.GET_COURSES].data.data.splice(index, 1);
     },
     [deleteCourse.rejected]: (state, { payload }) => {
       state.loadings[courseTypes.DELETE_COURSE] = false;

@@ -10,7 +10,8 @@ const Dashboard = ({
   examslots,
   majors,
   semesters,
-  loadings
+  allusers,
+  loadings,
 }) => {
   return (
     <div className="h-full p-8">
@@ -50,6 +51,24 @@ const Dashboard = ({
             <div>
               <h4>StudentList</h4>
               <p>{students?.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className=" border  border-black rounded-lg cursor-pointer w-64 font-medium text-base  ">
+          <div className="flex">
+            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="h-13 w-14 bg-green-800 rounded-lg"
+              >
+                <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </span>
+            <div>
+              <h4>User</h4>
+              <p>{allusers?.length}</p>
             </div>
           </div>
         </div>
@@ -167,6 +186,7 @@ const Dashboard = ({
   )
 }
 Dashboard.propTypes = {
+  
   classrooms: PropTypes.array,
   courses: PropTypes.array,
   teachers: PropTypes.array,
@@ -174,6 +194,7 @@ Dashboard.propTypes = {
   examschedules: PropTypes.array,
   examslots: PropTypes.array,
   majors: PropTypes.array,
+  allusers: PropTypes.array,
   semesters: PropTypes.array,
 }
 

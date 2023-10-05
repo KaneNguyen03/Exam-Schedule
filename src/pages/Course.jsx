@@ -11,12 +11,16 @@ import { Pagination } from "react-headless-pagination";
 import courseTypes from "../constants/courseTypes";
 import { createCourse, deleteCourse, getAllCourses, updateCourse } from "../store/thunks/course";
 import semesterTypes from "../constants/semesterTypes";
-
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
+import { getAllSemesters } from "../store/thunks/semester";
 const Course = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const [openModal, setOpenModal] = useState(false);
   const [isShowSelect, setIsShowSelect] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
@@ -24,10 +28,12 @@ const Course = () => {
   });
   const [currentCourse, setCurrentCourse] = useState({});
   const dataco = useSelector((state) => state.course);
+ 
   const datase = useSelector((state) => state.semester);
   const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data
-  const pagination = dataco?.paginations[courseTypes.GET_TEACHERS];
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data;
+  const pagination = dataco?.paginations[courseTypes.GET_COURSES];
+
   const popupSelect = useRef(null);
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
@@ -38,10 +44,12 @@ const Course = () => {
   });
   const [loadings, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
+  
   const options = semesters?.map((semester) => ({
-    value: semester.classroomId,
-    label: semester.classroomId + " : " + semester.name,
+    value: semester.semesterId,
+    label: semester.semesterId + " : " + semester.semesterName,
   }));
+  console.log(semesters);
 
   const UpdateCourse = () => {
     dispatch(updateCourse(currentCourse));
@@ -54,9 +62,22 @@ const Course = () => {
   };
 
   const onDeleteCourse= (data) => {
-    dispatch(deleteCourse(data));
-    setTimeout(() => dispatch(getAllCourses(param)), 2000);
+    const req ={
+      ...data,
+      status:"Inactive",
+    };
+    dispatch(deleteCourse(req));
+    setOpenModalConfirm(false);
+    setTimeout(() => dispatch(getAllCourses(param)), 1000);
   };
+  const restoreCourse =(data) =>{
+    const req = {
+      ...data,
+      status: "Active",
+  }
+  dispatch(deleteCourse(req));
+  setTimeout(() => dispatch(getAllCourses(param)), 1000);
+};
   useEffect(() => {
     if (
       dataco?.loadings[courseTypes.GET_COURSES] ||
@@ -72,7 +93,7 @@ const Course = () => {
     const delayDebounceFn = setTimeout(() => {
       dispatch(getAllCourses(param));
     }, 500);
-    dispatch(getAllCourses({ page: 1, pageSize: 999 }));
+    dispatch(getAllSemesters({ page: 1, pageSize: 999 }));
     return () => clearTimeout(delayDebounceFn);
   }, [param.keyword, dispatch, param]);
   return (
@@ -218,6 +239,9 @@ const Course = () => {
                   studentListId
                   </th>
                   <th scope="col" className="px-6 py-3">
+                  status
+                  </th>
+                  <th scope="col" className="px-6 py-3">
                     Action
                   </th>
                 </tr>
@@ -226,7 +250,7 @@ const Course = () => {
                 {courses?.data?.map((course) => (
                   <tr
                     className="bg-white border-b  border-gray-700"
-                    key={course.coursId}
+                    key={course.courseId}
                   >
                     <td className="px-6 py-4">{course.courseId}</td>
                     <td className="px-6 py-4">
@@ -261,7 +285,7 @@ const Course = () => {
                                 </h3>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    courseg Id
+                                    course Id
                                   </label>
                                   <input
                                     defaultValue={currentCourse?.courseId}
@@ -333,7 +357,7 @@ const Course = () => {
                                   studentListId
                                   </label>
                                   <input
-                                    value={currentCourse?.compensation}
+                                    value={currentCourse?.studentListId}
                                     onChange={(e) =>
                                       setCurrentCourse({
                                         ...currentCourse,
@@ -489,32 +513,137 @@ const Course = () => {
                       ) : (
                         <></>
                       )}
+                      {openModalConfirm ? (
+                        <div className="fixed top-0 left-0  w-full h-full bg-gray-200 bg-opacity-5 z-[1000]">
+                          <div className="absolute top-0 left-0 w-full h-full">
+                            <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
+                              <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                                <button
+                                  type="button"
+                                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                  data-modal-hide="popup-modal"
+                                  onClick={() => setOpenModalConfirm(false)}
+                                >
+                                  <svg
+                                    className="w-3 h-3"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 14 14"
+                                  >
+                                    <path
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                                    />
+                                  </svg>
+                                  <span className="sr-only">Close modal</span>
+                                </button>
+                                <div className="p-10 text-center">
+                                  <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                                    Are you sure you want to delete this
+                                    course?
+                                  </h3>
+                                  <button
+                                    data-modal-hide="popup-modal"
+                                    type="button"
+                                    className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
+                                    onClick={() =>
+                                      onDeleteCourse(currentCourse)
+                                    }
+                                  >
+                                    Delete
+                                  </button>
+                                  <button
+                                    data-modal-hide="popup-modal"
+                                    type="button"
+                                    className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5"
+                                    onClick={() => setOpenModalConfirm(false)}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                     </td>
                     <td className="px-6 py-4">{course.semesterId}</td>
                     <td className="px-6 py-4">{course.studentListId}$</td>
                     <td>
-                      <div className="">
-                        {" "}
-                        <button
-                          type="button"
-                          id="Delete"
-                          className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
-                          onClick={() => onDeleteCourse(course)}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          type="button"
-                          id="Edit"
-                          className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
-                          onClick={() => {
-                            setOpenModal(!openModal);
-                            setCurrentCourse(course);
-                            setSelectedOption(course.semesterId);
-                          }}
-                        >
-                          Edit
-                        </button>
+                      <>
+                        {course.status === "Active" ? (
+                          <StatusButton
+                            color={color.green}
+                            bgColor={color.greenLight}
+                            title="Active"
+                          />
+                        ) : course?.status=== "Inactive" ? (
+                          <StatusButton
+                            color={color.red}
+                            bgColor={color.redLight}
+                            title="Inactive"
+                          />
+                        ) : (
+                          <>-</>
+                        )}
+                      </>
+                    </td>
+                    <td>
+                    <div className="">
+                        {course.status === "Active" ? (
+                          <>
+                            {" "}
+                            <button
+                              type="button"
+                              id="Delete"
+                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
+                              onClick={() =>
+                                // onDeleteClassroom(classroom)
+                                {
+                                  setCurrentCourse(course);
+                                  setOpenModalConfirm(true);
+                                }
+                              }
+                            >
+                              Delete
+                            </button>
+                            <button
+                              type="button"
+                              id="Edit"
+                              className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
+                              onClick={() => {
+                                setOpenModal(!openModal);
+                                setSelectedOption(course.semesterId)
+                                setCurrentCourse(course);
+                              }}
+                            >
+                              Edit
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => restoreCourse(course)}
+                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-400 hover:bg-gray-500 focus:ring-gray-600"
+                          >
+                            <svg
+                              viewBox="64 64 896 896"
+                              focusable="false"
+                              data-icon="redo"
+                              width="1em"
+                              height="1em"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path d="M758.2 839.1C851.8 765.9 912 651.9 912 523.9 912 303 733.5 124.3 512.6 124 291.4 123.7 112 302.8 112 523.9c0 125.2 57.5 236.9 147.6 310.2 3.5 2.8 8.6 2.2 11.4-1.3l39.4-50.5c2.7-3.4 2.1-8.3-1.2-11.1-8.1-6.6-15.9-13.7-23.4-21.2a318.64 318.64 0 01-68.6-101.7C200.4 609 192 567.1 192 523.9s8.4-85.1 25.1-124.5c16.1-38.1 39.2-72.3 68.6-101.7 29.4-29.4 63.6-52.5 101.7-68.6C426.9 212.4 468.8 204 512 204s85.1 8.4 124.5 25.1c38.1 16.1 72.3 39.2 101.7 68.6 29.4 29.4 52.5 63.6 68.6 101.7 16.7 39.4 25.1 81.3 25.1 124.5s-8.4 85.1-25.1 124.5a318.64 318.64 0 01-68.6 101.7c-9.3 9.3-19.1 18-29.3 26L668.2 724a8 8 0 00-14.1 3l-39.6 162.2c-1.2 5 2.6 9.9 7.7 9.9l167 .8c6.7 0 10.5-7.7 6.3-12.9l-37.3-47.9z"></path>
+                            </svg>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -525,6 +654,7 @@ const Course = () => {
               {courses?.data?.length ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}
+
                   setCurrentPage={(page) => {
                     setParam({ ...param, page: page + 1 });
                   }}
