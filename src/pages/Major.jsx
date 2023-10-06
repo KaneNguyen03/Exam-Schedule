@@ -39,13 +39,10 @@ const MajorDashboard = () => {
   const [currentMajor, setCurrentMajor] = useState({});
 
   const datamj = useSelector((state) => state.major);
-<<<<<<< HEAD
   //const datasep = useSelector((state) => state.semesters);
-=======
 
   // const datase = useSelector((state) => state.semester);
   // const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
->>>>>>> 727d626181a3d3a85da0d022e74286cdb90c63f7
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data;
 
   const pagination = datamj?.paginations[majorTypes.GET_MAJORS];

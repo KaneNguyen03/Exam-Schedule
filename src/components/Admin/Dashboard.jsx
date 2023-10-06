@@ -1,7 +1,7 @@
-import React from "react";
-import { Bar } from "react-chartjs-2";
-import PropTypes from "prop-types";
-import LoadingSpinner from "../../constants/commons/loading-spinner/LoadingSpinner";
+import React from "react"
+import { Bar } from "react-chartjs-2"
+import PropTypes from "prop-types"
+import LoadingSpinner from "../../constants/commons/loading-spinner/LoadingSpinner"
 
 const BarChart = ({ data }) => {
   const chartData = {
@@ -25,7 +25,7 @@ const BarChart = ({ data }) => {
         borderRadius: 10,
       },
     ],
-  };
+  }
 
   const chartOptions = {
     scales: {
@@ -33,14 +33,14 @@ const BarChart = ({ data }) => {
         beginAtZero: true,
       },
     },
-  };
+  }
 
-  return <Bar data={chartData} options={chartOptions} />;
-};
+  return <Bar data={chartData} options={chartOptions} />
+}
 
 BarChart.propTypes = {
   data: PropTypes.array.isRequired,
-};
+}
 
 const Dashboard = ({
   classrooms,
@@ -51,10 +51,7 @@ const Dashboard = ({
   examslots,
   majors,
   semesters,
-<<<<<<< HEAD
-=======
   allusers,
->>>>>>> 727d626181a3d3a85da0d022e74286cdb90c63f7
   loadings,
 }) => {
   return (
@@ -147,11 +144,10 @@ const Dashboard = ({
         {/* ... Other chart components ... */}
       </div>
     </div>
-  );
-};
+  )
+}
 
 Dashboard.propTypes = {
-  
   classrooms: PropTypes.array,
   courses: PropTypes.array,
   teachers: PropTypes.array,
@@ -162,9 +158,9 @@ Dashboard.propTypes = {
   allusers: PropTypes.array,
   semesters: PropTypes.array,
   loadings: PropTypes.bool.isRequired,
-};
+}
 
-export default Dashboard;
+export default Dashboard
 
 // import React, { useEffect, useState } from "react";
 // import { Bar } from "react-chartjs-2";
