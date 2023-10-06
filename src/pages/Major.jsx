@@ -15,8 +15,6 @@ import { sizeOptions } from "../constants/commons/commons";
 import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
 import useAuth from "../hooks/useAuth";
 import { getAllSemesters } from "../store/thunks/semester";
-import semesterTypes from "../constants/semesterTypes";
-import ReactSelect from "react-select";
 import major from "../store/slices/major";
 //
 
@@ -39,7 +37,6 @@ const MajorDashboard = () => {
   });
 
   const datamj = useSelector((state) => state.major);
-  const datase = useSelector((state) => state.semester);
   //const datasep = useSelector((state) => state.semesters);
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data;
 

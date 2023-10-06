@@ -8,12 +8,21 @@ import { Pagination } from "react-headless-pagination";
 import ReactSelect from "react-select";
 import teacherTypes from "../constants/teacherTypes";
 import examslotTypes from "../constants/examslotTypes";
-import { createExamslot, deleteExamslot, getAllExamslots, updateExamslot } from "../store/thunks/examslot";
+import {
+  createExamslot,
+  deleteExamslot,
+  getAllExamslots,
+  updateExamslot,
+} from "../store/thunks/examslot";
+//DATE
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+/////////
 
 import Sidebar from "../components/Layout/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTeachers } from "../store/thunks/teacher";
-
 
 const ExamSlot = () => {
   const dispatch = useDispatch();
@@ -26,10 +35,10 @@ const ExamSlot = () => {
     keyword: "",
   });
   const [currentExamslot, setCurrentExamslot] = useState({});
-  const dataexsl = useSelector((state) => state.examslot)
+  const dataexsl = useSelector((state) => state.examslot);
   const datate = useSelector((state) => state.teacher);
 
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
 
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
@@ -38,17 +47,25 @@ const ExamSlot = () => {
   const [addData, setAddData] = useState({
     examSlotId: "",
     examSlotName: "",
-    proctoringId:"",
+    proctoringId: "",
     proctoringLocation: "",
-    date:"",
-    startTime:"",
-    endTime:"",
+    date: "",
+    startTime: "",
+    endTime: "",
     examSchedules: [],
-    proctoring:"",
+    proctoring: "",
   });
   const [loadings, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
-  
+
+  //setup DATE selection
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+  ////////////
+
   const options = teachers?.map((teacher) => ({
     value: teacher.proctoringId,
     label: teacher.proctoringId + " : " + teacher.proctoringName,
@@ -59,7 +76,7 @@ const ExamSlot = () => {
     setOpenModal(false);
   };
 
-  const AddExamslot= () => {
+  const AddExamslot = () => {
     dispatch(createExamslot(addData));
     setOpenModalAdd(false);
   };
@@ -75,7 +92,7 @@ const ExamSlot = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-    setLoading(true);
+      setLoading(true);
     else setLoading(false);
   }, [dataexsl, param]);
 
@@ -220,10 +237,10 @@ const ExamSlot = () => {
                     examSlotId
                   </th>
                   <th scope="col" className="px-6 py-3">
-                  examSlotName
+                    examSlotName
                   </th>
                   <th scope="col" className="px-6 py-3">
-                  proctoringId
+                    proctoringId
                   </th>
                   <th scope="col" className="px-6 py-3">
                     date
@@ -302,7 +319,7 @@ const ExamSlot = () => {
                                     onChange={(e) =>
                                       setCurrentExamslot({
                                         ...currentExamslot,
-                                       examSlotName: e.target.value,
+                                        examSlotName: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -332,10 +349,7 @@ const ExamSlot = () => {
                                               option.value === selectedOption
                                           )
                                         : null
-                                      
-                                     
                                     }
-                                    
                                     onChange={(selectedOption) => {
                                       // Update the proctoringLocation in the currentTeacher state
                                       setCurrentExamslot((prevExamslot) => ({
@@ -354,11 +368,14 @@ const ExamSlot = () => {
                                     }}
                                   />
                                 </div>
+                                {/**
+                                 * <div class= day select">
+                                 */}
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     Date
                                   </label>
-                                  <input
+                                  {/* <input
                                     value={currentExamslot?.date}
                                     onChange={(e) =>
                                       setCurrentExamslot({
@@ -367,6 +384,12 @@ const ExamSlot = () => {
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                  /> */}
+                                  <DatePicker
+                                    selected={selectedDate}
+                                    onChange={handleDateChange}
+                                    dateFormat="yyyy-MM-dd"
+                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
                                 <div>
@@ -408,7 +431,7 @@ const ExamSlot = () => {
                                     onChange={(e) =>
                                       setCurrentExamslot({
                                         ...currentExamslot,
-                                       examSchedules: e.target.value,
+                                        examSchedules: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -539,7 +562,7 @@ const ExamSlot = () => {
                                   <label className="mb-2 text-sm font-medium  text-white flex">
                                     date
                                   </label>
-                                  <input
+                                  {/* <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
@@ -547,6 +570,12 @@ const ExamSlot = () => {
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                  /> */}
+                                  <DatePicker
+                                    selected={selectedDate}
+                                    onChange={handleDateChange}
+                                    dateFormat="yyyy-MM-dd"
+                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
                                 <div>
@@ -593,7 +622,7 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                   Proctoring
+                                    Proctoring
                                   </label>
                                   <input
                                     onChange={(e) =>

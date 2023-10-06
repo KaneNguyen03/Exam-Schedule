@@ -43,6 +43,8 @@ const updateSemester = async (data) => {
        semesterId: data.semesterId,
        semesterName: data.semesterName,
        majorId: data.majorId,
+       //status: data.status
+
      })
      return response
    } catch (error) {

@@ -222,7 +222,7 @@ const TeacherDashboard = () => {
                     proctoringLocation
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    compensation
+                    Exam invigilator slots
                   </th>
                   <th scope="col" className="px-6 py-3">
                     Action
@@ -337,7 +337,7 @@ const TeacherDashboard = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    Compensation
+                                    ExamInvigilatorSlots
                                   </label>
                                   <input
                                     value={currentTeacher?.compensation}
@@ -458,7 +458,7 @@ const TeacherDashboard = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    compensation
+                                    ExamInvigilatorSlots
                                   </label>
                                   <input
                                     onChange={(e) =>
@@ -498,7 +498,7 @@ const TeacherDashboard = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{teacher.proctoringLocation}</td>
-                    <td className="px-6 py-4">{teacher.compensation}$</td>
+                    <td className="px-6 py-4">{teacher.compensation}</td>
                     <td>
                       <div className="">
                         {" "}
