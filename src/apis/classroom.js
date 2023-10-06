@@ -16,8 +16,9 @@ const updateClassroom = async (data) => {
       `api/Classroom/${data.classroomId}`,
       {
         ClassroomId: data.classroomId,
-        name: data.name ,
+        name: data.name,
         capacity: data.capacity,
+        status: "Active"
       }
     )
     return response
@@ -28,8 +29,13 @@ const updateClassroom = async (data) => {
 
 const deleteClassroom = async (data) => {
   try {
-    const response = await apiInstance.delete(
-      `api/Classroom/${data.classroomId}`
+    const response = await apiInstance.put(
+      `api/Classroom/${data.classroomId}`,
+      {
+        ...data,
+        ClassroomId: data.classroomId,
+        status: data.status,
+      }
     )
     return response
   } catch (error) {
@@ -43,6 +49,7 @@ const createClassroom = async (data) => {
       ClassroomId: data.classroomId,
       name: data.name,
       capacity: data.capacity,
+      status : "Active"
     })
     return response
   } catch (error) {

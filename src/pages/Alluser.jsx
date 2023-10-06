@@ -1,104 +1,89 @@
-import { useDispatch, useSelector } from "react-redux";
-import Sidebar from "../components/Layout/Sidebar";
-import teacherTypes from "../constants/teacherTypes";
 import { useEffect, useRef, useState } from "react";
-import {
-  createTeacher,
-  deleteTeacher,
-  getAllTeachers,
-  updateTeacher,
-} from "../store/thunks/teacher";
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
-
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import Sidebar from "../components/Layout/Sidebar";
+import alluserTypes from "../constants/alluserTypes";
+import { useDispatch,useSelector } from "react-redux";
 import useAuth from "../hooks/useAuth";
-import { sizeOptions } from "../constants/commons/commons";
 import { Pagination } from "react-headless-pagination";
-import { getAllClassrooms } from "../store/thunks/classroom";
-import classroomTypes from "../constants/classroomTypes";
-import ReactSelect from "react-select";
 import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
-const TeacherDashboard = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
-  const [param, setParam] = useState({
-    page: 1,
-    pageSize: 10,
-    keyword: "",
-  });
-  const [currentTeacher, setCurrentTeacher] = useState({});
-  const datate = useSelector((state) => state.teacher);
-  const datacl = useSelector((state) => state.classroom);
-  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data;
-  const pagination = datate?.paginations[teacherTypes.GET_TEACHERS];
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import { sizeOptions } from "../constants/commons/commons";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import { createAlluser, deleteAlluser, getAllusers, updateAlluser } from "../store/thunks/alluser";
+const AlluserDashboard = () => {
+    const dispatch = useDispatch();
+    const { user } = useAuth();
+    const [openModal, setOpenModal] = useState(false);
+    const [isShowSelect, setIsShowSelect] = useState(false);
+    const [param, setParam] = useState({
+      page: 1,
+      pageSize: 10,
+      keyword: "",
+    });
+    const [currentAlluser, setCurrentAlluser] = useState({});
+  const datauser = useSelector((state) => state.alluser);
+  
+  const allusers = datauser?.contents[alluserTypes.GET_ALLUSERS]?.data;
+
+  const pagination = datauser?.paginations[alluserTypes.GET_ALLUSERS];
   const popupSelect = useRef(null);
   const [openModalAdd, setOpenModalAdd] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [addData, setAddData] = useState({
-    proctoringId: "",
-    proctoringName: "",
-    proctoringLocation: "",
-    compensation: 0,
-  });
+    username: "",
+    roleId: "",
+    // email:""
+});
   const [loadings, setLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(null);
 
-  const options = classrooms?.map((classroom) => ({
-    value: classroom.classroomId,
-    label: classroom.classroomId + " : " + classroom.name,
-  }));
-
-  const UpdateTeacher = () => {
-    dispatch(updateTeacher(currentTeacher));
+  const UpdateAlluser = () => {
+    dispatch(updateAlluser(currentAlluser));
     setOpenModal(false);
   };
 
-  const AddTeacher = () => {
-    dispatch(createTeacher(addData));
+  const AddAlluser = () => {
+    dispatch(createAlluser(addData));
     setOpenModalAdd(false);
   };
 
-  const onDeleteTeacher = (data) => {
+  const onDeleteAlluser = (data) => {
     const req = {
       ...data,
       status: "Inactive",
     };
-    dispatch(deleteTeacher(req));
+    dispatch(deleteAlluser(req));
     setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllTeachers(param)), 1000);
+    setTimeout(() => dispatch(getAllusers(param)), 1000);
   };
-  const restoreTeacher = (data) => {
+  const restoreAlluser = (data) => {
     const req = {
       ...data,
       status: "Active",
     };
-    dispatch(deleteTeacher(req));
-    setTimeout(() => dispatch(getAllTeachers(param)), 1000);
+    dispatch(deleteAlluser(req));
+    setTimeout(() => dispatch(getAllusers(param)), 1000);
   };
+
   useEffect(() => {
     if (
-      datate?.loadings[teacherTypes.GET_TEACHERS] ||
-      datate?.loadings[teacherTypes.CREATE_TEACHER] ||
-      datate?.loadings[teacherTypes.UPDATE_TEACHER] ||
-      datate?.loadings[teacherTypes.DELETE_TEACHER]
+      datauser?.loadings[alluserTypes.GET_ALLUSERS] ||
+      datauser?.loadings[alluserTypes.CREATE_ALLUSER] ||
+      datauser?.loadings[alluserTypes.UPDATE_ALLUSER] ||
+      datauser?.loadings[alluserTypes.DELETE_ALLUSER]
     )
       setLoading(true);
     else setLoading(false);
-  }, [datate, param]);
-
+  }, [datauser, param]);
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllTeachers(param));
+      dispatch(getAllusers(param));
     }, 500);
-    dispatch(getAllClassrooms({ page: 1, pageSize: 999 }));
+
     return () => clearTimeout(delayDebounceFn);
   }, [param.keyword, dispatch, param]);
-  return (
-    <div className="relative">
+
+    return (
+        <div className="relative">
       {loadings && <LoadingSpinner />}
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
@@ -175,11 +160,11 @@ const TeacherDashboard = () => {
                   </span>
                 </a>
               </div>
-              <div></div>
             </div>
           </header>
+
           <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
-            <div className="justify-center w-full">Proctoring Management</div>
+            <div className="justify-center w-full">User Management</div>
             <button
               type="button"
               id="Add"
@@ -223,22 +208,21 @@ const TeacherDashboard = () => {
               )}
             </div>
           </div>
+          {/* table */}
           <div className="grid gap-4 pt-7 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
             <table className=" text-sm text-left text-gray-400 ">
               <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
                 <tr>
                   <th scope="col" className="px-6 py-3">
-                    ProctoringId
+                    username
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    proctoringName
+                    roleId
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    proctoringLocation
+                    Email
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                    Exam invigilator slots
-                  </th>
+                  
                   <th scope="col" className="px-6 py-3">
                     Status
                   </th>
@@ -248,16 +232,16 @@ const TeacherDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {teachers?.data?.map((teacher) => (
+                {allusers?.data?.map((alluser) => (
                   <tr
                     className="bg-white border-b  border-gray-700"
-                    key={teacher.proctoringId}
+                    key={alluser.username}
                   >
-                    <td className="px-6 py-4">{teacher.proctoringId}</td>
+                    <td className="px-6 py-4">{alluser.username}</td>
                     <td className="px-6 py-4">
-                      {teacher.proctoringName}
+                      {alluser.roleId}
                       {openModal ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
+                        <div className="modal absolute top-5 w-[30%]">
                           <div className="modal-content ">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
@@ -282,14 +266,14 @@ const TeacherDashboard = () => {
                               </button>
                               <div className="px-6 py-6 lg:px-8">
                                 <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Edit proctoring
+                                  Edit user
                                 </h3>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    proctoring Id
+                                    Username
                                   </label>
                                   <input
-                                    defaultValue={currentTeacher?.proctoringId}
+                                    defaultValue={currentAlluser?.username}
                                     className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                     placeholder=""
                                     readOnly
@@ -297,77 +281,35 @@ const TeacherDashboard = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    Proctoring Name
+                                    roleId
                                   </label>
                                   <input
-                                    value={currentTeacher?.proctoringName}
+                                    value={currentAlluser?.roleId}
                                     onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        proctoringName: e.target.value,
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                        roleId: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                <div>
+                                {/* <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    proctoring Location
-                                  </label>
-                                  {/* <input
-                                    value={currentTeacher?.protoringLocation}
-                                    onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        protoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentTeacher((prevTeacher) => ({
-                                        ...prevTeacher,
-                                        proctoringLocation: selectedOption
-                                          ? selectedOption.value
-                                          : null,
-                                      }));
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                    }}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    ExamInvigilatorSlots
+                                  Email
                                   </label>
                                   <input
-                                    value={currentTeacher?.compensation}
+                                    value={currentAlluser?.email}
                                     onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        compensation: e.target.value,
+                                      setCurrentAlluser({
+                                        ...currentAlluser,
+                                        email: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
-                                </div>
+                                </div> */}
+                                
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -375,7 +317,7 @@ const TeacherDashboard = () => {
                                   <button
                                     type="submit"
                                     className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                    onClick={() => UpdateTeacher()}
+                                    onClick={() => UpdateAlluser()}
                                   >
                                     Save
                                   </button>
@@ -394,9 +336,8 @@ const TeacherDashboard = () => {
                       ) : (
                         <></>
                       )}
-
                       {openModalAdd ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
+                        <div className="modal absolute top-5 w-[30%]">
                           <div className="modal-content ">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
@@ -421,74 +362,52 @@ const TeacherDashboard = () => {
                               </button>
                               <div className="px-6 py-6 lg:px-8 flex flex-col gap-y-4">
                                 <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Add proctoring
+                                  Add User
                                 </h3>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    proctoring Id
+                                    username
                                   </label>
                                   <input
                                     className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    placeholder="C-XXX"
+                                    placeholder=""
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        proctoringId: e.target.value,
+                                        username: e.target.value,
                                       })
                                     }
                                   />
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Proctoring Name
+                                  roleId
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        proctoringName: e.target.value,
+                                        roleId: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                <div>
+                                {/* <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    proctoringLocation
-                                  </label>
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    onChange={(data) => {
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                      setAddData({
-                                        ...addData,
-                                        proctoringLocation: data.value,
-                                      });
-                                    }}
-
-                                    ////////////////////////////////
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    ExamInvigilatorSlots
+                                  email
                                   </label>
                                   <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
-                                        compensation: e.target.value,
+                                        email: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
-                                </div>
+                                </div> */}
+                                
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -496,7 +415,7 @@ const TeacherDashboard = () => {
                                   <button
                                     type="submit"
                                     className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                    onClick={() => AddTeacher()}
+                                    onClick={() => AddAlluser()}
                                   >
                                     Add
                                   </button>
@@ -546,14 +465,14 @@ const TeacherDashboard = () => {
                                 <div className="p-10 text-center">
                                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                                     Are you sure you want to delete this
-                                    proctoring?
+                                    user?
                                   </h3>
                                   <button
                                     data-modal-hide="popup-modal"
                                     type="button"
                                     className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
                                     onClick={() =>
-                                      onDeleteTeacher(currentTeacher)
+                                      onDeleteAlluser(currentAlluser)
                                     }
                                   >
                                     Delete
@@ -575,17 +494,17 @@ const TeacherDashboard = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-6 py-4">{teacher.proctoringLocation}</td>
-                    <td className="px-6 py-4">{teacher.compensation}</td>
+                    
+                    {/* <td className="px-6 py-4">{alluser.email}</td> */}
                     <td>
                       <>
-                        {teacher.status === "Active" ? (
+                        {alluser.status === "Active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : teacher?.status=== "Inactive" ? (
+                        ) : alluser.status === "Inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -598,7 +517,7 @@ const TeacherDashboard = () => {
                     </td>
                     <td>
                       <div className="">
-                        {teacher.status === "Active" ? (
+                        {alluser.status === "Active" ? (
                           <>
                             {" "}
                             <button
@@ -606,9 +525,9 @@ const TeacherDashboard = () => {
                               id="Delete"
                               className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
                               onClick={() =>
-                                // onDeleteClassroom(classroom)
+                                // onDeleteAlluser(alluser)
                                 {
-                                  setCurrentTeacher(teacher);
+                                  setCurrentAlluser(alluser);
                                   setOpenModalConfirm(true);
                                 }
                               }
@@ -621,8 +540,7 @@ const TeacherDashboard = () => {
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
                                 setOpenModal(!openModal);
-                                setSelectedOption(teacher.proctoringLocation)
-                                setCurrentTeacher(teacher);
+                                setCurrentAlluser(alluser);
                               }}
                             >
                               Edit
@@ -630,7 +548,7 @@ const TeacherDashboard = () => {
                           </>
                         ) : (
                           <button
-                            onClick={() => restoreTeacher(teacher)}
+                            onClick={() => restoreAlluser(alluser)}
                             className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-400 hover:bg-gray-500 focus:ring-gray-600"
                           >
                             <svg
@@ -652,8 +570,9 @@ const TeacherDashboard = () => {
                 ))}
               </tbody>
             </table>
+            {/**Data */}
             <div className="sticky bottom-0 bg-white p-2">
-              {teachers?.data?.length ? (
+              {allusers?.data?.length ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
@@ -688,7 +607,7 @@ const TeacherDashboard = () => {
                   </Pagination.PrevButton>
 
                   <div className="flex items-center justify-center mx-6 list-none ">
-                    {teachers?.data?.length > 0 ? (
+                    {allusers?.data?.length > 0 ? (
                       <Pagination.PageButton
                         activeClassName="bg-blue-button border-0 text-white "
                         inactiveClassName="border"
@@ -705,7 +624,7 @@ const TeacherDashboard = () => {
                     className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
                       page
                     ) =>
-                      page > teachers?.data?.length
+                      page > allusers?.data?.length
                         ? "cursor-pointer"
                         : "cursor-not-allowed"}`}
                   >
@@ -727,6 +646,7 @@ const TeacherDashboard = () => {
         </main>
       </div>
     </div>
-  );
+    );
 };
-export default TeacherDashboard;
+
+export default AlluserDashboard;

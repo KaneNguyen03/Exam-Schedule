@@ -1,6 +1,5 @@
 import "./App.css"
-import Header from "./components/Layout/Header"
-import Footer from "./components/Layout/Footer"
+
 import { Routes, Route } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
@@ -21,6 +20,7 @@ import ProtectedAuth from "./components/ProtectedAuth"
 import { makeRoles } from "./utils/common"
 import Management from "./components/Layout/Management"
 import useAuth from "./hooks/useAuth"
+import AlluserDashboard from "./pages/Alluser"
 function App() {
   const { user } = useAuth()
   return (
@@ -53,6 +53,8 @@ function App() {
             />
             
             <Route path="/room" element={<Room />} />
+            <Route path="/alluser" element={<AlluserDashboard />} />
+
             <Route path="/profile" element={<Profile />} />
             <Route path="/proctoring" element={<TeacherDashboard />} />
             <Route path="/student" element={<StudentDashboard />} />

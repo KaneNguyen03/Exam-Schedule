@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllMajors,
+import { 
+  getAllMajors,
   createMajor,
   updateMajor,
   deleteMajor,
@@ -62,12 +63,12 @@ const majorSlice = createSlice({
     [deleteMajor.fulfilled]: (state, payload) => {
       state.loadings[majorTypes.UPDATE_MAJOR] = false
       state.contents[majorTypes.UPDATE_MAJOR] = payload.meta.arg
-      const index = state.contents[
-        majorTypes.GET_MAJORS
-      ].data.data.findIndex(
-        (c) => c.majorId === payload.meta.arg.majorId
-      )
-      state.contents[majorTypes.GET_MAJORS].data.data.splice(index, 1)
+      // const index = state.contents[
+      //   majorTypes.GET_MAJORS
+      // ].data.data.findIndex(
+      //   (c) => c.majorId === payload.meta.arg.majorId
+      // )
+      // state.contents[majorTypes.GET_MAJORS].data.data.splice(index, 1)
     },
     [deleteMajor.rejected]: (state, { payload }) => {
       state.loadings[majorTypes.UPDATE_MAJOR] = false

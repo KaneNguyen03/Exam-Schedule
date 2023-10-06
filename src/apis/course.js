@@ -13,12 +13,13 @@ const updateCourse = async(data) => {
    
  try {
     const response  = await apiInstance.put(
-      `api/Course${data.courseId}`,
+      `api/Course/${data.courseId}`,
       {
          courseId: data.courseId,
          courseName: data.courseName,
          semesterId: data.semesterId,
          studentListId: data.studentListId,
+         status: "Active",
       })
       return response
  } catch (error) {
@@ -27,8 +28,13 @@ const updateCourse = async(data) => {
 }
 const deleteCourse = async (data) => {
    try {
-     const response = await apiInstance.delete(
-       `api/Course/${data.courseId}`
+     const response = await apiInstance.put(
+       `api/Course/${data.courseId}`,
+       {
+        ...data,
+        courseId: data.courseId,
+        status: data.status
+       }
      )
      return response
    } catch (error) {
@@ -43,6 +49,7 @@ const createCourse = async (data) => {
          courseName: data.courseName,
          semesterId: data.semesterId,
          studentListId: data.studentListId,
+         status: "Active"
        }
      )
      return response

@@ -51,6 +51,10 @@ const Dashboard = ({
   examslots,
   majors,
   semesters,
+<<<<<<< HEAD
+=======
+  allusers,
+>>>>>>> 727d626181a3d3a85da0d022e74286cdb90c63f7
   loadings,
 }) => {
   return (
@@ -147,6 +151,7 @@ const Dashboard = ({
 };
 
 Dashboard.propTypes = {
+  
   classrooms: PropTypes.array,
   courses: PropTypes.array,
   teachers: PropTypes.array,
@@ -154,6 +159,7 @@ Dashboard.propTypes = {
   examschedules: PropTypes.array,
   examslots: PropTypes.array,
   majors: PropTypes.array,
+  allusers: PropTypes.array,
   semesters: PropTypes.array,
   loadings: PropTypes.bool.isRequired,
 };

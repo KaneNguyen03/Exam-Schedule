@@ -23,6 +23,7 @@ const updateExamslot = async(data) => {
          endTime: data.endTime,
          examSchedules: data.examSchedules,
          proctoring: data?.proctoring,
+         status: "Active"
       }
       )
       return response
@@ -33,8 +34,13 @@ const updateExamslot = async(data) => {
 
 const deleteExamslot = async (data) => {
    try {
-      const response = await apiInstance.delete(
-         `api/ExamSlot/${data.examSlotId}`
+      const response = await apiInstance.put(
+         `api/ExamSlot/${data.examSlotId}`,
+         {
+            ...data,
+            examSlotId: data.examSlotId,
+            status: data.status
+         }
       )
       return response
    } catch (error) {
@@ -55,6 +61,7 @@ const createExamslot = async(data) => {
            endTime: data.endTime,
            examSchedules: data.examSchedules,
            proctoring: data?.proctoring,
+           status:"Active"
         }
         )
         return response

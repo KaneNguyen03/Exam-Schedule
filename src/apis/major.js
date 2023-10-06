@@ -16,7 +16,7 @@ const updateMajor = async (data) => {
        {
          majorId: data.majorId,
          majorName: data.majorName,
-         semester:data.semesters,
+         status: "Active",
        }
      )
      return response
@@ -27,8 +27,13 @@ const updateMajor = async (data) => {
  
  const deleteMajor = async (data) => {
    try {
-     const response = await apiInstance.delete(
-       `api/Major/${data.majorId}`
+     const response = await apiInstance.put(
+       `api/Major/${data.majorId}`,
+       {
+        ...data,
+        majorId: data.majorId,
+        status: data.status,
+       }
      )
      return response
    } catch (error) {
@@ -41,7 +46,7 @@ const updateMajor = async (data) => {
      const response = await apiInstance.post(`api/Major`, {
        majorId: data.majorId,
        majorName: data.majorName,
-       semester:data.semesters,
+      status: "Active",
      })
      return response
    } catch (error) {

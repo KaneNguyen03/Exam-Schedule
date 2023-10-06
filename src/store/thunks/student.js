@@ -1,6 +1,6 @@
 import { createAsyncThunk, isRejectedWithValue } from "@reduxjs/toolkit";
 import studentTypes from "../../constants/studentTypes";
-import student from "../../apis/student";
+import student from "../../apis/studentlist";
 
 export const getAllStudents = createAsyncThunk(
   studentTypes.GET_STUDENTS,

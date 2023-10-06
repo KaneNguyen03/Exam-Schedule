@@ -58,12 +58,12 @@ const teacherSlice = createSlice({
     [deleteTeacher.fulfilled]: (state, payload) => {
       state.loadings[teacherTypes.DELETE_TEACHER] = false;
       state.contents[teacherTypes.DELETE_TEACHER] = payload.meta.arg;
-      const index = state.contents[
-        teacherTypes.GET_TEACHERS
-      ].data.data.findIndex(
-        (c) => c.proctoringId === payload.meta.arg.proctoringId
-      );
-      state.contents[teacherTypes.GET_TEACHERS].data.data.splice(index, 1);
+      // const index = state.contents[
+      //   teacherTypes.GET_TEACHERS
+      // ].data.data.findIndex(
+      //   (c) => c.proctoringId === payload.meta.arg.proctoringId
+      // );
+      // state.contents[teacherTypes.GET_TEACHERS].data.data.splice(index, 1);
     },
     [deleteTeacher.rejected]: (state, { payload }) => {
       state.loadings[teacherTypes.DELETE_TEACHER] = false;

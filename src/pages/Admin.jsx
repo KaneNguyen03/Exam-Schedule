@@ -21,9 +21,12 @@ import { getAllSemesters } from "../store/thunks/semester";
 import examslotTypes from "../constants/examslotTypes";
 import examscheduleTypes from "../constants/examscheduleTypes";
 import Dashboard from "../components/Admin/Dashboard";
+import alluserTypes from "../constants/alluserTypes";
+import { getAllusers } from "../store/thunks/alluser";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
+
   const datacl = useSelector((state) => state.classroom);
   const dataco = useSelector((state) => state.course);
   const datate = useSelector((state) => state.teacher);
@@ -32,27 +35,37 @@ const AdminDashboard = () => {
   const dataexsl = useSelector((state) => state.examslot);
   const datamj = useSelector((state) => state.major);
   const datase = useSelector((state) => state.semester);
+  const datauser = useSelector((state) => state.alluser);
+  const allusers =datauser?.contents[alluserTypes.GET_ALLUSERS]?.data.data;
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data;
   const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data;
   const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data;
-  const examschedules =
-    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
-  dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.payload?.data;
+  const examschedules =dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data;
-  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data?.data;
+  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
   const [loadings, setLoading] = useState(true);
   useEffect(() => {
     if (
-      dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
-      dataexsl?.loadings[examslotTypes.CREATE_EXAMSLOT] ||
-      dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
-      dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
+      dataco?.loadings[courseTypes.GET_COURSES] ||
+      dataco?.loadings[courseTypes.CREATE_COURSE] ||
+      dataco?.loadings[courseTypes.UPDATE_COURSE] ||
+      dataco?.loadings[courseTypes.DELETE_COURSE]
     )
       setLoading(true);
     else setLoading(false);
-  }, [dataexsl]);
+  }, [dataco]);
+  useEffect(() => {
+    if (
+      datase?.loadings[semesterTypes.GET_SEMESTERS] ||
+      datase?.loadings[semesterTypes.CREATE_SEMESTER] ||
+      datase?.loadings[semesterTypes.UPDATE_SEMESTER] ||
+      datase?.loadings[semesterTypes.DELETE_SEMESTER]
+    )
+      setLoading(true);
+    else setLoading(false);
+  }, [datase]);
   useEffect(() => {
     if (
       dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
@@ -63,16 +76,7 @@ const AdminDashboard = () => {
       setLoading(true);
     else setLoading(false);
   }, [dataexsl]);
-  useEffect(() => {
-    if (
-      dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
-      dataexsl?.loadings[examslotTypes.CREATE_EXAMSLOT] ||
-      dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
-      dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
-    )
-      setLoading(true);
-    else setLoading(false);
-  }, [dataexsl]);
+  
   useEffect(() => {
     if (
       datacl?.loadings[classroomTypes.GET_CLASSROOMS] ||
@@ -83,6 +87,16 @@ const AdminDashboard = () => {
       setLoading(true);
     else setLoading(false);
   }, [datacl]);
+  useEffect(() => {
+    if (
+      datauser?.loadings[alluserTypes.GET_ALLUSERS] ||
+      datauser?.loadings[alluserTypes.CREATE_ALLUSER] ||
+      datauser?.loadings[alluserTypes.UPDATE_ALLUSER] ||
+      datauser?.loadings[alluserTypes.DELETE_ALLUSER]
+    )
+      setLoading(true);
+    else setLoading(false);
+  }, [datauser]);
   useEffect(() => {
     if (
       datate?.loadings[teacherTypes.GET_TEACHERS] ||
@@ -108,6 +122,7 @@ const AdminDashboard = () => {
     dispatch(getAllClassrooms());
     dispatch(getAllCourses());
     dispatch(getAllTeachers());
+    dispatch(getAllusers());
     dispatch(getAllStudents());
     dispatch(getAllExamschedules());
     dispatch(getAllExamslots());
@@ -178,6 +193,7 @@ const AdminDashboard = () => {
             </div>
           </header>
           <Dashboard
+            allusers={allusers}
             classrooms={classrooms}
             courses={courses}
             teachers={teachers}
