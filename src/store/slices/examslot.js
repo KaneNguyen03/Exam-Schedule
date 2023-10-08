@@ -78,8 +78,9 @@ const examslotSlice = createSlice({
         [createExamslot.fulfilled]: (state, payload) => {
           state.loadings[examslotTypes.CREATE_EXAMSLOT] = false;
           state.contents[examslotTypes.CREATE_EXAMSLOT] = payload.meta.arg;
+          const temp = {...payload.meta.arg, status:"Active"}
           state.contents[examslotTypes.GET_EXAMSLOTS].data.data.push(
-            payload.meta.arg
+            temp
           );
     
           state.contents[examslotTypes.GET_EXAMSLOTS].data.data.sort((a, b) => {

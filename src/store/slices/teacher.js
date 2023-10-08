@@ -78,8 +78,9 @@ const teacherSlice = createSlice({
     [createTeacher.fulfilled]: (state, payload) => {
       state.loadings[teacherTypes.CREATE_TEACHER] = false;
       state.contents[teacherTypes.CREATE_TEACHER] = payload.meta.arg;
+      const temp = {...payload.meta.arg, status:"Active"}
       state.contents[teacherTypes.GET_TEACHERS].data.data.push(
-        payload.meta.arg
+       temp
       );
 
       state.contents[teacherTypes.GET_TEACHERS].data.data.sort((a, b) => {

@@ -82,9 +82,9 @@ const majorSlice = createSlice({
     },
     [createMajor.fulfilled]: (state, payload) => {
       state.loadings[majorTypes.CREATE_MAJOR] = false
-      state.contents[majorTypes.CREATE_MAJOR] = payload.meta.arg
+      const temp = {...payload.meta.arg, status:"Active"}
       state.contents[majorTypes.GET_MAJORS].data.data.push(
-        payload.meta.arg
+        temp
       )
       // Sort the array by majorId
       state.contents[majorTypes.GET_MAJORS].data.data.sort((a, b) => {

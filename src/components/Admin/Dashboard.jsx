@@ -53,6 +53,8 @@ const Dashboard = ({
   semesters,
   allusers,
   loadings,
+  reproctoring,
+  
 }) => {
   return (
     <div className="h-full p-8">
@@ -158,6 +160,8 @@ Dashboard.propTypes = {
   allusers: PropTypes.array,
   semesters: PropTypes.array,
   loadings: PropTypes.bool.isRequired,
+  registers: PropTypes.array,
+  reproctoring: PropTypes.array,
 }
 
 export default Dashboard

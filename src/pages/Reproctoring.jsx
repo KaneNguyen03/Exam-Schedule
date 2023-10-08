@@ -1,27 +1,30 @@
-import { useDispatch, useSelector } from "react-redux";
-import Sidebar from "../components/Layout/Sidebar";
-import teacherTypes from "../constants/teacherTypes";
-import { useEffect, useRef, useState } from "react";
-import {
-  createTeacher,
-  deleteTeacher,
-  getAllTeachers,
-  updateTeacher,
-} from "../store/thunks/teacher";
 import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
 
+import { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
 import useAuth from "../hooks/useAuth";
-import { sizeOptions } from "../constants/commons/commons";
+import { sizeOptions, timeOptions } from "../constants/commons/commons";
 import { Pagination } from "react-headless-pagination";
-import { getAllClassrooms } from "../store/thunks/classroom";
-import classroomTypes from "../constants/classroomTypes";
 import ReactSelect from "react-select";
+import teacherTypes from "../constants/teacherTypes";
+import examslotTypes from "../constants/examslotTypes";
+import {
+  createExamslot,
+  deleteExamslot,
+  getAllExamslots,
+  updateExamslot,
+} from "../store/thunks/examslot";
+
+import Sidebar from "../components/Layout/Sidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTeachers } from "../store/thunks/teacher";
 import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
-const TeacherDashboard = () => {
+
+const Reproctoring = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
+
   const [openModal, setOpenModal] = useState(false);
   const [isShowSelect, setIsShowSelect] = useState(false);
   const [openModalConfirm, setOpenModalConfirm] = useState(false);
@@ -30,73 +33,80 @@ const TeacherDashboard = () => {
     pageSize: 10,
     keyword: "",
   });
-  const [currentTeacher, setCurrentTeacher] = useState({});
+  const [currentExamslot, setCurrentExamslot] = useState({});
+  const dataexsl = useSelector((state) => state.examslot);
   const datate = useSelector((state) => state.teacher);
-  const datacl = useSelector((state) => state.classroom);
-  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data;
-  const pagination = datate?.paginations[teacherTypes.GET_TEACHERS];
+
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
+  const currentUserExamslot = teachers?.filter((teacher) => {
+    return teacher.proctoringName === user.username;
+  });
+  console.log(examslots?.data);
+  console.log(currentUserExamslot);
+  const remainUserExamslot = teachers?.filter((teacher) => {
+    return teacher.proctoringName !== user.username;
+  });
+  console.log(remainUserExamslot);
+
+  console.log(currentUserExamslot);
+
+  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
   const popupSelect = useRef(null);
-  const [openModalAdd, setOpenModalAdd] = useState(false);
+
   const [addData, setAddData] = useState({
+    examSlotId: "",
+    examSlotName: "",
     proctoringId: "",
-    proctoringName: "",
     proctoringLocation: "",
-    compensation: 0,
+    date: "",
+    startTime: "",
+    endTime: "",
   });
   const [loadings, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const options = classrooms?.map((classroom) => ({
-    value: classroom.classroomId,
-    label: classroom.classroomId + " : " + classroom.name,
-  }));
-
-  const UpdateTeacher = () => {
-    dispatch(updateTeacher(currentTeacher));
+  const UpdateExamslot = () => {
+    dispatch(updateExamslot(currentExamslot));
     setOpenModal(false);
   };
 
-  const AddTeacher = () => {
-    dispatch(createTeacher(addData));
-    setOpenModalAdd(false);
-  };
-
-  const onDeleteTeacher = (data) => {
+  const onDeleteExamslot = (data) => {
     const req = {
       ...data,
       status: "Inactive",
     };
-    dispatch(deleteTeacher(req));
+    dispatch(deleteExamslot(req));
     setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllTeachers(param)), 1000);
+    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
   };
-  const restoreTeacher = (data) => {
+  const restoreExamslot = (data) => {
     const req = {
       ...data,
       status: "Active",
     };
-    dispatch(deleteTeacher(req));
-    setTimeout(() => dispatch(getAllTeachers(param)), 1000);
+    dispatch(deleteExamslot(req));
+    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
   };
   useEffect(() => {
     if (
-      datate?.loadings[teacherTypes.GET_TEACHERS] ||
-      datate?.loadings[teacherTypes.CREATE_TEACHER] ||
-      datate?.loadings[teacherTypes.UPDATE_TEACHER] ||
-      datate?.loadings[teacherTypes.DELETE_TEACHER]
+      dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
+      dataexsl?.loadings[examslotTypes.CREATE_EXAMSLOT] ||
+      dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
+      dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
       setLoading(true);
     else setLoading(false);
-  }, [datate, param]);
+  }, [dataexsl, param]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllTeachers(param));
+      dispatch(getAllExamslots(param));
     }, 500);
-    dispatch(getAllClassrooms({ page: 1, pageSize: 999 }));
+    dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
     return () => clearTimeout(delayDebounceFn);
   }, [param.keyword, dispatch, param]);
+
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -179,15 +189,8 @@ const TeacherDashboard = () => {
             </div>
           </header>
           <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
-            <div className="justify-center w-full">Proctoring Management</div>
-            <button
-              type="button"
-              id="Add"
-              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
-              onClick={() => setOpenModalAdd(true)}
-            >
-              Add
-            </button>
+            <div className="justify-center w-full">Register Examslot</div>
+
             <div>
               <div
                 className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
@@ -228,17 +231,22 @@ const TeacherDashboard = () => {
               <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
                 <tr>
                   <th scope="col" className="px-6 py-3">
-                    ProctoringId
+                    examSlotId
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    proctoringName
+                    examSlotName
+                  </th>
+
+                  <th scope="col" className="px-6 py-3">
+                    date
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    proctoringLocation
+                    Start Time
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Exam invigilator slots
+                    End Time
                   </th>
+
                   <th scope="col" className="px-6 py-3">
                     Status
                   </th>
@@ -248,14 +256,14 @@ const TeacherDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {teachers?.data?.map((teacher) => (
+                {examslots?.data?.map((examslot) => (
                   <tr
                     className="bg-white border-b  border-gray-700"
-                    key={teacher.proctoringId}
+                    key={examslot.examSlotId}
                   >
-                    <td className="px-6 py-4">{teacher.proctoringId}</td>
+                    <td className="px-6 py-4">{examslot.examSlotId}</td>
                     <td className="px-6 py-4">
-                      {teacher.proctoringName}
+                      {examslot.examSlotName}
                       {openModal ? (
                         <div className="modal absolute top-5 w-[30%] z-20">
                           <div className="modal-content ">
@@ -282,92 +290,55 @@ const TeacherDashboard = () => {
                               </button>
                               <div className="px-6 py-6 lg:px-8">
                                 <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Edit proctoring
+                                  Do you want to register as a protoring for
+                                  this exam
                                 </h3>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                    proctoring Id
+                                    Examslot Id
                                   </label>
                                   <input
-                                    defaultValue={currentTeacher?.proctoringId}
+                                    defaultValue={currentExamslot?.examSlotId}
                                     className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                     placeholder=""
                                     readOnly
                                   />
                                 </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    Proctoring Name
-                                  </label>
-                                  <input
-                                    value={currentTeacher?.proctoringName}
-                                    onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        proctoringName: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    proctoring Location
-                                  </label>
-                                  {/* <input
-                                    value={currentTeacher?.protoringLocation}
-                                    onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        protoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentTeacher((prevTeacher) => ({
-                                        ...prevTeacher,
-                                        proctoringLocation: selectedOption
-                                          ? selectedOption.value
-                                          : null,
-                                      }));
+                                
 
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                    }}
-                                  />
-                                </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    ExamInvigilatorSlots
+                                    Date
                                   </label>
                                   <input
-                                    value={currentTeacher?.compensation}
+                                  readOnly
+                                    value={currentExamslot?.date.substring(0,10)}
                                     onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        compensation: e.target.value,
+                                      setCurrentExamslot({
+                                        ...currentExamslot,
+                                        date: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
+                                
+                                {/* <div>
+                                  <label className="mb-2 text-sm font-medium text-white flex">
+                                    End Time
+                                  </label>
+                                  <input
+                                    value={currentExamslot?.endTime}
+                                    onChange={(e) =>
+                                      setCurrentExamslot({
+                                        ...currentExamslot,
+                                        endTime: e.target.value,
+                                      })
+                                    }
+                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                  />
+                                </div> */}
+
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -375,7 +346,7 @@ const TeacherDashboard = () => {
                                   <button
                                     type="submit"
                                     className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                    onClick={() => UpdateTeacher()}
+                                    onClick={() => UpdateExamslot()}
                                   >
                                     Save
                                   </button>
@@ -395,125 +366,7 @@ const TeacherDashboard = () => {
                         <></>
                       )}
 
-                      {openModalAdd ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
-                            <div className="relativerounded-lg shadow bg-gray-700">
-                              <button
-                                type="button"
-                                className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
-                                data-modal-hide="authentication-modal"
-                                onClick={() => setOpenModalAdd(false)}
-                              >
-                                <svg
-                                  className="w-3 h-3"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 14 14"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                  />
-                                </svg>
-                                <span className="sr-only">Close modal</span>
-                              </button>
-                              <div className="px-6 py-6 lg:px-8 flex flex-col gap-y-4">
-                                <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Add proctoring
-                                </h3>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    proctoring Id
-                                  </label>
-                                  <input
-                                    className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    placeholder="C-XXX"
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        proctoringId: e.target.value,
-                                      })
-                                    }
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Proctoring Name
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        proctoringName: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    proctoringLocation
-                                  </label>
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    onChange={(data) => {
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                      setAddData({
-                                        ...addData,
-                                        proctoringLocation: data.value,
-                                      });
-                                    }}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    ExamInvigilatorSlots
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        compensation: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div className="flex justify-between">
-                                  <div className="flex items-start"></div>
-                                </div>
-                                <div className="flex flex-row p-4 gap-5 items-end">
-                                  <button
-                                    type="submit"
-                                    className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                    onClick={() => AddTeacher()}
-                                  >
-                                    Add
-                                  </button>
-                                  <button
-                                    type="submit"
-                                    className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
-                                    onClick={() => setOpenModalAdd(false)}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <></>
-                      )}
-                      {openModalConfirm ? (
+                      {/* {openModalConfirm ? (
                         <div className="fixed top-0 left-0  w-full h-full bg-gray-200 bg-opacity-5 z-[1000]">
                           <div className="absolute top-0 left-0 w-full h-full">
                             <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
@@ -543,15 +396,15 @@ const TeacherDashboard = () => {
                                 </button>
                                 <div className="p-10 text-center">
                                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to delete this
-                                    proctoring?
+                                    Are you sure you want to delete this exam
+                                    slot?
                                   </h3>
                                   <button
                                     data-modal-hide="popup-modal"
                                     type="button"
                                     className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
                                     onClick={() =>
-                                      onDeleteTeacher(currentTeacher)
+                                      onDeleteExamslot(currentExamslot)
                                     }
                                   >
                                     Delete
@@ -571,19 +424,57 @@ const TeacherDashboard = () => {
                         </div>
                       ) : (
                         <></>
-                      )}
+                      )} */}
                     </td>
-                    <td className="px-6 py-4">{teacher.proctoringLocation}</td>
-                    <td className="px-6 py-4">{teacher.compensation}/h</td>
+
+                    <td className="px-6 py-4">{examslot.date.substring(0,10)}</td>
+                    <td className="px-6 py-4">
+                      {examslot.startTime.substring(0, 5)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {/* {(() => {
+                        const startTime = new Date(
+                          `{examslot.startTime}:00Z`
+                        );
+                        startTime.setMinutes(startTime.getMinutes() + 90);
+
+                        return startTime.toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }).toString().substring(0,5);
+                      })()} */}
+                      {/* {examslot.startTime} */}
+                      {(() => {
+                        // Split the startTime into hours and minutes
+                        const [hours, minutes] = examslot.startTime
+                          .split(":")
+                          .map(Number);
+
+                        // Add 90 minutes
+                        const newMinutes = minutes + 90;
+                        const newHours = hours + Math.floor(newMinutes / 60);
+                        const formattedHours = newHours % 24; // Handle overflow if necessary
+                        const formattedMinutes = newMinutes % 60;
+
+                        // Format the result as "HH:mm"
+                        const formattedTime = `${formattedHours
+                          .toString()
+                          .padStart(2, "0")}:${formattedMinutes
+                          .toString()
+                          .padStart(2, "0")}`;
+
+                        return formattedTime;
+                      })()}
+                    </td>
                     <td>
                       <>
-                        {teacher.status === "Active" ? (
+                        {/* {examslot.status === "Active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : teacher?.status=== "Inactive" ? (
+                        ) : examslot?.status === "Inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -591,14 +482,42 @@ const TeacherDashboard = () => {
                           />
                         ) : (
                           <>-</>
-                        )}
+                        )} */}
+                        {currentUserExamslot.map((item) => {
+                          return (
+                            item.examSlotId === examslot.examSlotId && (
+                              <StatusButton
+                                color={color.gray}
+                                bgColor={color.grayLight}
+                                title="Enrolled"
+                              />
+                            )
+                          );
+                        })}
+                        {remainUserExamslot.map((item) => {
+                          return (
+                            item.examSlotId === examslot.examSlotId && (
+                              <StatusButton
+                                color={color.gray}
+                                bgColor={color.grayLight}
+                                title="Enrolled"
+                              />
+                            )
+                          );
+                        })}
+                        {
+                          <StatusButton
+                            color={color.green}
+                            bgColor={color.greenLight}
+                            title="Available"
+                          />
+                        }
                       </>
                     </td>
                     <td>
-                      <div className="">
-                        {teacher.status === "Active" ? (
-                          <>
-                            {" "}
+                      {currentUserExamslot.map((item) => {
+                        return (
+                          item.examSlotId === examslot.examSlotId && (
                             <button
                               type="button"
                               id="Delete"
@@ -606,52 +525,68 @@ const TeacherDashboard = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentTeacher(teacher);
+                                  setCurrentExamslot(examslot);
                                   setOpenModalConfirm(true);
                                 }
                               }
                             >
-                              Delete
+                              Cancel
                             </button>
+                          )
+                        );
+                      })}
+                      {remainUserExamslot.map((item) => {
+                        return (
+                          item.examSlotId === examslot.examSlotId && (
+                            <button
+                              type="button"
+                              id="Delete"
+                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-600 hover:bg-gray-700 focus:ring-gray-900"
+                            >
+                              Unavailable
+                            </button>
+                          )
+                        );
+                      })}
+                      {/* {remainUserExamslot.map((item) => {
+                        return (
+                          item.examSlotId !== examslot.examSlotId  && (
                             <button
                               type="button"
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
                                 setOpenModal(!openModal);
-                                setSelectedOption(teacher.proctoringLocation)
-                                setCurrentTeacher(teacher);
+                                setSelectedOption(examslot.proctoringId);
+                                setCurrentExamslot(examslot);
                               }}
                             >
-                              Edit
+                              Register
                             </button>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => restoreTeacher(teacher)}
-                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-400 hover:bg-gray-500 focus:ring-gray-600"
-                          >
-                            <svg
-                              viewBox="64 64 896 896"
-                              focusable="false"
-                              data-icon="redo"
-                              width="1em"
-                              height="1em"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path d="M758.2 839.1C851.8 765.9 912 651.9 912 523.9 912 303 733.5 124.3 512.6 124 291.4 123.7 112 302.8 112 523.9c0 125.2 57.5 236.9 147.6 310.2 3.5 2.8 8.6 2.2 11.4-1.3l39.4-50.5c2.7-3.4 2.1-8.3-1.2-11.1-8.1-6.6-15.9-13.7-23.4-21.2a318.64 318.64 0 01-68.6-101.7C200.4 609 192 567.1 192 523.9s8.4-85.1 25.1-124.5c16.1-38.1 39.2-72.3 68.6-101.7 29.4-29.4 63.6-52.5 101.7-68.6C426.9 212.4 468.8 204 512 204s85.1 8.4 124.5 25.1c38.1 16.1 72.3 39.2 101.7 68.6 29.4 29.4 52.5 63.6 68.6 101.7 16.7 39.4 25.1 81.3 25.1 124.5s-8.4 85.1-25.1 124.5a318.64 318.64 0 01-68.6 101.7c-9.3 9.3-19.1 18-29.3 26L668.2 724a8 8 0 00-14.1 3l-39.6 162.2c-1.2 5 2.6 9.9 7.7 9.9l167 .8c6.7 0 10.5-7.7 6.3-12.9l-37.3-47.9z"></path>
-                            </svg>
-                          </button>
-                        )}
-                      </div>
+                          )
+                        );
+                      })} */}
+                      {
+                        <button
+                          type="button"
+                          id="Edit"
+                          className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
+                          onClick={() => {
+                            setOpenModal(!openModal);
+                            setSelectedOption(examslot.proctoringId);
+                            setCurrentExamslot(examslot);
+                          }}
+                        >
+                          Register
+                        </button>
+                      }
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <div className="sticky bottom-0 bg-white p-2">
-              {teachers?.data?.length ? (
+              {examslots?.data?.length ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
@@ -686,7 +621,7 @@ const TeacherDashboard = () => {
                   </Pagination.PrevButton>
 
                   <div className="flex items-center justify-center mx-6 list-none ">
-                    {teachers?.data?.length > 0 ? (
+                    {examslots?.data?.length > 0 ? (
                       <Pagination.PageButton
                         activeClassName="bg-blue-button border-0 text-white "
                         inactiveClassName="border"
@@ -703,7 +638,7 @@ const TeacherDashboard = () => {
                     className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
                       page
                     ) =>
-                      page > teachers?.data?.length
+                      page > examslots?.data?.length
                         ? "cursor-pointer"
                         : "cursor-not-allowed"}`}
                   >
@@ -727,4 +662,5 @@ const TeacherDashboard = () => {
     </div>
   );
 };
-export default TeacherDashboard;
+
+export default Reproctoring;

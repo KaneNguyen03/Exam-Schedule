@@ -80,8 +80,9 @@ const courseSlice = createSlice({
     [createCourse.fulfilled]: (state, payload) => {
       state.loadings[courseTypes.CREATE_COURSE] = false;
       state.contents[courseTypes.CREATE_COURSE] = payload.meta.arg;
+      const temp = {...payload.meta.arg, status:"Active"}
       state.contents[courseTypes.GET_COURSES].data.data.push(
-        payload.meta.arg
+        temp
       );
 
       state.contents[courseTypes.GET_COURSES].data.data.sort((a, b) => {

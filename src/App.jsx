@@ -21,6 +21,8 @@ import { makeRoles } from "./utils/common"
 import Management from "./components/Layout/Management"
 import useAuth from "./hooks/useAuth"
 import AlluserDashboard from "./pages/Alluser"
+import ReproctoringDashboard from "./pages/Reproctoring"
+
 function App() {
   const { user } = useAuth()
   return (
@@ -54,6 +56,7 @@ function App() {
             
             <Route path="/room" element={<Room />} />
             <Route path="/alluser" element={<AlluserDashboard />} />
+            <Route path="/reproctoring" element={<ReproctoringDashboard />} />
 
             <Route path="/profile" element={<Profile />} />
             <Route path="/proctoring" element={<TeacherDashboard />} />
