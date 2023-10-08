@@ -216,7 +216,7 @@ const Sidebar = () => {
                 <span className="ml-3">Proctoring</span>
               </Link>
             </li>)}
-            {[...makeRoles([4])].includes(user.roleId) && (
+            {[...makeRoles([1,4])].includes(user.roleId) && (
             <li className="my-px">
               <Link
                 to="/reproctoring"
