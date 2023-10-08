@@ -233,9 +233,7 @@ const TeacherDashboard = () => {
                   <th scope="col" className="px-6 py-3">
                     proctoringName
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                    proctoringLocation
-                  </th>
+                 
                   <th scope="col" className="px-6 py-3">
                     Exam invigilator slots
                   </th>
@@ -573,8 +571,8 @@ const TeacherDashboard = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-6 py-4">{teacher.proctoringLocation}</td>
-                    <td className="px-6 py-4">{teacher.compensation}/h</td>
+                   
+                    <td className="px-6 py-4">{teacher.compensation}h</td>
                     <td>
                       <>
                         {teacher.status === "Active" ? (
