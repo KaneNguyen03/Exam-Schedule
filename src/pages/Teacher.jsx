@@ -471,8 +471,6 @@ const TeacherDashboard = () => {
                                         proctoringLocation: data.value,
                                       });
                                     }}
-
-                                    ////////////////////////////////
                                   />
                                 </div>
                                 <div>
@@ -576,7 +574,7 @@ const TeacherDashboard = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{teacher.proctoringLocation}</td>
-                    <td className="px-6 py-4">{teacher.compensation}$</td>
+                    <td className="px-6 py-4">{teacher.compensation}/h</td>
                     <td>
                       <>
                         {teacher.status === "Active" ? (

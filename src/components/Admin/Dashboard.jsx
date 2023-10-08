@@ -12,6 +12,8 @@ const Dashboard = ({
   semesters,
   allusers,
   loadings,
+  reproctoring,
+  
 }) => {
   return (
     <div className="h-full p-8">
@@ -196,6 +198,8 @@ Dashboard.propTypes = {
   majors: PropTypes.array,
   allusers: PropTypes.array,
   semesters: PropTypes.array,
+  registers: PropTypes.array,
+  reproctoring: PropTypes.array,
 }
 
 export default Dashboard

@@ -24,6 +24,7 @@ import Dashboard from "../components/Admin/Dashboard";
 import alluserTypes from "../constants/alluserTypes";
 import { getAllusers } from "../store/thunks/alluser";
 
+
 const AdminDashboard = () => {
   const dispatch = useDispatch();
 
@@ -35,7 +36,9 @@ const AdminDashboard = () => {
   const dataexsl = useSelector((state) => state.examslot);
   const datamj = useSelector((state) => state.major);
   const datase = useSelector((state) => state.semester);
+
   const datauser = useSelector((state) => state.alluser);
+
   const allusers =datauser?.contents[alluserTypes.GET_ALLUSERS]?.data.data;
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
@@ -56,6 +59,7 @@ const AdminDashboard = () => {
       setLoading(true);
     else setLoading(false);
   }, [dataco]);
+  
   useEffect(() => {
     if (
       datase?.loadings[semesterTypes.GET_SEMESTERS] ||
@@ -127,6 +131,7 @@ const AdminDashboard = () => {
     dispatch(getAllExamschedules());
     dispatch(getAllExamslots());
     dispatch(getAllMajors());
+  
     dispatch(getAllSemesters());
   }, []);
 
@@ -203,6 +208,7 @@ const AdminDashboard = () => {
             majors={majors}
             semesters={semesters}
             loadings={loadings}
+        
           />
         </div>
       </div>

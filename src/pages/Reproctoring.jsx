@@ -21,9 +21,10 @@ import { getAllTeachers } from "../store/thunks/teacher";
 import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
 
-const ExamSlot = () => {
+const Reproctoring = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
+
   const [openModal, setOpenModal] = useState(false);
   const [isShowSelect, setIsShowSelect] = useState(false);
   const [openModalConfirm, setOpenModalConfirm] = useState(false);
@@ -38,10 +39,21 @@ const ExamSlot = () => {
 
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
+  const currentUserExamslot = teachers?.filter((teacher) => {
+    return teacher.proctoringName === user.username;
+  });
+  console.log(examslots?.data);
+  console.log(currentUserExamslot);
+  const remainUserExamslot = teachers?.filter((teacher) => {
+    return teacher.proctoringName !== user.username;
+  });
+  console.log(remainUserExamslot);
+
+  console.log(currentUserExamslot);
 
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
   const popupSelect = useRef(null);
-  const [openModalAdd, setOpenModalAdd] = useState(false);
+
   const [addData, setAddData] = useState({
     examSlotId: "",
     examSlotName: "",
@@ -49,24 +61,14 @@ const ExamSlot = () => {
     proctoringLocation: "",
     date: "",
     startTime: "",
-   
+    endTime: "",
   });
   const [loadings, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const options = teachers?.map((teacher) => ({
-    value: teacher.proctoringId,
-    label: teacher.proctoringId + " : " + teacher.proctoringName,
-  }));
-
   const UpdateExamslot = () => {
     dispatch(updateExamslot(currentExamslot));
     setOpenModal(false);
-  };
-
-  const AddExamslot = () => {
-    dispatch(createExamslot(addData));
-    setOpenModalAdd(false);
   };
 
   const onDeleteExamslot = (data) => {
@@ -104,6 +106,7 @@ const ExamSlot = () => {
     dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
     return () => clearTimeout(delayDebounceFn);
   }, [param.keyword, dispatch, param]);
+
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -186,15 +189,8 @@ const ExamSlot = () => {
             </div>
           </header>
           <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
-            <div className="justify-center w-full">Examslot Management</div>
-            <button
-              type="button"
-              id="Add"
-              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
-              onClick={() => setOpenModalAdd(true)}
-            >
-              Add
-            </button>
+            <div className="justify-center w-full">Register Examslot</div>
+
             <div>
               <div
                 className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
@@ -240,9 +236,7 @@ const ExamSlot = () => {
                   <th scope="col" className="px-6 py-3">
                     examSlotName
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                    proctoringId
-                  </th>
+
                   <th scope="col" className="px-6 py-3">
                     date
                   </th>
@@ -296,7 +290,8 @@ const ExamSlot = () => {
                               </button>
                               <div className="px-6 py-6 lg:px-8">
                                 <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Edit examslot
+                                  Do you want to register as a protoring for
+                                  this exam
                                 </h3>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
@@ -309,70 +304,15 @@ const ExamSlot = () => {
                                     readOnly
                                   />
                                 </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    Examslot Name
-                                  </label>
-                                  <input
-                                    value={currentExamslot?.examSlotName}
-                                    onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        examSlotName: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    proctoring id
-                                  </label>
-                                  {/* <input
-                                    value={currentTeacher?.protoringLocation}
-                                    onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        protoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentExamslot((prevExamslot) => ({
-                                        ...prevExamslot,
-                                        proctoringId: selectedOption
-                                          ? selectedOption.value
-                                          : null,
-                                      }));
+                                
 
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                    }}
-                                  />
-                                </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     Date
                                   </label>
                                   <input
-                                    value={currentExamslot?.date}
+                                  readOnly
+                                    value={currentExamslot?.date.substring(0,10)}
                                     onChange={(e) =>
                                       setCurrentExamslot({
                                         ...currentExamslot,
@@ -382,44 +322,7 @@ const ExamSlot = () => {
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    Start time
-                                  </label>
-                                  <ReactSelect
-                                    options={timeOptions}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? timeOptions.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentExamslot((prevExamslot) => ({
-                                        ...prevExamslot,
-                                        startTime: selectedOption
-                                          ? selectedOption.value
-                                          : null,
-                                      }));
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-
-                                      setAddData({
-                                        ...addData,
-                                        startTime: selectedOption.value,
-                                      });
-                                    }}
-                                  />
-                                </div>
+                                
                                 {/* <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     End Time
@@ -462,180 +365,8 @@ const ExamSlot = () => {
                       ) : (
                         <></>
                       )}
-                      {openModalAdd ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
-                            <div className="relativerounded-lg shadow bg-gray-700">
-                              <button
-                                type="button"
-                                className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
-                                data-modal-hide="authentication-modal"
-                                onClick={() => setOpenModalAdd(false)}
-                              >
-                                <svg
-                                  className="w-3 h-3"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 14 14"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                  />
-                                </svg>
-                                <span className="sr-only">Close modal</span>
-                              </button>
-                              <div className="px-6 py-6 lg:px-8 flex flex-col gap-y-4">
-                                <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Add examslot
-                                </h3>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Examslot Id
-                                  </label>
-                                  <input
-                                    className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    placeholder="C-XXX"
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        examSlotId: e.target.value,
-                                      })
-                                    }
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Examslot Name
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        examSlotName: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    proctoringId
-                                  </label>
-                                  <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    onChange={(data) => {
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                      setAddData({
-                                        ...addData,
-                                        proctoringId: data.value,
-                                      });
-                                    }}
 
-                                    ////////////////////////////////
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    date
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        date: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    startTime
-                                  </label>
-                                  <ReactSelect
-                                    options={timeOptions}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? timeOptions.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentExamslot((prevExamslot) => ({
-                                        ...prevExamslot,
-                                        startTime: selectedOption
-                                          ? selectedOption.value
-                                          : null,
-                                      }));
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-
-                                      setAddData({
-                                        ...addData,
-                                        startTime: selectedOption.value,
-                                      });
-                                    }}
-                                  />
-                                </div>
-                                {/* <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    End Time
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        endTime: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div> */}
-
-                                <div className="flex justify-between">
-                                  <div className="flex items-start"></div>
-                                </div>
-                                <div className="flex flex-row p-4 gap-5 items-end">
-                                  <button
-                                    type="submit"
-                                    className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                    onClick={() => AddExamslot()}
-                                  >
-                                    Add
-                                  </button>
-                                  <button
-                                    type="submit"
-                                    className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
-                                    onClick={() => setOpenModalAdd(false)}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <></>
-                      )}
-                      {openModalConfirm ? (
+                      {/* {openModalConfirm ? (
                         <div className="fixed top-0 left-0  w-full h-full bg-gray-200 bg-opacity-5 z-[1000]">
                           <div className="absolute top-0 left-0 w-full h-full">
                             <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
@@ -693,10 +424,10 @@ const ExamSlot = () => {
                         </div>
                       ) : (
                         <></>
-                      )}
+                      )} */}
                     </td>
-                    <td className="px-6 py-4">{examslot.proctoringId}</td>
-                    <td className="px-6 py-4">{examslot.date}</td>
+
+                    <td className="px-6 py-4">{examslot.date.substring(0,10)}</td>
                     <td className="px-6 py-4">
                       {examslot.startTime.substring(0, 5)}
                     </td>
@@ -737,7 +468,7 @@ const ExamSlot = () => {
                     </td>
                     <td>
                       <>
-                        {examslot.status === "Active" ? (
+                        {/* {examslot.status === "Active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
@@ -751,14 +482,42 @@ const ExamSlot = () => {
                           />
                         ) : (
                           <>-</>
-                        )}
+                        )} */}
+                        {currentUserExamslot.map((item) => {
+                          return (
+                            item.examSlotId === examslot.examSlotId && (
+                              <StatusButton
+                                color={color.gray}
+                                bgColor={color.grayLight}
+                                title="Enrolled"
+                              />
+                            )
+                          );
+                        })}
+                        {remainUserExamslot.map((item) => {
+                          return (
+                            item.examSlotId === examslot.examSlotId && (
+                              <StatusButton
+                                color={color.gray}
+                                bgColor={color.grayLight}
+                                title="Enrolled"
+                              />
+                            )
+                          );
+                        })}
+                        {
+                          <StatusButton
+                            color={color.green}
+                            bgColor={color.greenLight}
+                            title="Available"
+                          />
+                        }
                       </>
                     </td>
                     <td>
-                      <div className="">
-                        {examslot.status === "Active" ? (
-                          <>
-                            {" "}
+                      {currentUserExamslot.map((item) => {
+                        return (
+                          item.examSlotId === examslot.examSlotId && (
                             <button
                               type="button"
                               id="Delete"
@@ -771,8 +530,27 @@ const ExamSlot = () => {
                                 }
                               }
                             >
-                              Delete
+                              Cancel
                             </button>
+                          )
+                        );
+                      })}
+                      {remainUserExamslot.map((item) => {
+                        return (
+                          item.examSlotId === examslot.examSlotId && (
+                            <button
+                              type="button"
+                              id="Delete"
+                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-600 hover:bg-gray-700 focus:ring-gray-900"
+                            >
+                              Unavailable
+                            </button>
+                          )
+                        );
+                      })}
+                      {/* {remainUserExamslot.map((item) => {
+                        return (
+                          item.examSlotId !== examslot.examSlotId  && (
                             <button
                               type="button"
                               id="Edit"
@@ -783,28 +561,25 @@ const ExamSlot = () => {
                                 setCurrentExamslot(examslot);
                               }}
                             >
-                              Edit
+                              Register
                             </button>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => restoreExamslot(examslot)}
-                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-400 hover:bg-gray-500 focus:ring-gray-600"
-                          >
-                            <svg
-                              viewBox="64 64 896 896"
-                              focusable="false"
-                              data-icon="redo"
-                              width="1em"
-                              height="1em"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path d="M758.2 839.1C851.8 765.9 912 651.9 912 523.9 912 303 733.5 124.3 512.6 124 291.4 123.7 112 302.8 112 523.9c0 125.2 57.5 236.9 147.6 310.2 3.5 2.8 8.6 2.2 11.4-1.3l39.4-50.5c2.7-3.4 2.1-8.3-1.2-11.1-8.1-6.6-15.9-13.7-23.4-21.2a318.64 318.64 0 01-68.6-101.7C200.4 609 192 567.1 192 523.9s8.4-85.1 25.1-124.5c16.1-38.1 39.2-72.3 68.6-101.7 29.4-29.4 63.6-52.5 101.7-68.6C426.9 212.4 468.8 204 512 204s85.1 8.4 124.5 25.1c38.1 16.1 72.3 39.2 101.7 68.6 29.4 29.4 52.5 63.6 68.6 101.7 16.7 39.4 25.1 81.3 25.1 124.5s-8.4 85.1-25.1 124.5a318.64 318.64 0 01-68.6 101.7c-9.3 9.3-19.1 18-29.3 26L668.2 724a8 8 0 00-14.1 3l-39.6 162.2c-1.2 5 2.6 9.9 7.7 9.9l167 .8c6.7 0 10.5-7.7 6.3-12.9l-37.3-47.9z"></path>
-                            </svg>
-                          </button>
-                        )}
-                      </div>
+                          )
+                        );
+                      })} */}
+                      {
+                        <button
+                          type="button"
+                          id="Edit"
+                          className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
+                          onClick={() => {
+                            setOpenModal(!openModal);
+                            setSelectedOption(examslot.proctoringId);
+                            setCurrentExamslot(examslot);
+                          }}
+                        >
+                          Register
+                        </button>
+                      }
                     </td>
                   </tr>
                 ))}
@@ -888,4 +663,4 @@ const ExamSlot = () => {
   );
 };
 
-export default ExamSlot;
+export default Reproctoring;

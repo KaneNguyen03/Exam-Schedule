@@ -1,61 +1,77 @@
 import apiInstance from "./config";
 
-const getAllStudents = async(data) => {
-   const url ="?" + new URLSearchParams(data).toString()
- try {
-    const data  = await apiInstance.get(`api/StudentList${url}`)
-      return data
- } catch (error) {
-    throw new Error("Error geting students")
- }
-}
+const getAllStudents = async (data) => {
+  const url = "?" + new URLSearchParams(data).toString();
+  try {
+    const data = await apiInstance.get(`api/StudentList${url}`);
+    return data;
+  } catch (error) {
+    throw new Error("Error geting students");
+  }
+};
+
+const getStudents = async () => {
+  try {
+    const data = await apiInstance.get(`api/Auth/AllStudents`);
+    return data;
+  } catch (error) {
+    throw new Error("Error geting students");
+  }
+};
+
 const updateStudent = async (data) => {
-   try {
-     const response = await apiInstance.put(
-       `api/StudentList/${data.studentListId}`,
-       {
+  try {
+    const response = await apiInstance.put(
+      `api/StudentList/${data.studentListId}`,
+      {
         studentListId: data.studentListId,
-         studentId: data.studentId ,
-         courseId: data.courseId,
-         status: "Active"
-       }
-     )
-     return response
-   } catch (error) {
-     throw new Error("Error update studentlist")
-   }
- }
- 
- const deleteStudent = async (data) => {
-   try {
-     const response = await apiInstance.delete(
-       `api/StudentList/${data.studentListId}`
-     )
-     return response
-   } catch (error) {
-     throw new Error("Error delete studentlist")
-   }
- }
- 
- const createStudent = async (data) => {
-   try {
-     const response = await apiInstance.post(`api/StudentList`, {
+        studentId: data.studentId,
+        courseId: data.courseId,
+        status: "Active",
+      }
+    );
+    return response;
+  } catch (error) {
+    throw new Error("Error update studentlist");
+  }
+};
+
+const deleteStudent = async (data) => {
+  try {
+    const response = await apiInstance.put(
+      `api/StudentList/${data.studentListId}`,
+      {
+        ...data,
+        studentListId: data.studentListId,
+        status: data.status
+      }
+    );
+    return response;
+  } catch (error) {
+    throw new Error("Error delete studentlist");
+  }
+};
+
+const createStudent = async (data) => {
+  try {
+    const response = await apiInstance.post(`api/StudentList`, {
       studentListId: data.studentListId,
-       studentId: data.studentId ,
-       courseId: data.courseId,
-       status: "Active"
-     })
-     return response
-   } catch (error) {
-     throw new Error("Error create studentlist")
-   }
- }
+      studentId: data.studentId,
+      courseId: data.courseId,
+      status: "Active",
+    });
+    return response;
+  } catch (error) {
+    throw new Error("Error create studentlist");
+  }
+};
 
 const studentApi = {
-    getAllStudents,
-    updateStudent,
-    deleteStudent,
-    createStudent,
-  }
-  
-  export default studentApi
+  getAllStudents,
+  updateStudent,
+  deleteStudent,
+  createStudent,
+  getStudents,
+};
+
+export default studentApi;

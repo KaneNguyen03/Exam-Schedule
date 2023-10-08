@@ -77,8 +77,9 @@ const semesterSlice = createSlice({
     [createSemester.fulfilled]: (state, payload) => {
       state.loadings[semesterTypes.CREATE_SEMESTER] = false;
       state.contents[semesterTypes.CREATE_SEMESTER] = payload.meta.arg
+      const temp = {...payload.meta.arg, status:"Active"}
       state.contents[semesterTypes.GET_SEMESTERS].data.data.push(
-        payload.meta.arg
+        temp
       )
       // Sort the array by semesterId
       state.contents[semesterTypes.GET_SEMESTERS].data.data.sort((a, b) => {

@@ -79,8 +79,9 @@ const alluserSlice =createSlice({
       [createAlluser.fulfilled]: (state, payload) => {
         state.loadings[alluserTypes.CREATE_ALLUSER] = false
         state.contents[alluserTypes.CREATE_ALLUSER] = payload.meta.arg
+        const temp = {...payload.meta.arg, status:"Active"}
         state.contents[alluserTypes.GET_ALLUSERS].data.data.push(
-          payload.meta.arg
+          temp
         )
   
         state.contents[alluserTypes.GET_ALLUSERS].data.data.sort((a, b) => {
