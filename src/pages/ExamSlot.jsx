@@ -1,52 +1,53 @@
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
 
-import { useEffect, useRef, useState } from "react";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { sizeOptions } from "../constants/commons/commons";
-import { Pagination } from "react-headless-pagination";
-import ReactSelect from "react-select";
-import teacherTypes from "../constants/teacherTypes";
-import examslotTypes from "../constants/examslotTypes";
+import { useEffect, useRef, useState } from "react"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import useAuth from "../hooks/useAuth"
+import { sizeOptions } from "../constants/commons/commons"
+import { Pagination } from "react-headless-pagination"
+import ReactSelect from "react-select"
+import teacherTypes from "../constants/teacherTypes"
+import examslotTypes from "../constants/examslotTypes"
 import {
   createExamslot,
   deleteExamslot,
   getAllExamslots,
   updateExamslot,
-} from "../store/thunks/examslot";
+} from "../store/thunks/examslot"
 //DATE
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 /////////
 
-import Sidebar from "../components/Layout/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllTeachers } from "../store/thunks/teacher";
-import { color } from "../constants/commons/styled";
-import StatusButton from "../components/Status";
+import Sidebar from "../components/Layout/Sidebar"
+import { useDispatch, useSelector } from "react-redux"
+import { getAllTeachers } from "../store/thunks/teacher"
+import { color } from "../constants/commons/styled"
+import StatusButton from "../components/Status"
+import { makeRoles } from "../utils/common"
 
 const ExamSlot = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  const dispatch = useDispatch()
+  const { user } = useAuth()
+  const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
-  const [currentExamslot, setCurrentExamslot] = useState({});
-  const dataexsl = useSelector((state) => state.examslot);
-  const datate = useSelector((state) => state.teacher);
+  })
+  const [currentExamslot, setCurrentExamslot] = useState({})
+  const dataexsl = useSelector((state) => state.examslot)
+  const datate = useSelector((state) => state.teacher)
 
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
 
-  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
-  const popupSelect = useRef(null);
-  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
+  const popupSelect = useRef(null)
+  const [openModalAdd, setOpenModalAdd] = useState(false)
   const [addData, setAddData] = useState({
     examSlotId: "",
     examSlotName: "",
@@ -57,50 +58,50 @@ const ExamSlot = () => {
     endTime: "",
     examSchedules: [],
     proctoring: "",
-  });
-  const [loadings, setLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(null);
+  })
+  const [loadings, setLoading] = useState(true)
+  const [selectedOption, setSelectedOption] = useState(null)
 
   //setup DATE selection
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null)
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
+    setSelectedDate(date)
+  }
   ////////////
 
   const options = teachers?.map((teacher) => ({
     value: teacher.proctoringId,
     label: teacher.proctoringId + " : " + teacher.proctoringName,
-  }));
+  }))
 
   const UpdateExamslot = () => {
-    dispatch(updateExamslot(currentExamslot));
-    setOpenModal(false);
-  };
+    dispatch(updateExamslot(currentExamslot))
+    setOpenModal(false)
+  }
 
   const AddExamslot = () => {
-    dispatch(createExamslot(addData));
-    setOpenModalAdd(false);
-  };
+    dispatch(createExamslot(addData))
+    setOpenModalAdd(false)
+  }
 
   const onDeleteExamslot = (data) => {
-    const req={
+    const req = {
       ...data,
-      status:"Inactive"
+      status: "Inactive",
     }
-    dispatch(deleteExamslot(req));
-    setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
-  };
+    dispatch(deleteExamslot(req))
+    setOpenModalConfirm(false)
+    setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+  }
   const restoreExamslot = (data) => {
     const req = {
       ...data,
       status: "Active",
-    };
-    dispatch(deleteExamslot(req));
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
-  };
+    }
+    dispatch(deleteExamslot(req))
+    setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+  }
   useEffect(() => {
     if (
       dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
@@ -108,17 +109,17 @@ const ExamSlot = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [dataexsl, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [dataexsl, param])
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllExamslots(param));
-    }, 500);
-    dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
-    return () => clearTimeout(delayDebounceFn);
-  }, [param.keyword, dispatch, param]);
+      dispatch(getAllExamslots(param))
+    }, 500)
+    dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
+    return () => clearTimeout(delayDebounceFn)
+  }, [param.keyword, dispatch, param])
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -150,7 +151,7 @@ const ExamSlot = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      });
+                      })
                     }}
                     value={param.keyword}
                   />
@@ -232,14 +233,14 @@ const ExamSlot = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) });
-                          setIsShowSelect(false);
+                          setParam({ ...param, pageSize: Number(item.value) })
+                          setIsShowSelect(false)
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               )}
@@ -266,12 +267,6 @@ const ExamSlot = () => {
                   </th>
                   <th scope="col" className="px-6 py-3">
                     End Time
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    examSchedules
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Proctoring
                   </th>
                   <th scope="col" className="px-6 py-3">
                     Status
@@ -376,14 +371,14 @@ const ExamSlot = () => {
                                         proctoringId: selectedOption
                                           ? selectedOption.value
                                           : null,
-                                      }));
+                                      }))
 
                                       // Update the selectedOption state
                                       setSelectedOption(
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      );
+                                      )
                                     }}
                                   />
                                 </div>
@@ -436,36 +431,6 @@ const ExamSlot = () => {
                                       setCurrentExamslot({
                                         ...currentExamslot,
                                         endTime: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    examSchedules
-                                  </label>
-                                  <input
-                                    value={currentExamslot?.endTime}
-                                    onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        examSchedules: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    Proctoring
-                                  </label>
-                                  <input
-                                    value={currentExamslot?.endTime}
-                                    onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        proctoring: e.target.value,
                                       })
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -567,11 +532,11 @@ const ExamSlot = () => {
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      );
+                                      )
                                       setAddData({
                                         ...addData,
                                         proctoringId: data.value,
-                                      });
+                                      })
                                     }}
 
                                     ////////////////////////////////
@@ -620,34 +585,6 @@ const ExamSlot = () => {
                                       setAddData({
                                         ...addData,
                                         endTime: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    examschedules
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        eexamSchedules: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    Proctoring
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        proctoring: e.target.value,
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -709,8 +646,8 @@ const ExamSlot = () => {
                                 </button>
                                 <div className="p-10 text-center">
                                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to delete this
-                                    exam slot?
+                                    Are you sure you want to delete this exam
+                                    slot?
                                   </h3>
                                   <button
                                     data-modal-hide="popup-modal"
@@ -743,29 +680,29 @@ const ExamSlot = () => {
                     <td className="px-6 py-4">{examslot.date}</td>
                     <td className="px-6 py-4">{examslot.startTime}</td>
                     <td className="px-6 py-4">{examslot.endTime}</td>
-                    <td className="px-6 py-4">{examslot.examSchedules}</td>
-                    <td className="px-6 py-4">{examslot.proctoring}</td>
                     <td>
-                      <>
-                        {examslot.status === "Active" ? (
-                          <StatusButton
-                            color={color.green}
-                            bgColor={color.greenLight}
-                            title="Active"
-                          />
-                        ) :examslot?.status=== "Inactive" ? (
-                          <StatusButton
-                            color={color.red}
-                            bgColor={color.redLight}
-                            title="Inactive"
-                          />
-                        ) : (
-                          <>-</>
-                        )}
-                      </>
+                      {makeRoles([1, 2]).includes(user.roleId) && (
+                        <>
+                          {examslot.status === "Active" ? (
+                            <StatusButton
+                              color={color.green}
+                              bgColor={color.greenLight}
+                              title="Active"
+                            />
+                          ) : examslot?.status === "Inactive" ? (
+                            <StatusButton
+                              color={color.red}
+                              bgColor={color.redLight}
+                              title="Inactive"
+                            />
+                          ) : (
+                            <>-</>
+                          )}
+                        </>
+                      )}
                     </td>
                     <td>
-                    <div className="">
+                      <div className="">
                         {examslot.status === "Active" ? (
                           <>
                             {" "}
@@ -776,8 +713,8 @@ const ExamSlot = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentExamslot(examslot);
-                                  setOpenModalConfirm(true);
+                                  setCurrentExamslot(examslot)
+                                  setOpenModalConfirm(true)
                                 }
                               }
                             >
@@ -788,9 +725,9 @@ const ExamSlot = () => {
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal);
+                                setOpenModal(!openModal)
                                 setSelectedOption(examslot.proctoringId)
-                                setCurrentExamslot(examslot);
+                                setCurrentExamslot(examslot)
                               }}
                             >
                               Edit
@@ -825,7 +762,7 @@ const ExamSlot = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 });
+                    setParam({ ...param, page: page + 1 })
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -895,7 +832,7 @@ const ExamSlot = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ExamSlot;
+export default ExamSlot

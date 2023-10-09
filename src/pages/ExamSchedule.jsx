@@ -1,26 +1,67 @@
+import SubHeader from "../components/Layout/SubHeader"
+import Sidebar from "../components/Layout/Sidebar"
+import { useDispatch, useSelector } from "react-redux"
+import examscheduleTypes from "../constants/examscheduleTypes"
+import { getAllExamschedules } from "../store/thunks/examschedule"
+import { useEffect } from "react"
 
-import SubHeader from '../components/Layout/SubHeader';
-import Sidebar from '../components/Layout/Sidebar';
-import { useDispatch, useSelector } from 'react-redux';
-import examscheduleTypes from '../constants/examscheduleTypes';
-import { getAllExamschedules } from '../store/thunks/examschedule';
-import { useEffect } from 'react';
-import Actionbt from '../components/Layout/Actionbt';
+import { Calendar, momentLocalizer } from "react-big-calendar"
+import "react-big-calendar/lib/css/react-big-calendar.css"
+import moment from "moment"
 
 const ExamscheduleDashboard = () => {
-    const dispatch = useDispatch();
-  const dataexs = useSelector((state) => state.examschedule);
-  const examschedules = dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
+  const dispatch = useDispatch()
+  const dataexs = useSelector((state) => state.examschedule)
+  const examschedules =
+    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
+
+  const examSlots = [
+    {
+      title: "Math Exam",
+      start: new Date(2023, 9, 10, 10, 0),
+      end: new Date(2023, 9, 10, 12, 0),
+    },
+    {
+      title: "History Exam",
+      start: new Date(2023, 9, 11, 14, 0),
+      end: new Date(2023, 9, 11, 16, 0),
+    },
+    // Add more exam slots as needed
+  ]
+
+  const localizer = momentLocalizer(moment)
+
+  const eventStyleGetter = (event, start, end, isSelected) => {
+    let backgroundColor = "#3174ad" // Default background color
+
+    if (event.subject === "Math") {
+      backgroundColor = "#ff5733" // Customize background color for Math exams
+    }
+
+    // Add more conditions for custom styling
+
+    return {
+      style: {
+        backgroundColor,
+      },
+    }
+  }
+
+  const handleEventClick = (event) => {
+    // Handle the event click here
+    console.log("Clicked on exam:", event)
+    // You can show more details or perform actions as needed
+  }
 
   useEffect(() => {
-    dispatch(getAllExamschedules());
-  }, []);
-    return (
-        <div>
-            <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
-        <Sidebar></Sidebar>
+    dispatch(getAllExamschedules())
+  }, [])
+  return (
+    <div>
+      <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
+        <Sidebar />
         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
-          <SubHeader></SubHeader>
+          <SubHeader />
           {/* <div className="main-content flex flex-col flex-grow p-4">
             <h1 className="font-bold text-2xl text-gray-700">Dashboard</h1>
             <div>
@@ -75,7 +116,7 @@ const ExamscheduleDashboard = () => {
           <div className=" text-slate-800 font-semibold text-3xl">
             DashBoard
           </div>
-          <div className="grid gap-4 pt-7 m-1">
+          {/* <div className="grid gap-4 pt-7 m-1">
             <table className="w-full text-sm text-left text-gray-500 text-gray-400">
               <thead className="text-xs text-gray-300 uppercase bg-gray-50 bg-gray-700">
                 <tr>
@@ -123,12 +164,22 @@ const ExamscheduleDashboard = () => {
                 </tr>
               ))}
             </table>
+          </div> */}
+          <div className="div">
+            <Calendar
+              localizer={localizer}
+              events={examSlots}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 500 }}
+              eventPropGetter={eventStyleGetter}
+              onSelectEvent={handleEventClick} // Handle event click
+            />
           </div>
-          
         </main>
       </div>
-        </div>
-    );
-};
+    </div>
+  )
+}
 
-export default ExamscheduleDashboard;
+export default ExamscheduleDashboard

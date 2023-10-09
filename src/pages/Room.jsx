@@ -1,77 +1,77 @@
-import { useEffect, useRef, useState } from "react";
-import Sidebar from "../components/Layout/Sidebar";
+import { useEffect, useRef, useState } from "react"
+import Sidebar from "../components/Layout/Sidebar"
 import {
   createClassroom,
   deleteClassroom,
   getAllClassrooms,
   updateClassroom,
-} from "../store/thunks/classroom";
-import classroomTypes from "../constants/classroomTypes";
-import { useDispatch, useSelector } from "react-redux";
-import { Pagination } from "react-headless-pagination";
+} from "../store/thunks/classroom"
+import classroomTypes from "../constants/classroomTypes"
+import { useDispatch, useSelector } from "react-redux"
+import { Pagination } from "react-headless-pagination"
 
 // assets
 // import PreIcon from "../assets/pagination_pre.png";
 // import NextIcon from "../assets/pagination_next.png";
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
-import { sizeOptions } from "../constants/commons/commons";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { color } from "../constants/commons/styled";
-import StatusButton from "../components/Status";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import { sizeOptions } from "../constants/commons/commons"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import useAuth from "../hooks/useAuth"
+import { color } from "../constants/commons/styled"
+import StatusButton from "../components/Status"
 
 const Room = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
+  const dispatch = useDispatch()
+  const { user } = useAuth()
+  const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
-  const [currentClassroom, setCurrentClassroom] = useState({});
-  const datacl = useSelector((state) => state.classroom);
-  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data;
-  const pagination = datacl?.paginations[classroomTypes.GET_CLASSROOMS];
-  const popupSelect = useRef(null);
-  const [openModalAdd, setOpenModalAdd] = useState(false);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  })
+  const [currentClassroom, setCurrentClassroom] = useState({})
+  const datacl = useSelector((state) => state.classroom)
+  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data
+  const pagination = datacl?.paginations[classroomTypes.GET_CLASSROOMS]
+  const popupSelect = useRef(null)
+  const [openModalAdd, setOpenModalAdd] = useState(false)
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
   const [addData, setAddData] = useState({
     classroomId: "",
     name: "",
     capacity: 0,
-  });
-  const [loadings, setLoading] = useState(true);
+  })
+  const [loadings, setLoading] = useState(true)
 
   const UpdateClassroom = () => {
-    dispatch(updateClassroom(currentClassroom));
-    setOpenModal(false);
-  };
+    dispatch(updateClassroom(currentClassroom))
+    setOpenModal(false)
+  }
 
   const AddClassroom = () => {
-    dispatch(createClassroom(addData));
-    setOpenModalAdd(false);
-  };
+    dispatch(createClassroom(addData))
+    setOpenModalAdd(false)
+  }
 
   const onDeleteClassroom = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    };
-    dispatch(deleteClassroom(req));
-    setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllClassrooms(param)), 1000);
-  };
+    }
+    dispatch(deleteClassroom(req))
+    setOpenModalConfirm(false)
+    setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
+  }
 
   const restoreClassroom = (data) => {
     const req = {
       ...data,
       status: "Active",
-    };
-    dispatch(deleteClassroom(req));
-    setTimeout(() => dispatch(getAllClassrooms(param)), 1000);
-  };
+    }
+    dispatch(deleteClassroom(req))
+    setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
+  }
 
   useEffect(() => {
     if (
@@ -80,17 +80,17 @@ const Room = () => {
       datacl?.loadings[classroomTypes.UPDATE_CLASSROOM] ||
       datacl?.loadings[classroomTypes.DELETE_CLASSROOM]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [datacl, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [datacl, param])
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllClassrooms(param));
-    }, 500);
+      dispatch(getAllClassrooms(param))
+    }, 500)
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [param.keyword, dispatch, param]);
+    return () => clearTimeout(delayDebounceFn)
+  }, [param.keyword, dispatch, param])
 
   return (
     <div className="relative">
@@ -123,7 +123,7 @@ const Room = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      });
+                      })
                     }}
                     value={param.keyword}
                   />
@@ -205,14 +205,14 @@ const Room = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) });
-                          setIsShowSelect(false);
+                          setParam({ ...param, pageSize: Number(item.value) })
+                          setIsShowSelect(false)
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               )}
@@ -220,7 +220,7 @@ const Room = () => {
           </div>
           {/* table */}
           <div className="grid gap-4 pt-7 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
-            <table className=" text-sm text-left text-gray-400 ">
+            <table className=" text-sm text-left text-gray-400 z-20">
               <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
                 <tr>
                   <th scope="col" className="px-6 py-3">
@@ -533,8 +533,8 @@ const Room = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentClassroom(classroom);
-                                  setOpenModalConfirm(true);
+                                  setCurrentClassroom(classroom)
+                                  setOpenModalConfirm(true)
                                 }
                               }
                             >
@@ -545,8 +545,8 @@ const Room = () => {
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal);
-                                setCurrentClassroom(classroom);
+                                setOpenModal(!openModal)
+                                setCurrentClassroom(classroom)
                               }}
                             >
                               Edit
@@ -582,7 +582,7 @@ const Room = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 });
+                    setParam({ ...param, page: page + 1 })
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -652,7 +652,7 @@ const Room = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Room;
+export default Room
