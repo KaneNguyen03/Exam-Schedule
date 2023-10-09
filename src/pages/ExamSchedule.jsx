@@ -8,26 +8,41 @@ import { useEffect } from "react"
 import { Calendar, momentLocalizer } from "react-big-calendar"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import moment from "moment"
+import { useState } from "react"
+import { getAllExamslots } from "../store/thunks/examslot"
+import examslotTypes from "../constants/examslotTypes"
 
 const ExamscheduleDashboard = () => {
   const dispatch = useDispatch()
   const dataexs = useSelector((state) => state.examschedule)
+  const dataexsl = useSelector((state) => state.examslot)
   const examschedules =
     dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
+  const allExamSlots =
+    dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data
 
-  const examSlots = [
-    {
-      title: "Math Exam",
-      start: new Date(2023, 9, 10, 10, 0),
-      end: new Date(2023, 9, 10, 12, 0),
-    },
-    {
-      title: "History Exam",
-      start: new Date(2023, 9, 11, 14, 0),
-      end: new Date(2023, 9, 11, 16, 0),
-    },
-    // Add more exam slots as needed
-  ]
+  const convertDataExamSlots = allExamSlots
+    ?.filter((item) => item.status === "Active")
+    ?.map((item) => ({
+      title: item.examSlotName, // You can customize the title as needed
+      start: new Date(item.date), // Convert the date string to a Date object
+      end: new Date(item.date),
+    }))
+
+
+  // const examSlotsEX = [
+  //   {
+  //     title: "Math Exam",
+  //     start: new Date(2023, 9, 10, 10, 0),
+  //     end: new Date(2023, 9, 10, 12, 0),
+  //   },
+  //   {
+  //     title: "History Exam",
+  //     start: new Date(2023, 9, 11, 14, 0),
+  //     end: new Date(2023, 9, 11, 16, 0),
+  //   },
+  //   // Add more exam slots as needed
+  // ]
 
   const localizer = momentLocalizer(moment)
 
@@ -55,7 +70,9 @@ const ExamscheduleDashboard = () => {
 
   useEffect(() => {
     dispatch(getAllExamschedules())
-  }, [])
+    dispatch(getAllExamslots())
+  }, [dispatch])
+
   return (
     <div>
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
@@ -168,7 +185,7 @@ const ExamscheduleDashboard = () => {
           <div className="div">
             <Calendar
               localizer={localizer}
-              events={examSlots}
+              events={convertDataExamSlots}
               startAccessor="start"
               endAccessor="end"
               style={{ height: 500 }}

@@ -80,8 +80,9 @@ const classroomSlice = createSlice({
     [createClassroom.fulfilled]: (state, payload) => {
       state.loadings[classroomTypes.CREATE_CLASSROOM] = false
       state.contents[classroomTypes.CREATE_CLASSROOM] = payload.meta.arg
+      const temp = {...payload.meta.arg, status:"Active"}
       state.contents[classroomTypes.GET_CLASSROOMS].data.data.push(
-        payload.meta.arg
+        temp
       )
 
       state.contents[classroomTypes.GET_CLASSROOMS].data.data.sort((a, b) => {

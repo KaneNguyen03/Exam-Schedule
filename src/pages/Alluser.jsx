@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "../components/Layout/Sidebar";
 import alluserTypes from "../constants/alluserTypes";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useAuth from "../hooks/useAuth";
 import { Pagination } from "react-headless-pagination";
 import { color } from "../constants/commons/styled";
@@ -9,20 +9,27 @@ import StatusButton from "../components/Status";
 import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
 import { sizeOptions } from "../constants/commons/commons";
 import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import { createAlluser, deleteAlluser, getAllusers, updateAlluser } from "../store/thunks/alluser";
+import {
+  createAlluser,
+  deleteAlluser,
+  getAllusers,
+  updateAlluser,
+} from "../store/thunks/alluser";
+import ReactSelect from "react-select";
+import { selectRole } from "../constants/auth";
 const AlluserDashboard = () => {
-    const dispatch = useDispatch();
-    const { user } = useAuth();
-    const [openModal, setOpenModal] = useState(false);
-    const [isShowSelect, setIsShowSelect] = useState(false);
-    const [param, setParam] = useState({
-      page: 1,
-      pageSize: 10,
-      keyword: "",
-    });
-    const [currentAlluser, setCurrentAlluser] = useState({});
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
+  const [param, setParam] = useState({
+    page: 1,
+    pageSize: 10,
+    keyword: "",
+  });
+  const [currentAlluser, setCurrentAlluser] = useState({});
   const datauser = useSelector((state) => state.alluser);
-  
+ 
   const allusers = datauser?.contents[alluserTypes.GET_ALLUSERS]?.data;
 
   const pagination = datauser?.paginations[alluserTypes.GET_ALLUSERS];
@@ -32,15 +39,18 @@ const AlluserDashboard = () => {
   const [addData, setAddData] = useState({
     username: "",
     roleId: "",
-    // email:""
-});
+    email:""
+  });
   const [loadings, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
+
 
   const UpdateAlluser = () => {
     dispatch(updateAlluser(currentAlluser));
     setOpenModal(false);
   };
 
+  console.log(addData);
   const AddAlluser = () => {
     dispatch(createAlluser(addData));
     setOpenModalAdd(false);
@@ -82,8 +92,8 @@ const AlluserDashboard = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [param.keyword, dispatch, param]);
 
-    return (
-        <div className="relative">
+  return (
+    <div className="relative">
       {loadings && <LoadingSpinner />}
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
@@ -222,7 +232,7 @@ const AlluserDashboard = () => {
                   <th scope="col" className="px-6 py-3">
                     Email
                   </th>
-                  
+
                   <th scope="col" className="px-6 py-3">
                     Status
                   </th>
@@ -283,20 +293,38 @@ const AlluserDashboard = () => {
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     roleId
                                   </label>
-                                  <input
-                                    value={currentAlluser?.roleId}
-                                    onChange={(e) =>
-                                      setCurrentAlluser({
-                                        ...currentAlluser,
-                                        roleId: e.target.value,
-                                      })
+                                  <ReactSelect
+                                    options={selectRole}
+                                    isMulti={false}
+                                    defaultValue={
+                                      selectedOption
+                                        ? selectRole.find(
+                                            (option) =>
+                                              option.value === selectedOption
+                                          )
+                                        : null
                                     }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                    onChange={(selectedOption) => {
+                                      // Update the proctoringLocation in the currentTeacher state
+                                      setCurrentAlluser((prevAlluser) => ({
+                                        ...prevAlluser,
+                                        roleId: selectedOption
+                                          ? selectedOption.value
+                                          : null,
+                                      }));
+
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      );
+                                    }}
                                   />
                                 </div>
-                                {/* <div>
+                                <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                  Email
+                                    Email
                                   </label>
                                   <input
                                     value={currentAlluser?.email}
@@ -308,8 +336,8 @@ const AlluserDashboard = () => {
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
-                                </div> */}
-                                
+                                </div>
+
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -381,21 +409,44 @@ const AlluserDashboard = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                  roleId
+                                    roleId
                                   </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        roleId: e.target.value,
-                                      })
+                                  <ReactSelect
+                                    options={selectRole}
+                                    isMulti={false}
+                                    defaultValue={
+                                      selectedOption
+                                        ? selectRole.find(
+                                            (option) =>
+                                              option.value === selectedOption
+                                          )
+                                        : null
                                     }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                    onChange={(selectedOption) => {
+                                      // Update the proctoringLocation in the currentTeacher state
+                                      setCurrentAlluser((prevAlluser) => ({
+                                        ...prevAlluser,
+                                        roleId: selectedOption
+                                          ? selectedOption.value
+                                          : null,
+                                      }));
+
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      );
+
+                                      setAddData({...addData, roleId: 
+                                        selectedOption.value
+                                      })
+                                    }}
                                   />
                                 </div>
-                                {/* <div>
+                                <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
-                                  email
+                                    email
                                   </label>
                                   <input
                                     onChange={(e) =>
@@ -406,8 +457,8 @@ const AlluserDashboard = () => {
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
-                                </div> */}
-                                
+                                </div>
+
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -464,8 +515,7 @@ const AlluserDashboard = () => {
                                 </button>
                                 <div className="p-10 text-center">
                                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to delete this
-                                    user?
+                                    Are you sure you want to delete this user?
                                   </h3>
                                   <button
                                     data-modal-hide="popup-modal"
@@ -494,8 +544,7 @@ const AlluserDashboard = () => {
                         <></>
                       )}
                     </td>
-                    
-                    {/* <td className="px-6 py-4">{alluser.email}</td> */}
+                    <td className="px-6 py-4">{alluser.email}</td>
                     <td>
                       <>
                         {alluser.status === "Active" ? (
@@ -515,6 +564,7 @@ const AlluserDashboard = () => {
                         )}
                       </>
                     </td>
+
                     <td>
                       <div className="">
                         {alluser.status === "Active" ? (
@@ -646,7 +696,7 @@ const AlluserDashboard = () => {
         </main>
       </div>
     </div>
-    );
+  );
 };
 
 export default AlluserDashboard;

@@ -7,7 +7,7 @@ import examscheduleReducer from "./slices/examschedule"
 import examslotReducer from "./slices/examslot"
 import majorReducer from "./slices/major"
 import semesterReducer from "./slices/semester"
-
+import alluserReducer from "./slices/alluser"
 const reducer = combineReducers({
   classroom: classroomReducer,
   course: courseReducer,
@@ -17,6 +17,7 @@ const reducer = combineReducers({
   examslot: examslotReducer,
   major: majorReducer,
   semester: semesterReducer,
+  alluser: alluserReducer,
 })
 
 const store = configureStore({

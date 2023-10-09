@@ -57,10 +57,10 @@ const ExamSlot = () => {
     startTime: "",
     endTime: "",
     examSchedules: [],
-    proctoring: "",
-  })
-  const [loadings, setLoading] = useState(true)
-  const [selectedOption, setSelectedOption] = useState(null)
+    proctoring: ""
+  });
+  const [loadings, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   //setup DATE selection
   const [selectedDate, setSelectedDate] = useState(null)
