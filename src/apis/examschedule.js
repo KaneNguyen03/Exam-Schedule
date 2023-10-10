@@ -9,8 +9,18 @@ const getAllExamschedules = async() => {
  }
 }
 
+const createExamschedule = async(res) => {
+ try {
+    const data  = await apiInstance.post("api/ExamSchedule", res)
+      return data
+ } catch (error) {
+    throw new Error("Error geting exam schedule")
+ }
+}
+
 const examscheduleApi = {
-    getAllExamschedules
+    getAllExamschedules,
+    createExamschedule
   }
   
   export default examscheduleApi

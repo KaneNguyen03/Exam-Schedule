@@ -24,7 +24,8 @@ const classroomSlice = createSlice({
     [getAllClassrooms.fulfilled]: (state, { payload }) => {
       state.loadings[classroomTypes.GET_CLASSROOMS] = false
       state.contents[classroomTypes.GET_CLASSROOMS] = payload
-      state.paginations[classroomTypes.GET_CLASSROOMS] = payload.data.pagination
+      state.paginations[classroomTypes.GET_CLASSROOMS] =
+        payload.data?.pagination
     },
     [getAllClassrooms.rejected]: (state, { payload }) => {
       state.loadings[classroomTypes.GET_CLASSROOMS] = false
@@ -80,10 +81,8 @@ const classroomSlice = createSlice({
     [createClassroom.fulfilled]: (state, payload) => {
       state.loadings[classroomTypes.CREATE_CLASSROOM] = false
       state.contents[classroomTypes.CREATE_CLASSROOM] = payload.meta.arg
-      const temp = {...payload.meta.arg, status:"Active"}
-      state.contents[classroomTypes.GET_CLASSROOMS].data.data.push(
-        temp
-      )
+      const temp = { ...payload.meta.arg, status: "Active" }
+      state.contents[classroomTypes.GET_CLASSROOMS].data.data.push(temp)
 
       state.contents[classroomTypes.GET_CLASSROOMS].data.data.sort((a, b) => {
         return a.classroomId.localeCompare(b.classroomId)

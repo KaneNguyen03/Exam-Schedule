@@ -51,6 +51,7 @@ const createExamslot = async (data) => {
       startTime: data.startTime,
       endTime: data.endTime,
       status: "Active",
+      courseId: data.courseId,
     })
     return response
   } catch (error) {

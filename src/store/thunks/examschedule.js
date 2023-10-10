@@ -13,3 +13,15 @@ export const getAllExamschedules = createAsyncThunk(
     }
   }
 );
+
+export const createExamschedule = createAsyncThunk(
+  examscheduleTypes.CREATE_EXAMSCHEDULES,
+  async (data) => {
+    try {
+      const result = await examschedule.createExamschedule(data);
+      return result;
+    } catch (error) {
+      return isRejectedWithValue(error);
+    }
+  }
+);

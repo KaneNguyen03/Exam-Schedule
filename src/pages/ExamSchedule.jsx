@@ -2,7 +2,10 @@ import SubHeader from "../components/Layout/SubHeader"
 import Sidebar from "../components/Layout/Sidebar"
 import { useDispatch, useSelector } from "react-redux"
 import examscheduleTypes from "../constants/examscheduleTypes"
-import { getAllExamschedules } from "../store/thunks/examschedule"
+import {
+  createExamschedule,
+  getAllExamschedules,
+} from "../store/thunks/examschedule"
 import { useEffect } from "react"
 
 import { Calendar, momentLocalizer } from "react-big-calendar"
@@ -11,17 +14,22 @@ import moment from "moment"
 import { useState } from "react"
 import { getAllExamslots } from "../store/thunks/examslot"
 import examslotTypes from "../constants/examslotTypes"
+import classroomTypes from "../constants/classroomTypes"
+import { getAllClassrooms } from "../store/thunks/classroom"
 
 const ExamscheduleDashboard = () => {
   const dispatch = useDispatch()
   const dataexs = useSelector((state) => state.examschedule)
   const dataexsl = useSelector((state) => state.examslot)
-  const [openModal, setOpenModal] = useState(false)
+  const datacl = useSelector((state) => state.classroom)
+  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data
   const examschedules =
     dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
   const allExamSlots =
     dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data
 
+  const [openModal, setOpenModal] = useState(false)
+  const [currentExamSchedule, setCurrentExamSchedule] = useState()
   const convertDataExamSlots = allExamSlots
     ?.filter((item) => item.status === "Active")
     ?.map((item) => {
@@ -37,39 +45,23 @@ const ExamscheduleDashboard = () => {
         title: item.examSlotId, // You can customize the title as needed
         start: startDate, // Convert the date string to a Date object
         end: endDate,
-        classroom: null,
         proctoring: item.proctoringId,
       }
     })
-  console.log(
-    "🚀 Kha ne ~ file: ExamSchedule.jsx:25 ~ convertDataExamSlots:",
-    convertDataExamSlots
-  )
-
-  // const examSlotsEX = [
-  //   {
-  //     title: "Math Exam",
-  //     start: new Date(2023, 9, 10, 10, 0),
-  //     end: new Date(2023, 9, 10, 12, 0),
-  //   },
-  //   {
-  //     title: "History Exam",
-  //     start: new Date(2023, 9, 11, 14, 0),
-  //     end: new Date(2023, 9, 11, 16, 0),
-  //   },
-  //   // Add more exam slots as needed
-  // ]
 
   const localizer = momentLocalizer(moment)
 
   const eventStyleGetter = (event, start, end, isSelected) => {
-    console.log("🚀 Kha ne ~ file: ExamSchedule.jsx:80 ~ event:", event)
-
     const currentTime = new Date()
     const isEventInProgress =
       event.start <= currentTime && event.end >= currentTime
     let backgroundColor = event.start < new Date() ? "#ccc" : "#dc3454"
-    if (event.proctoring && event.start > new Date()) {
+    if (
+      event.proctoring &&
+      event.start > new Date() &&
+      event.className &&
+      event.courseId
+    ) {
       backgroundColor = "#3174ad"
     }
     if (isEventInProgress) backgroundColor = "#ffd700"
@@ -83,11 +75,24 @@ const ExamscheduleDashboard = () => {
   }
 
   const handleEventClick = (event) => {
+    setCurrentExamSchedule(event)
     // Handle the event click here
     // if (!event.proctoring)
     setOpenModal(true)
     // You can show more details or perform actions as needed
   }
+
+  const UpdateExamSchedule = () => {
+    dispatch(createExamschedule(currentExamSchedule))
+  }
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
+    }, 500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(getAllExamschedules())
@@ -100,58 +105,9 @@ const ExamscheduleDashboard = () => {
         <Sidebar />
         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
           <SubHeader />
-          <div className=" text-slate-800 font-semibold text-3xl">
-            DashBoard
+          <div className=" text-slate-800 font-semibold text-3xl p-12">
+            Exam Schedule
           </div>
-          {/* <div className="grid gap-4 pt-7 m-1">
-            <table className="w-full text-sm text-left text-gray-500 text-gray-400">
-              <thead className="text-xs text-gray-300 uppercase bg-gray-50 bg-gray-700">
-                <tr>
-                  <th scope="col" className="px-6 py-3">
-                    Exam Schedule Id
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Course Id
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Exam Slot Id
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Classroom Id
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Date
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Start time
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    End time
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              {examschedules?.map((examschedules) => (
-                <tr
-                  className="bg-white border-b bg-gray-800 border-gray-700"
-                  key={examschedules.examscheduleId}
-                >
-                  <td className="px-6 py-4">{examschedules.examScheduleId}</td>
-                  <td className="px-6 py-4">{examschedules.courseId}</td>
-                  <td className="px-6 py-4">{examschedules.examSlotId}</td>
-                  <td className="px-6 py-4">{examschedules.classroomId}</td>
-                  <td className="px-6 py-4">{examschedules.date}</td>
-                  <td className="px-6 py-4">{examschedules.startTime}</td>
-                  <td className="px-6 py-4">{examschedules.endTime}</td>
-                  <td>
-                    <Actionbt></Actionbt>
-                  </td>
-                </tr>
-              ))}
-            </table>
-          </div> */}
           <div className="p-12">
             <Calendar
               localizer={localizer}
@@ -197,7 +153,6 @@ const ExamscheduleDashboard = () => {
                           Examslot Id
                         </label>
                         <input
-                          // defaultValue={currentExamslot?.examSlotId}
                           className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                           placeholder=""
                           readOnly
@@ -207,21 +162,41 @@ const ExamscheduleDashboard = () => {
                         <label className="mb-2 text-sm font-medium text-white flex">
                           Examslot Name
                         </label>
+                        <input
+                          className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                          placeholder=""
+                          readOnly
+                        />
                       </div>
                       <div>
                         <label className="mb-2 text-sm font-medium text-white flex">
                           proctoring id
                         </label>
+                        <input
+                          className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                          placeholder=""
+                          readOnly
+                        />
                       </div>
                       <div>
                         <label className="mb-2 text-sm font-medium text-white flex">
                           Date
                         </label>
+                        <input
+                          className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                          placeholder=""
+                          readOnly
+                        />
                       </div>
                       <div>
                         <label className="mb-2 text-sm font-medium text-white flex">
                           Start time
                         </label>
+                        <input
+                          className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                          placeholder=""
+                          readOnly
+                        />
                       </div>
                       <div className="flex justify-between">
                         <div className="flex items-start"></div>
@@ -230,7 +205,7 @@ const ExamscheduleDashboard = () => {
                         <button
                           type="submit"
                           className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                          // onClick={() => UpdateExamslot()}
+                          onClick={() => UpdateExamSchedule()}
                         >
                           Save
                         </button>
@@ -250,6 +225,94 @@ const ExamscheduleDashboard = () => {
           ) : (
             <></>
           )}
+
+          <div className="p-4 grid grid-cols-2 gap-4 justify-items-center">
+            {/* <!-- Gray Box --> */}
+            <div className="flex flex-row justify-around items-center gap-4 p-8 bg-gray-300 rounded-md w-80">
+              <div className="w-12 h-12 bg-gray-400 flex items-center justify-center rounded-md">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+              </div>
+              <div className="text-gray-800">The Exam has finished</div>
+            </div>
+
+            {/* <!-- Red Box --> */}
+            <div className="flex flex-row justify-around items-center gap-4 w-80 p-8 bg-red-300 rounded-md">
+              <div className="w-12 h-12 bg-red-400 flex items-center justify-center rounded-md">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              </div>
+              <div className="text-red-800">
+                Missing classroom or proctoring.
+              </div>
+            </div>
+
+            {/* <!-- Blue Box --> */}
+            <div className="flex flex-row justify-around items-center gap-4 w-80 p-8 bg-blue-300 rounded-md">
+              <div className="w-12 h-12 bg-blue-400 flex items-center justify-center rounded-md">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M20 12H4"
+                  ></path>
+                </svg>
+              </div>
+              <div className="text-blue-800">Scheduled for the future.</div>
+            </div>
+
+            {/* <!-- Yellow Box --> */}
+            <div className="flex flex-row justify-around items-center gap-4 w-80 p-8 bg-yellow-300 rounded-md">
+              <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center rounded-md">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  ></path>
+                </svg>
+              </div>
+              <div className="text-yellow-800">Exam in progress. </div>
+            </div>
+          </div>
         </main>
       </div>
     </div>
