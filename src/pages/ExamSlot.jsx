@@ -3,7 +3,7 @@ import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
 import { useEffect, useRef, useState } from "react"
 import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
 import useAuth from "../hooks/useAuth"
-import { sizeOptions } from "../constants/commons/commons"
+import { sizeOptions, timeOptions } from "../constants/commons/commons"
 import { Pagination } from "react-headless-pagination"
 import ReactSelect from "react-select"
 import teacherTypes from "../constants/teacherTypes"
@@ -14,18 +14,15 @@ import {
   getAllExamslots,
   updateExamslot,
 } from "../store/thunks/examslot"
-//DATE
-
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-/////////
 
 import Sidebar from "../components/Layout/Sidebar"
 import { useDispatch, useSelector } from "react-redux"
 import { getAllTeachers } from "../store/thunks/teacher"
 import { color } from "../constants/commons/styled"
 import StatusButton from "../components/Status"
-import { makeRoles } from "../utils/common"
+import moment from "moment"
+import ReactDatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 
 const ExamSlot = () => {
   const dispatch = useDispatch()
@@ -56,25 +53,25 @@ const ExamSlot = () => {
     date: "",
     startTime: "",
     endTime: "",
-    examSchedules: [],
-    proctoring: ""
-  });
-  const [loadings, setLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  //setup DATE selection
-  const [selectedDate, setSelectedDate] = useState(null)
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date)
-  }
-  ////////////
+  })
+  const [loadings, setLoading] = useState(true)
+  const [selectedOption, setSelectedOption] = useState(null)
 
   const options = teachers?.map((teacher) => ({
     value: teacher.proctoringId,
     label: teacher.proctoringId + " : " + teacher.proctoringName,
   }))
 
+  //setup DATE selection
+  const [selectedDate, setSelectedDate] = useState(null)
+
+  const handleDateChange = (date) => {
+    setCurrentExamslot({
+      ...currentExamslot,
+      date: date,
+    })
+    setSelectedDate(date)
+  }
   const UpdateExamslot = () => {
     dispatch(updateExamslot(currentExamslot))
     setOpenModal(false)
@@ -268,6 +265,7 @@ const ExamSlot = () => {
                   <th scope="col" className="px-6 py-3">
                     End Time
                   </th>
+
                   <th scope="col" className="px-6 py-3">
                     Status
                   </th>
@@ -382,27 +380,14 @@ const ExamSlot = () => {
                                     }}
                                   />
                                 </div>
-                                {/**
-                                 * <div class= day select">
-                                 */}
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     Date
                                   </label>
-                                  {/* <input
-                                    value={currentExamslot?.date}
-                                    onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        date: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
-                                  <DatePicker
+                                  <ReactDatePicker
                                     selected={selectedDate}
                                     onChange={handleDateChange}
-                                    dateFormat="yyyy-MM-dd"
+                                    dateFormat="dd-MM-yyyy"
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
@@ -410,18 +395,45 @@ const ExamSlot = () => {
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     Start time
                                   </label>
-                                  <input
-                                    value={currentExamslot?.startTime}
-                                    onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        startTime: e.target.value,
-                                      })
+                                  <ReactSelect
+                                    options={timeOptions}
+                                    isMulti={false}
+                                    defaultValue={
+                                      selectedOption
+                                        ? timeOptions.find(
+                                            (option) =>
+                                              option.value === selectedOption
+                                          )
+                                        : null
                                     }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                    onChange={(selectedOption) => {
+                                      // Update the proctoringLocation in the currentTeacher state
+                                      setCurrentExamslot((prevExamslot) => ({
+                                        ...prevExamslot,
+                                        startTime: selectedOption
+                                          ? selectedOption.value[0]
+                                          : null,
+                                        endTime: selectedOption
+                                          ? selectedOption.value[1]
+                                          : null,
+                                      }))
+
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      )
+
+                                      // setAddData({
+                                      //   ...addData,
+                                      //   startTime: selectedOption.value[0],
+                                      //   endTime: selectedOption.value[1],
+                                      // })
+                                    }}
                                   />
                                 </div>
-                                <div>
+                                {/* <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     End Time
                                   </label>
@@ -435,7 +447,8 @@ const ExamSlot = () => {
                                     }
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
-                                </div>
+                                </div> */}
+
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -546,7 +559,7 @@ const ExamSlot = () => {
                                   <label className="mb-2 text-sm font-medium  text-white flex">
                                     date
                                   </label>
-                                  {/* <input
+                                  <input
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
@@ -554,29 +567,48 @@ const ExamSlot = () => {
                                       })
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
-                                  <DatePicker
-                                    selected={selectedDate}
-                                    onChange={handleDateChange}
-                                    dateFormat="yyyy-MM-dd"
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
                                     startTime
                                   </label>
-                                  <input
-                                    onChange={(e) =>
+                                  <ReactSelect
+                                    options={timeOptions}
+                                    isMulti={false}
+                                    defaultValue={
+                                      selectedOption
+                                        ? timeOptions.find(
+                                            (option) =>
+                                              option.value === selectedOption
+                                          )
+                                        : null
+                                    }
+                                    onChange={(selectedOption) => {
+                                      // Update the proctoringLocation in the currentTeacher state
+                                      setCurrentExamslot((prevExamslot) => ({
+                                        ...prevExamslot,
+                                        startTime: selectedOption
+                                          ? selectedOption.value
+                                          : null,
+                                      }))
+
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      )
+
                                       setAddData({
                                         ...addData,
-                                        startTime: e.target.value,
+                                        startTime: selectedOption.value[0],
+                                        endTime: selectedOption.value[1],
                                       })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                    }}
                                   />
                                 </div>
-                                <div>
+                                {/* <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
                                     End Time
                                   </label>
@@ -589,7 +621,8 @@ const ExamSlot = () => {
                                     }
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
-                                </div>
+                                </div> */}
+
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -677,29 +710,53 @@ const ExamSlot = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{examslot.proctoringId}</td>
-                    <td className="px-6 py-4">{examslot.date}</td>
-                    <td className="px-6 py-4">{examslot.startTime}</td>
-                    <td className="px-6 py-4">{examslot.endTime}</td>
+                    <td className="px-6 py-4">
+                      {moment(examslot.date).format("DD/MM/YYYY")}
+                    </td>
+                    <td className="px-6 py-4">
+                      {examslot.startTime.substring(0, 5)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {(() => {
+                        // Split the startTime into hours and minutes
+                        const [hours, minutes] = examslot.startTime
+                          .split(":")
+                          .map(Number)
+
+                        // Add 90 minutes
+                        const newMinutes = minutes + 90
+                        const newHours = hours + Math.floor(newMinutes / 60)
+                        const formattedHours = newHours % 24 // Handle overflow if necessary
+                        const formattedMinutes = newMinutes % 60
+
+                        // Format the result as "HH:mm"
+                        const formattedTime = `${formattedHours
+                          .toString()
+                          .padStart(2, "0")}:${formattedMinutes
+                          .toString()
+                          .padStart(2, "0")}`
+
+                        return formattedTime
+                      })()}
+                    </td>
                     <td>
-                      {makeRoles([1, 2]).includes(user.roleId) && (
-                        <>
-                          {examslot.status === "Active" ? (
-                            <StatusButton
-                              color={color.green}
-                              bgColor={color.greenLight}
-                              title="Active"
-                            />
-                          ) : examslot?.status === "Inactive" ? (
-                            <StatusButton
-                              color={color.red}
-                              bgColor={color.redLight}
-                              title="Inactive"
-                            />
-                          ) : (
-                            <>-</>
-                          )}
-                        </>
-                      )}
+                      <>
+                        {examslot.status === "Active" ? (
+                          <StatusButton
+                            color={color.green}
+                            bgColor={color.greenLight}
+                            title="Active"
+                          />
+                        ) : examslot?.status === "Inactive" ? (
+                          <StatusButton
+                            color={color.red}
+                            bgColor={color.redLight}
+                            title="Inactive"
+                          />
+                        ) : (
+                          <>-</>
+                        )}
+                      </>
                     </td>
                     <td>
                       <div className="">

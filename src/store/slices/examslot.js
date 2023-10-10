@@ -23,7 +23,7 @@ const examslotSlice = createSlice({
     [getAllExamslots.fulfilled]: (state, {payload}) => {
       state.loadings[examslotTypes.GET_EXAMSLOTS] = false;
       state.contents[examslotTypes.GET_EXAMSLOTS] = payload;
-      state.paginations[examslotTypes.GET_EXAMSLOTS] = payload.data.pagination;
+      state.paginations[examslotTypes.GET_EXAMSLOTS] = payload.data?.pagination;
     },
     [getAllExamslots.rejected]: (state, { payload }) => {
       state.loadings[examslotTypes.GET_EXAMSLOTS] = false;
