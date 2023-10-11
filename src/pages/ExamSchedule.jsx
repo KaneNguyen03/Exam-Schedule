@@ -2,6 +2,7 @@ import SubHeader from "../components/Layout/SubHeader"
 import Sidebar from "../components/Layout/Sidebar"
 import { useDispatch, useSelector } from "react-redux"
 import examscheduleTypes from "../constants/examscheduleTypes"
+import '../pages/CalendarStyles.css';
 import {
   createExamschedule,
   getAllExamschedules,
@@ -105,7 +106,7 @@ const ExamscheduleDashboard = () => {
         <Sidebar />
         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
           <SubHeader />
-          <div className=" text-slate-800 font-semibold text-3xl p-12">
+          <div className=" text-slate-800 font-semibold text-3xl p-1">
             Exam Schedule
           </div>
           <div className="p-12">
@@ -114,7 +115,7 @@ const ExamscheduleDashboard = () => {
               events={convertDataExamSlots}
               startAccessor="start"
               endAccessor="end"
-              style={{ height: 500 }}
+              style={{ height: 500}}
               eventPropGetter={eventStyleGetter}
               onSelectEvent={handleEventClick} // Handle event click
             />
@@ -226,13 +227,13 @@ const ExamscheduleDashboard = () => {
             <></>
           )}
 
-          <div className="p-4 grid grid-cols-2 gap-4 justify-items-center">
+          <div className="p-4 grid grid-cols-4 justify-items-center">
             {/* <!-- Gray Box --> */}
-            <div className="flex flex-row justify-around items-center gap-4 p-8 bg-gray-300 rounded-md w-80">
+            <div className="flex flex-row justify-around items-center gap-4 p-4 bg-gray-300 rounded-md w-80">
               <div className="w-12 h-12 bg-gray-400 flex items-center justify-center rounded-md">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-white"
+                  className="h-6 w-6 text-white "
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -249,7 +250,7 @@ const ExamscheduleDashboard = () => {
             </div>
 
             {/* <!-- Red Box --> */}
-            <div className="flex flex-row justify-around items-center gap-4 w-80 p-8 bg-red-300 rounded-md">
+            <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-red-300 rounded-md">
               <div className="w-12 h-12 bg-red-400 flex items-center justify-center rounded-md">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -272,7 +273,7 @@ const ExamscheduleDashboard = () => {
             </div>
 
             {/* <!-- Blue Box --> */}
-            <div className="flex flex-row justify-around items-center gap-4 w-80 p-8 bg-blue-300 rounded-md">
+            <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-blue-300 rounded-md">
               <div className="w-12 h-12 bg-blue-400 flex items-center justify-center rounded-md">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -293,7 +294,7 @@ const ExamscheduleDashboard = () => {
             </div>
 
             {/* <!-- Yellow Box --> */}
-            <div className="flex flex-row justify-around items-center gap-4 w-80 p-8 bg-yellow-300 rounded-md">
+            <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-yellow-300 rounded-md">
               <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center rounded-md">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

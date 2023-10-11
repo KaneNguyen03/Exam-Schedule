@@ -17,14 +17,15 @@ import {
 
 import Sidebar from "../components/Layout/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllTeachers } from "../store/thunks/teacher";
+import { createTeacher, getAllTeachers } from "../store/thunks/teacher";
 import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
+import { v4 as uuidv4 } from "uuid";
 
 const Reproctoring = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
-
+  console.log(user);
   const [openModal, setOpenModal] = useState(false);
   const [isShowSelect, setIsShowSelect] = useState(false);
   const [openModalConfirm, setOpenModalConfirm] = useState(false);
@@ -42,14 +43,9 @@ const Reproctoring = () => {
   const currentUserExamslot = teachers?.filter((teacher) => {
     return teacher.proctoringName === user.username;
   });
-  console.log(examslots?.data);
-  console.log(currentUserExamslot);
   const remainUserExamslot = teachers?.filter((teacher) => {
     return teacher.proctoringName !== user.username;
   });
-  console.log(remainUserExamslot);
-
-  console.log(currentUserExamslot);
 
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
   const popupSelect = useRef(null);
@@ -63,10 +59,12 @@ const Reproctoring = () => {
     startTime: "",
     endTime: "",
   });
+  const [dataTeacher, setDataTeacher] = useState();
   const [loadings, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
 
   const UpdateExamslot = () => {
+    dispatch(createTeacher(dataTeacher));
     dispatch(updateExamslot(currentExamslot));
     setOpenModal(false);
   };
@@ -236,6 +234,9 @@ const Reproctoring = () => {
                   <th scope="col" className="px-6 py-3">
                     examSlotName
                   </th>
+                  <th scope="col" className="px-6 py-3">
+                    proctoringId
+                  </th>
 
                   <th scope="col" className="px-6 py-3">
                     date
@@ -262,6 +263,7 @@ const Reproctoring = () => {
                     key={examslot.examSlotId}
                   >
                     <td className="px-6 py-4">{examslot.examSlotId}</td>
+
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
                       {openModal ? (
@@ -304,15 +306,17 @@ const Reproctoring = () => {
                                     readOnly
                                   />
                                 </div>
-                                
 
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     Date
                                   </label>
                                   <input
-                                  readOnly
-                                    value={currentExamslot?.date.substring(0,10)}
+                                    readOnly
+                                    value={currentExamslot?.date.substring(
+                                      0,
+                                      10
+                                    )}
                                     onChange={(e) =>
                                       setCurrentExamslot({
                                         ...currentExamslot,
@@ -322,7 +326,7 @@ const Reproctoring = () => {
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                
+
                                 {/* <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     End Time
@@ -426,8 +430,26 @@ const Reproctoring = () => {
                         <></>
                       )} */}
                     </td>
-
-                    <td className="px-6 py-4">{examslot.date.substring(0,10)}</td>
+                    <td className="px-6 py-4">{examslot.examSlotId}</td>
+                    {/* <td className="px-6 py-4">
+                      {examslot.date.substring(0, 10)}
+                    </td> */}
+                    <td className="px-6 py-4">
+                      {(() => {
+                        // Assuming examslot.date is a string in the format "yyyy-mm-dd"
+                        const dateParts = examslot.date
+                          .substring(0, 10)
+                          .split("-");
+                        if (dateParts.length === 3) {
+                          const year = dateParts[0]; // Get the last two digits of the year
+                          const month = dateParts[1];
+                          const day = dateParts[2];
+                          return `${day}/${month}/${year}`;
+                        } else {
+                          return "Invalid Date"; // Handle the case where the date format is incorrect
+                        }
+                      })()}
+                    </td>
                     <td className="px-6 py-4">
                       {examslot.startTime.substring(0, 5)}
                     </td>
@@ -575,6 +597,13 @@ const Reproctoring = () => {
                             setOpenModal(!openModal);
                             setSelectedOption(examslot.proctoringId);
                             setCurrentExamslot(examslot);
+                            setDataTeacher({
+                              proctoringId: uuidv4(),
+                              proctoringName: user.username,
+                              status: "Active",
+                              compensation: "0",
+                              examSlotId: examslot.examSlotId,
+                            });
                           }}
                         >
                           Register

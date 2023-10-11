@@ -1,19 +1,19 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import currentUser from "../../apis/user"
-import { makeRoles } from "../../utils/common"
-import useAuth from "../../hooks/useAuth"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import currentUser from "../../apis/user";
+import { makeRoles } from "../../utils/common";
+import useAuth from "../../hooks/useAuth";
 
 const Sidebar = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false)
-  const { user } = useAuth()
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useAuth();
   const handleLogout = async () => {
-    await currentUser.logOutApp()
-  }
+    await currentUser.logOutApp();
+  };
 
   const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen)
-  }
+    setSidebarOpen(!isSidebarOpen);
+  };
 
   return (
     <div className={`min-h-screen ${isSidebarOpen ? "md:ml-0" : "md:ml-64"}`}>
@@ -129,12 +129,13 @@ const Sidebar = () => {
               >
                 <span className="flex items-center justify-center text-lg text-gray-400">
                   <svg
+                    xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    className="h-6 w-6"
+                    className="w-6 h-6"
                   >
-                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    <path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
                   </svg>
                 </span>
                 <span className="ml-3">Exam Schedule</span>
@@ -229,12 +230,17 @@ const Sidebar = () => {
                 >
                   <span className="flex items-center justify-center text-lg text-gray-400">
                     <svg
+                      xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
+                      
                       stroke="currentColor"
-                      className="h-6 w-6"
+                      className="w-6 h-6"
                     >
-                      <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      <path
+                        
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                      />
                     </svg>
                   </span>
                   <span className="ml-3">Register Proctoring</span>
@@ -307,27 +313,6 @@ const Sidebar = () => {
                 <span className="ml-3">Notifications</span>
               </Link>
             </li>
-            {[...makeRoles([1])].includes(user.roleId) && (
-              <li className="my-px">
-                <Link
-                  to="/settings"
-                  className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                >
-                  <span className="flex items-center justify-center text-lg text-gray-400">
-                    <svg
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="h-6 w-6"
-                    >
-                      <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </span>
-                  <span className="ml-3">Settings</span>
-                </Link>
-              </li>
-            )}
 
             <li className="my-px" onClick={() => handleLogout()}>
               <a className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700">
@@ -348,7 +333,7 @@ const Sidebar = () => {
         </div>
       </aside>
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

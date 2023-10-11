@@ -17,7 +17,7 @@ import {
 
 import Sidebar from "../components/Layout/Sidebar"
 import { useDispatch, useSelector } from "react-redux"
-import { getAllTeachers } from "../store/thunks/teacher"
+import { createTeacher, getAllTeachers } from "../store/thunks/teacher"
 import { color } from "../constants/commons/styled"
 import StatusButton from "../components/Status"
 import moment from "moment"
@@ -56,13 +56,13 @@ const ExamSlot = () => {
   const [addData, setAddData] = useState({
     examSlotId: "",
     examSlotName: "",
+    courseId: "",
     proctoringId: "",
     date: "",
     startTime: "",
     endTime: "",
-    courseId: "",
+  
   })
-  console.log("🚀 Kha ne ~ file: ExamSlot.jsx:65 ~ addData:", addData)
   const [loadings, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState(null)
 
@@ -496,6 +496,9 @@ const ExamSlot = () => {
                     proctoringId
                   </th>
                   <th scope="col" className="px-6 py-3">
+                    Course
+                  </th>
+                  <th scope="col" className="px-6 py-3">
                     date
                   </th>
                   <th scope="col" className="px-6 py-3">
@@ -578,18 +581,41 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
+                                    Course
+                                  </label>
+                                  <ReactSelect
+                                    options={optionsCourse}
+                                    isMulti={false}
+                                    defaultValue={
+                                      selectedOption
+                                        ? optionsCourse.find(
+                                            (option) =>
+                                              option.value === selectedOption
+                                          )
+                                        : null
+                                    }
+                                    onChange={(selectedOption) => {
+                                      // Update the proctoringLocation in the currentTeacher state
+                                      setCurrentExamslot((prevExamslot) => ({
+                                        ...prevExamslot,
+                                        courseId: selectedOption
+                                          ? selectedOption.value
+                                          : null,
+                                      }))
+
+                                      // Update the selectedOption state
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      )
+                                    }}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="mb-2 text-sm font-medium text-white flex">
                                     proctoring id
                                   </label>
-                                  {/* <input
-                                    value={currentTeacher?.protoringLocation}
-                                    onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        protoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
                                   <ReactSelect
                                     options={options}
                                     isMulti={false}
@@ -619,6 +645,7 @@ const ExamSlot = () => {
                                     }}
                                   />
                                 </div>
+                                
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     Date
@@ -776,6 +803,7 @@ const ExamSlot = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{examslot.proctoringId}</td>
+                    <td className="px-6 py-4">{examslot.courseId}</td>
                     <td className="px-6 py-4">
                       {moment(examslot.date).format("DD/MM/YYYY")}
                     </td>

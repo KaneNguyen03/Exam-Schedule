@@ -29,7 +29,8 @@
     "react-router-dom": "^6.15.0",
     "react-select": "^5.7.5",
     "react-time-picker": "^6.5.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
