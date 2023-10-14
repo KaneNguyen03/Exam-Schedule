@@ -33,6 +33,7 @@ const Room = () => {
   const [currentClassroom, setCurrentClassroom] = useState({})
   const datacl = useSelector((state) => state.classroom)
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data
+  console.log("🚀 Kha ne ~ file: Room.jsx:36 ~ classrooms:", classrooms)
   const pagination = datacl?.paginations[classroomTypes.GET_CLASSROOMS]
   const popupSelect = useRef(null)
   const [openModalAdd, setOpenModalAdd] = useState(false)
@@ -504,13 +505,13 @@ const Room = () => {
                     <td className="px-6 py-4">{classroom.capacity}</td>
                     <td>
                       <>
-                        {classroom.status === "Active" ? (
+                        {classroom.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : classroom.status === "Inactive" ? (
+                        ) : classroom.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -523,7 +524,7 @@ const Room = () => {
                     </td>
                     <td>
                       <div className="">
-                        {classroom.status === "Active" ? (
+                        {classroom.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button

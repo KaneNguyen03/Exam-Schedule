@@ -16,22 +16,54 @@ import { getAllExamslots } from "../store/thunks/examslot"
 import examslotTypes from "../constants/examslotTypes"
 import classroomTypes from "../constants/classroomTypes"
 import { getAllClassrooms } from "../store/thunks/classroom"
+import ReactSelect from "react-select"
+import teacherTypes from "../constants/teacherTypes"
+import { getAllTeachers } from "../store/thunks/teacher"
+import ReactDatePicker from "react-datepicker"
+import { timeOptions } from "../constants/commons/commons"
 
 const ExamscheduleDashboard = () => {
   const dispatch = useDispatch()
   const dataexs = useSelector((state) => state.examschedule)
   const dataexsl = useSelector((state) => state.examslot)
   const datacl = useSelector((state) => state.classroom)
+  const datate = useSelector((state) => state.teacher)
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const examschedules =
     dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
+
   const allExamSlots =
     dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data
 
   const [openModal, setOpenModal] = useState(false)
   const [currentExamSchedule, setCurrentExamSchedule] = useState()
-  const convertDataExamSlots = allExamSlots
-    ?.filter((item) => item.status === "Active")
+
+  const options = teachers?.map((teacher) => ({
+    value: teacher.proctoringId,
+    label: teacher.proctoringId + " : " + teacher.proctoringName,
+  }))
+  const optionsClassroom = classrooms?.map((classroom) => ({
+    value: classroom.classroomId,
+    label: classroom.classroomId + " : " + classroom.name,
+  }))
+  // Create a dictionary to map examSlotId to examSlot data
+  const examSlotDict = {}
+  allExamSlots?.forEach((exam) => {
+    examSlotDict[exam.examSlotId] = exam
+  })
+
+  // Connect the data based on examSlotId
+  const connectedData = examschedules?.map((schedule) => {
+    const examSlotData = examSlotDict[schedule.examSlotId]
+    if (examSlotData) {
+      return { ...schedule, ...examSlotData }
+    }
+  })
+  const [selectedOption, setSelectedOption] = useState(null)
+
+  const convertDataExamSlots = connectedData
+    ?.filter((item) => item?.status === "Active")
     ?.map((item) => {
       const startDate = new Date(item.date)
       const endDate = new Date(item.date)
@@ -45,23 +77,32 @@ const ExamscheduleDashboard = () => {
         title: item.examSlotId, // You can customize the title as needed
         start: startDate, // Convert the date string to a Date object
         end: endDate,
-        proctoring: item.proctoringId,
+        proctoringId: item.proctoringId,
+        classroomId: item.classroomId,
+        courseId: item.courseId,
+        examScheduleId: item.examScheduleId,
+        examSlotId: item.examSlotId,
+        examSlotName: item.examSlotName,
+        status: item.status,
       }
     })
+  //setup DATE selection
+  const [selectedDate, setSelectedDate] = useState(null)
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date)
+  }
 
   const localizer = momentLocalizer(moment)
 
   const eventStyleGetter = (event, start, end, isSelected) => {
+    console.log("🚀 Kha ne ~ file: ExamSchedule.jsx:116 ~ event:", event)
+
     const currentTime = new Date()
     const isEventInProgress =
       event.start <= currentTime && event.end >= currentTime
     let backgroundColor = event.start < new Date() ? "#ccc" : "#dc3454"
-    if (
-      event.proctoring &&
-      event.start > new Date() &&
-      event.className &&
-      event.courseId
-    ) {
+    if (event.proctoringId && event.start > new Date() && event.classroomId) {
       backgroundColor = "#3174ad"
     }
     if (isEventInProgress) backgroundColor = "#ffd700"
@@ -90,7 +131,7 @@ const ExamscheduleDashboard = () => {
     const delayDebounceFn = setTimeout(() => {
       dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
     }, 500)
-
+    dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
     return () => clearTimeout(delayDebounceFn)
   }, [dispatch])
 
@@ -150,12 +191,24 @@ const ExamscheduleDashboard = () => {
                       </h3>
                       <div>
                         <label className="mb-2 text-sm font-medium  text-white flex">
-                          Examslot Id
+                          Exam Schedule Id
                         </label>
                         <input
                           className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                           placeholder=""
                           readOnly
+                          value={currentExamSchedule.examScheduleId}
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-2 text-sm font-medium  text-white flex">
+                          Exam Slot Id
+                        </label>
+                        <input
+                          className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                          placeholder=""
+                          readOnly
+                          value={currentExamSchedule.examSlotId}
                         />
                       </div>
                       <div>
@@ -166,36 +219,100 @@ const ExamscheduleDashboard = () => {
                           className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                           placeholder=""
                           readOnly
+                          value={currentExamSchedule.examSlotId}
                         />
                       </div>
                       <div>
-                        <label className="mb-2 text-sm font-medium text-white flex">
-                          proctoring id
+                        <label className="mb-2 text-sm font-medium  text-white flex">
+                          proctoringId
                         </label>
-                        <input
-                          className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                          placeholder=""
-                          readOnly
+                        <ReactSelect
+                          className="text-sm text-start"
+                          options={options}
+                          isMulti={false}
+                          defaultValue={
+                            currentExamSchedule
+                              ? options.find(
+                                  (option) =>
+                                    option.value ===
+                                    currentExamSchedule.proctoringId
+                                )
+                              : null
+                          }
                         />
                       </div>
-                      <div>
+                      <div className="">
                         <label className="mb-2 text-sm font-medium text-white flex">
-                          Date
+                          Classroom
                         </label>
-                        <input
-                          className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                          placeholder=""
-                          readOnly
+                        <ReactSelect
+                          className="text-sm text-start"
+                          options={optionsClassroom}
+                          isMulti={false}
+                          defaultValue={
+                            currentExamSchedule
+                              ? optionsClassroom.find(
+                                  (option) =>
+                                    option.value ===
+                                    currentExamSchedule.classroomId
+                                )
+                              : null
+                          }
                         />
                       </div>
-                      <div>
-                        <label className="mb-2 text-sm font-medium text-white flex">
-                          Start time
-                        </label>
-                        <input
-                          className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                          placeholder=""
-                          readOnly
+                      <label className="mb-2 text-sm font-medium text-white flex">
+                        Date
+                      </label>
+                      <div className="flex">
+                        <ReactDatePicker
+                          selected={new Date(currentExamSchedule.start)}
+                          onChange={handleDateChange}
+                          dateFormat="dd-MM-yyyy"
+                          className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white flex justify-start"
+                        />
+                      </div>
+                      <label className="mb-2 text-sm font-medium text-white flex">
+                        Start time
+                      </label>
+                      <div className="flex">
+                        <ReactSelect
+                          options={timeOptions}
+                          isMulti={false}
+                          defaultValue={
+                            timeOptions
+                              ? timeOptions.find(
+                                  (option) =>
+                                    option.value[0] ===
+                                    currentExamSchedule?.start
+                                      ?.toString()
+                                      .slice(16, 25)
+                                      .trim()
+                                )
+                              : null
+                          }
+                          onChange={(selectedOption) => {
+                            // Update the proctoringLocation in the currentTeacher state
+                            // setCurrentExamslot((prevExamslot) => ({
+                            //   ...prevExamslot,
+                            //   startTime: selectedOption
+                            //     ? selectedOption.value[0]
+                            //     : null,
+                            //   endTime: selectedOption
+                            //     ? selectedOption.value[1]
+                            //     : null,
+                            // }))
+
+                            // Update the selectedOption state
+                            setSelectedOption(
+                              selectedOption ? selectedOption.value : null
+                            )
+
+                            // setAddData({
+                            //   ...addData,
+                            //   startTime: selectedOption.value[0],
+                            //   endTime: selectedOption.value[1],
+                            // })
+                          }}
                         />
                       </div>
                       <div className="flex justify-between">
@@ -266,9 +383,7 @@ const ExamscheduleDashboard = () => {
                   ></path>
                 </svg>
               </div>
-              <div className="text-red-800">
-                Missing classroom or proctoring.
-              </div>
+              <div className="text-red-800">Missing proctoring.</div>
             </div>
 
             {/* <!-- Blue Box --> */}

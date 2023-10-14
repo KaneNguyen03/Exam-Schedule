@@ -62,7 +62,6 @@ const ExamSlot = () => {
     endTime: "",
     courseId: "",
   })
-  console.log("🚀 Kha ne ~ file: ExamSlot.jsx:65 ~ addData:", addData)
   const [loadings, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState(null)
 
