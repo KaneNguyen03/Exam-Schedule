@@ -547,13 +547,13 @@ const AlluserDashboard = () => {
                     <td className="px-6 py-4">{alluser.email}</td>
                     <td>
                       <>
-                        {alluser.status === "Active" ? (
+                        {alluser.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : alluser.status === "Inactive" ? (
+                        ) : alluser.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -567,7 +567,7 @@ const AlluserDashboard = () => {
 
                     <td>
                       <div className="">
-                        {alluser.status === "Active" ? (
+                        {alluser.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button

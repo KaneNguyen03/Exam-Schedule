@@ -317,16 +317,6 @@ const Course = () => {
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     semester id
                                   </label>
-                                  {/* <input
-                                    value={currentTeacher?.protoringLocation}
-                                    onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        protoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
                                   <ReactSelect
                                     options={options}
                                     isMulti={false}
@@ -580,13 +570,13 @@ const Course = () => {
                     <td className="px-6 py-4">{course.studentListId}</td>
                     <td>
                       <>
-                        {course.status === "Active" ? (
+                        {course.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : course?.status === "Inactive" ? (
+                        ) : course?.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -599,7 +589,7 @@ const Course = () => {
                     </td>
                     <td>
                       <div className="">
-                        {course.status === "Active" ? (
+                        {course.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button

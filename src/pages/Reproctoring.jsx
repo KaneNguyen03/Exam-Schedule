@@ -284,7 +284,7 @@ const Reproctoring = () => {
                               </button>
                               <div className="px-6 py-6 lg:px-8">
                                 <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Do you want to register as a protoring for
+                                  Do you want to register as a proctoring for
                                   this exam
                                 </h3>
                                 <div>

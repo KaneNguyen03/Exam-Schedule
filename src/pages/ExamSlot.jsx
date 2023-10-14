@@ -586,16 +586,7 @@ const ExamSlot = () => {
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     proctoring id
                                   </label>
-                                  {/* <input
-                                    value={currentTeacher?.protoringLocation}
-                                    onChange={(e) =>
-                                      setCurrentTeacher({
-                                        ...currentTeacher,
-                                        protoringLocation: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  /> */}
+
                                   <ReactSelect
                                     options={options}
                                     isMulti={false}

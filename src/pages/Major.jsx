@@ -544,13 +544,13 @@ const MajorDashboard = () => {
                     
                     <td>
                       <>
-                        {major.status === "Active" ? (
+                        {major.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : major.status=== "Inactive" ? (
+                        ) : major.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -563,7 +563,7 @@ const MajorDashboard = () => {
                     </td>
                     <td>
                     <div className="">
-                        {major.status === "Active" ? (
+                        {major.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button
