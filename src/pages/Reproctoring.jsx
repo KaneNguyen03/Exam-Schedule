@@ -17,14 +17,19 @@ import {
 
 import Sidebar from "../components/Layout/Sidebar"
 import { useDispatch, useSelector } from "react-redux"
-import { getAllTeachers } from "../store/thunks/teacher"
+import {
+  createTeacher,
+  deleteTeacher,
+  getAllTeachers,
+} from "../store/thunks/teacher"
 import { color } from "../constants/commons/styled"
 import StatusButton from "../components/Status"
+
+import { v4 as uuidv4 } from "uuid"
 
 const Reproctoring = () => {
   const dispatch = useDispatch()
   const { user } = useAuth()
-
   const [openModal, setOpenModal] = useState(false)
   const [isShowSelect, setIsShowSelect] = useState(false)
   const [openModalConfirm, setOpenModalConfirm] = useState(false)
@@ -36,58 +41,47 @@ const Reproctoring = () => {
   const [currentExamslot, setCurrentExamslot] = useState({})
   const dataexsl = useSelector((state) => state.examslot)
   const datate = useSelector((state) => state.teacher)
-
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const currentUserExamslot = teachers?.filter((teacher) => {
     return teacher.proctoringName === user.username
   })
-  console.log(examslots?.data)
-  console.log(currentUserExamslot)
-  const remainUserExamslot = teachers?.filter((teacher) => {
-    return teacher.proctoringName !== user.username
-  })
-  console.log(remainUserExamslot)
-
-  console.log(currentUserExamslot)
 
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
   const popupSelect = useRef(null)
 
-  const [addData, setAddData] = useState({
-    examSlotId: "",
-    examSlotName: "",
-    proctoringId: "",
-    proctoringLocation: "",
-    date: "",
-    startTime: "",
-    endTime: "",
-  })
   const [loadings, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState(null)
 
-  const UpdateExamslot = () => {
-    dispatch(updateExamslot(currentExamslot))
+  const UpdateExamslot = async () => {
+    const result = await dispatch(
+      createTeacher({
+        proctoringId: uuidv4(),
+        proctoringName: user.username,
+        examSlotId: currentExamslot.examSlotId,
+      })
+    )
+    dispatch(
+      updateExamslot({
+        ...currentExamslot,
+        proctoringId: result?.payload?.data?.proctoringId,
+      })
+    )
     setOpenModal(false)
   }
 
-  const onDeleteExamslot = (data) => {
+  const onDeleteRegister = (data) => {
+    console.log("🚀 Kha ne ~ file: Reproctoring.jsx:79 ~ data:", data)
     const req = {
       ...data,
-      status: "Inactive",
+      productoringId: "",
     }
+    dispatch(deleteTeacher(data.proctoringId))
     dispatch(deleteExamslot(req))
     setOpenModalConfirm(false)
     setTimeout(() => dispatch(getAllExamslots(param)), 1000)
   }
-  const restoreExamslot = (data) => {
-    const req = {
-      ...data,
-      status: "Active",
-    }
-    dispatch(deleteExamslot(req))
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000)
-  }
+
   useEffect(() => {
     if (
       dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
@@ -265,8 +259,8 @@ const Reproctoring = () => {
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
                       {openModal ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
@@ -311,9 +305,12 @@ const Reproctoring = () => {
                                   </label>
                                   <input
                                     readOnly
-                                    value={currentExamslot?.date.substring(
-                                      0,
-                                      10
+                                    value={new Intl.DateTimeFormat(
+                                      "en-GB"
+                                    ).format(
+                                      new Date(
+                                        currentExamslot?.date.substring(0, 10)
+                                      )
                                     )}
                                     onChange={(e) =>
                                       setCurrentExamslot({
@@ -324,23 +321,6 @@ const Reproctoring = () => {
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-
-                                {/* <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    End Time
-                                  </label>
-                                  <input
-                                    value={currentExamslot?.endTime}
-                                    onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        endTime: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div> */}
-
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -368,8 +348,8 @@ const Reproctoring = () => {
                         <></>
                       )}
 
-                      {/* {openModalConfirm ? (
-                        <div className="fixed top-0 left-0  w-full h-full bg-gray-200 bg-opacity-5 z-[1000]">
+                      {openModalConfirm ? (
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
                           <div className="absolute top-0 left-0 w-full h-full">
                             <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
                               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -396,20 +376,20 @@ const Reproctoring = () => {
                                   </svg>
                                   <span className="sr-only">Close modal</span>
                                 </button>
-                                <div className="p-10 text-center">
+                                <div className="p-10 text-center my-8 gap-4">
                                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to delete this exam
-                                    slot?
+                                    Are you sure you want to cancel this exam
+                                    registration?
                                   </h3>
                                   <button
                                     data-modal-hide="popup-modal"
                                     type="button"
                                     className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
                                     onClick={() =>
-                                      onDeleteExamslot(currentExamslot)
+                                      onDeleteRegister(currentExamslot)
                                     }
                                   >
-                                    Delete
+                                    Submit
                                   </button>
                                   <button
                                     data-modal-hide="popup-modal"
@@ -426,7 +406,7 @@ const Reproctoring = () => {
                         </div>
                       ) : (
                         <></>
-                      )} */}
+                      )}
                     </td>
 
                     <td className="px-6 py-4">
@@ -436,18 +416,6 @@ const Reproctoring = () => {
                       {examslot.startTime.substring(0, 5)}
                     </td>
                     <td className="px-6 py-4">
-                      {/* {(() => {
-                        const startTime = new Date(
-                          `{examslot.startTime}:00Z`
-                        );
-                        startTime.setMinutes(startTime.getMinutes() + 90);
-
-                        return startTime.toLocaleTimeString("en-US", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }).toString().substring(0,5);
-                      })()} */}
-                      {/* {examslot.startTime} */}
                       {(() => {
                         // Split the startTime into hours and minutes
                         const [hours, minutes] = examslot.startTime
@@ -472,13 +440,21 @@ const Reproctoring = () => {
                     </td>
                     <td>
                       <>
-                        {/* {examslot.status === "Active" ? (
+                        {examslot.status.toLowerCase() === "active" &&
+                        examslot.proctoringId ? (
+                          <StatusButton
+                            color={color.blue}
+                            bgColor={color.blueLight}
+                            title="Enrolled"
+                          />
+                        ) : examslot.status.toLowerCase() === "active" &&
+                          !examslot.proctoringId ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
-                            title="Active"
+                            title="Available"
                           />
-                        ) : examslot?.status === "Inactive" ? (
+                        ) : examslot?.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -486,104 +462,63 @@ const Reproctoring = () => {
                           />
                         ) : (
                           <>-</>
-                        )} */}
-                        {currentUserExamslot.map((item) => {
-                          return (
-                            item.examSlotId === examslot.examSlotId && (
-                              <StatusButton
-                                color={color.gray}
-                                bgColor={color.grayLight}
-                                title="Enrolled"
-                              />
-                            )
-                          )
-                        })}
-                        {remainUserExamslot.map((item) => {
-                          return (
-                            item.examSlotId === examslot.examSlotId && (
-                              <StatusButton
-                                color={color.gray}
-                                bgColor={color.grayLight}
-                                title="Enrolled"
-                              />
-                            )
-                          )
-                        })}
-                        {
-                          <StatusButton
-                            color={color.green}
-                            bgColor={color.greenLight}
-                            title="Available"
-                          />
-                        }
+                        )}
                       </>
                     </td>
                     <td>
-                      {currentUserExamslot.map((item) => {
-                        return (
-                          item.examSlotId === examslot.examSlotId && (
-                            <button
-                              type="button"
-                              id="Delete"
-                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
-                              onClick={() =>
-                                // onDeleteClassroom(classroom)
-                                {
-                                  setCurrentExamslot(examslot)
-                                  setOpenModalConfirm(true)
-                                }
-                              }
-                            >
-                              Cancel
-                            </button>
-                          )
-                        )
-                      })}
-                      {remainUserExamslot.map((item) => {
-                        return (
-                          item.examSlotId === examslot.examSlotId && (
-                            <button
-                              type="button"
-                              id="Delete"
-                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-600 hover:bg-gray-700 focus:ring-gray-900"
-                            >
-                              Unavailable
-                            </button>
-                          )
-                        )
-                      })}
-                      {/* {remainUserExamslot.map((item) => {
-                        return (
-                          item.examSlotId !== examslot.examSlotId  && (
-                            <button
-                              type="button"
-                              id="Edit"
-                              className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
-                              onClick={() => {
-                                setOpenModal(!openModal);
-                                setSelectedOption(examslot.proctoringId);
-                                setCurrentExamslot(examslot);
-                              }}
-                            >
-                              Register
-                            </button>
-                          )
-                        );
-                      })} */}
-                      {
-                        <button
-                          type="button"
-                          id="Edit"
-                          className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
-                          onClick={() => {
-                            setOpenModal(!openModal)
-                            setSelectedOption(examslot.proctoringId)
-                            setCurrentExamslot(examslot)
-                          }}
-                        >
-                          Register
-                        </button>
-                      }
+                      <>
+                        {examslot.status.toLowerCase() === "active" &&
+                        currentUserExamslot.find(
+                          (slot) => slot.examSlotId === examslot.examSlotId
+                        ) ? (
+                          <button
+                            type="button"
+                            id="Delete"
+                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
+                            onClick={() => {
+                              setCurrentExamslot(examslot)
+                              setOpenModalConfirm(true)
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        ) : examslot.status.toLowerCase() === "active" &&
+                          !currentUserExamslot.find(
+                            (slot) => slot.examSlotId === examslot.examSlotId
+                          ) && examslot.proctoringId ? (
+                          <button
+                            type="button"
+                            id="Delete"
+                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-600 hover:bg-gray-700 focus:ring-gray-900"
+                          >
+                            Unavailable
+                          </button>
+                        ) : examslot.status.toLowerCase() === "active" &&
+                          (!examslot.proctoringId || examslot.proctoringId === "") ? (
+                          <button
+                            type="button"
+                            id="Register"
+                            className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
+                            onClick={() => {
+                              setOpenModal(!openModal)
+                              setSelectedOption(examslot.proctoringId)
+                              setCurrentExamslot(examslot)
+                            }}
+                          >
+                            Register
+                          </button>
+                        ) : examslot?.status.toLowerCase() === "inactive" ? (
+                          <button
+                            type="button"
+                            id="Delete"
+                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-600 hover:bg-gray-700 focus:ring-gray-900"
+                          >
+                            Unavailable
+                          </button>
+                        ) : (
+                          <>-</>
+                        )}
+                      </>
                     </td>
                   </tr>
                 ))}

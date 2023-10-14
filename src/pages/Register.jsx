@@ -31,33 +31,6 @@ const Register = () => {
     <div>
       {/* <img src={bg1} className="w-full "></img> */}
       <div className="my-5 md:my-40 flex justify-center items-center flex-col text-center ">
-        {/* <form className="">
-          <div className="relative text-start bg-lightgray ">
-            <label className="">Email Address</label>
-            <input
-              type="email"
-              className="block w-full px-4 py-2 text-sm rounded-xl border border-gray "
-              placeholder=" @gmail.com"
-            ></input>
-
-            <label className="">Password</label>
-            <input
-              type="password"
-              className="block w-full px-4 py-2 text-sm rounded-xl border border-gray"
-            />
-          </div>
-          <div className="ml-32 text-sm hover:text-blue-700">
-            <a href="../forget_password">Forget Password</a>
-          </div>
-
-          <button
-            type="button"
-            className="bg-slate-300 rounded-2xl w-24 h-8 mt-7 "
-          >
-            <a href="./dashboard">Login </a>
-          </button>
-        </form> */}
-
         <form
           onSubmit={handleSubmit}
           className="px-10 pt-4 pb-4 mb-4 box-border border-4 shadow-2xl shadow-slate-600 rounded-3xl md:w-96"

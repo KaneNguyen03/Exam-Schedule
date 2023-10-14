@@ -22,6 +22,7 @@ const updateExamslot = async (data) => {
       startTime: data.startTime,
       endTime: data.endTime,
       status: "Active",
+      courseId: data.courseId,
     })
     return response
   } catch (error) {
@@ -34,6 +35,7 @@ const deleteExamslot = async (data) => {
     const response = await apiInstance.put(`api/ExamSlot/${data.examSlotId}`, {
       ...data,
       examSlotId: data.examSlotId,
+      proctoringId: "",
       status: data.status,
     })
     return response

@@ -554,13 +554,13 @@ const Student = () => {
                       <td className="px-6 py-4">{student.courseId}</td>
                       <td>
                       <>
-                        {student.status === "Active" ? (
+                        {student.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : student?.status=== "Inactive" ? (
+                        ) : student?.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -573,7 +573,7 @@ const Student = () => {
                     </td>
                       <td>
                       <div className="">
-                        {student.status === "Active" ? (
+                        {student.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button
