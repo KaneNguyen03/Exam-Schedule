@@ -79,11 +79,13 @@ const ExamSlot = () => {
   const [selectedDate, setSelectedDate] = useState(null)
 
   const handleDateChange = (date) => {
+    const nextDay = new Date(date)
+    nextDay.setDate(nextDay.getDate() + 1)
     setCurrentExamslot({
       ...currentExamslot,
-      date: date,
+      date: nextDay,
     })
-    setAddData({ ...addData, date: date })
+    setAddData({ ...addData, date: nextDay })
     setSelectedDate(date)
   }
   const UpdateExamslot = () => {
@@ -93,14 +95,19 @@ const ExamSlot = () => {
 
   const AddExamslot = () => {
     dispatch(createExamslot(addData))
-    dispatch(
-      createExamschedule({
-        status: "Active",
-        examScheduleId: uuidv4(),
-        classroomId:
-          classrooms[Math.floor(Math.random() * classrooms.length)].classroomId,
-        examSlotId: addData.examSlotId,
-      })
+    setTimeout(
+      () =>
+        dispatch(
+          createExamschedule({
+            status: "Active",
+            examScheduleId: uuidv4(),
+            classroomId:
+              classrooms[Math.floor(Math.random() * classrooms.length)]
+                .classroomId,
+            examSlotId: addData.examSlotId,
+          })
+        ),
+      1000
     )
     setOpenModalAdd(false)
   }
