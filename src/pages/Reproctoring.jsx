@@ -35,6 +35,7 @@ const Reproctoring = () => {
     keyword: "",
   });
   const [currentExamslot, setCurrentExamslot] = useState({});
+
   const dataexsl = useSelector((state) => state.examslot);
   const datate = useSelector((state) => state.teacher);
 
