@@ -26,6 +26,7 @@ import { color } from "../constants/commons/styled"
 import StatusButton from "../components/Status"
 
 import { v4 as uuidv4 } from "uuid"
+import { differenceInDays, parseISO } from "date-fns"
 
 const Reproctoring = () => {
   const dispatch = useDispatch()
@@ -49,7 +50,7 @@ const Reproctoring = () => {
 
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
   const popupSelect = useRef(null)
-
+  const currentDate = new Date()
   const [loadings, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState(null)
 
@@ -470,7 +471,11 @@ const Reproctoring = () => {
                         {examslot.status.toLowerCase() === "active" &&
                         currentUserExamslot.find(
                           (slot) => slot.examSlotId === examslot.examSlotId
-                        ) ? (
+                        ) &&
+                        differenceInDays(
+                          parseISO(examslot.date.substring(0, 10)),
+                          currentDate
+                        ) > 3 ? (
                           <button
                             type="button"
                             id="Delete"
@@ -485,7 +490,8 @@ const Reproctoring = () => {
                         ) : examslot.status.toLowerCase() === "active" &&
                           !currentUserExamslot.find(
                             (slot) => slot.examSlotId === examslot.examSlotId
-                          ) && examslot.proctoringId ? (
+                          ) &&
+                          examslot.proctoringId ? (
                           <button
                             type="button"
                             id="Delete"
@@ -494,7 +500,8 @@ const Reproctoring = () => {
                             Unavailable
                           </button>
                         ) : examslot.status.toLowerCase() === "active" &&
-                          (!examslot.proctoringId || examslot.proctoringId === "") ? (
+                          (!examslot.proctoringId ||
+                            examslot.proctoringId === "") ? (
                           <button
                             type="button"
                             id="Register"
@@ -516,7 +523,16 @@ const Reproctoring = () => {
                             Unavailable
                           </button>
                         ) : (
-                          <>-</>
+                          <>
+                            {" "}
+                            <button
+                              type="button"
+                              id="Delete"
+                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
+                            >
+                              Disabled
+                            </button>
+                          </>
                         )}
                       </>
                     </td>
