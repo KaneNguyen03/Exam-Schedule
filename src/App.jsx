@@ -2,8 +2,7 @@ import "./App.css"
 
 import { Routes, Route } from "react-router-dom"
 import Login from "./pages/Login"
-import Register from "./pages/Register"
-import ResetPassword from "./pages/ResetPassword"
+import 'react-toastify/dist/ReactToastify.css'
 import Unauthorized from "./pages/Unauthorized"
 import Page404 from "./pages/Page404"
 import AdminDashboard from "./pages/Admin"
@@ -31,8 +30,7 @@ function App() {
         {/* public routes */}
         <Route element={<ProtectedAuth routeProtected={false} />}>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/reset_password" element={<ResetPassword />} />
+
           <Route path="/unauthorized" element={<Unauthorized />} />
         </Route>
 

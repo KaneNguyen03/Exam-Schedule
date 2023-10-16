@@ -23,7 +23,7 @@ import examscheduleTypes from "../constants/examscheduleTypes";
 import Dashboard from "../components/Admin/Dashboard";
 import alluserTypes from "../constants/alluserTypes";
 import { getAllusers } from "../store/thunks/alluser";
-
+import { toast } from "react-toastify";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -39,13 +39,14 @@ const AdminDashboard = () => {
 
   const datauser = useSelector((state) => state.alluser);
 
-  const allusers =datauser?.contents[alluserTypes.GET_ALLUSERS]?.data.data;
+  const allusers = datauser?.contents[alluserTypes.GET_ALLUSERS]?.data.data;
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data;
   const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data;
   const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data;
-  const examschedules =dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
+  const examschedules =
+    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data;
   const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
   const [loadings, setLoading] = useState(true);
@@ -59,7 +60,7 @@ const AdminDashboard = () => {
       setLoading(true);
     else setLoading(false);
   }, [dataco]);
-  
+
   useEffect(() => {
     if (
       datase?.loadings[semesterTypes.GET_SEMESTERS] ||
@@ -80,7 +81,7 @@ const AdminDashboard = () => {
       setLoading(true);
     else setLoading(false);
   }, [dataexsl]);
-  
+
   useEffect(() => {
     if (
       datacl?.loadings[classroomTypes.GET_CLASSROOMS] ||
@@ -123,16 +124,52 @@ const AdminDashboard = () => {
   }, [datast]);
 
   useEffect(() => {
-    dispatch(getAllClassrooms());
-    dispatch(getAllCourses());
-    dispatch(getAllTeachers());
-    dispatch(getAllusers());
-    dispatch(getAllStudents());
-    dispatch(getAllExamschedules());
-    dispatch(getAllExamslots());
-    dispatch(getAllMajors());
-  
-    dispatch(getAllSemesters());
+    try {
+      dispatch(getAllClassrooms());
+    } catch (error) {
+      toast.error("Error getting classroom");
+    }
+    try {
+      dispatch(getAllCourses());
+    } catch (error) {
+      toast.error("Error getting course");
+    }
+    try {
+      dispatch(getAllTeachers());
+    } catch (error) {
+      toast.error("Error getting proctoring");
+    }
+    try {
+      dispatch(getAllusers());
+    } catch (error) {
+      toast.error("Error getting users");
+    }
+    try {
+      dispatch(getAllStudents());
+    } catch (error) {
+      toast.error("Error getting students");
+    }
+    try {
+      dispatch(getAllExamschedules());
+    } catch (error) {
+      toast.error("Error getting examschedule");
+    }
+    try {
+      dispatch(getAllExamslots());
+    } catch (error) {
+      toast.error("Error getting examslot");
+    }
+    try {
+      dispatch(getAllMajors());
+    } catch (error) {
+      toast.error("Error getting majors");
+    }
+
+    try {
+      dispatch(getAllSemesters());
+    } catch (error) {
+      toast.error("Error getting semesters");
+    }
   }, []);
 
   return (
@@ -208,7 +245,6 @@ const AdminDashboard = () => {
             majors={majors}
             semesters={semesters}
             loadings={loadings}
-        
           />
         </div>
       </div>

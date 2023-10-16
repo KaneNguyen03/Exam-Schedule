@@ -19,6 +19,7 @@ import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
 import useAuth from "../hooks/useAuth"
 import { color } from "../constants/commons/styled"
 import StatusButton from "../components/Status"
+import { toast } from "react-toastify"
 
 const Room = () => {
   const dispatch = useDispatch()
@@ -33,6 +34,7 @@ const Room = () => {
   const [currentClassroom, setCurrentClassroom] = useState({})
   const datacl = useSelector((state) => state.classroom)
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data
+
   const pagination = datacl?.paginations[classroomTypes.GET_CLASSROOMS]
   const popupSelect = useRef(null)
   const [openModalAdd, setOpenModalAdd] = useState(false)
@@ -45,12 +47,24 @@ const Room = () => {
   const [loadings, setLoading] = useState(true)
 
   const UpdateClassroom = () => {
-    dispatch(updateClassroom(currentClassroom))
+    try {
+       dispatch(updateClassroom(currentClassroom))
+       toast.success("Exam room updated successfully")
+    } catch (error) {
+      toast.error("Error updating classroom")
+    }
+   
     setOpenModal(false)
   }
 
   const AddClassroom = () => {
-    dispatch(createClassroom(addData))
+    try {
+       dispatch(createClassroom(addData))
+       toast.success("Exam room added successfully")
+    } catch (error) {
+      toast.error("Error adding exam room")
+    }
+   
     setOpenModalAdd(false)
   }
 
@@ -59,9 +73,20 @@ const Room = () => {
       ...data,
       status: "Inactive",
     }
-    dispatch(deleteClassroom(req))
+    try {
+        dispatch(deleteClassroom(req))
+        toast.success("Exam room deleted successfully")
+    } catch (error) {
+      toast.error("Error deleting examroom")
+    }
+  
     setOpenModalConfirm(false)
-    setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
+    try {
+        setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting examroom ")
+    }
+  
   }
 
   const restoreClassroom = (data) => {
@@ -69,8 +94,18 @@ const Room = () => {
       ...data,
       status: "Active",
     }
-    dispatch(deleteClassroom(req))
-    setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
+    try {
+       dispatch(deleteClassroom(req))
+       toast.success("Exam room restored successfully")
+    } catch (error) {
+      toast.error("Error restoring classroom")
+    }
+   try {
+        setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
+   } catch (error) {
+    toast.error("Error getting examrooms")
+   }
+
   }
 
   useEffect(() => {
@@ -85,11 +120,16 @@ const Room = () => {
   }, [datacl, param])
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
+    try {
+          const delayDebounceFn = setTimeout(() => {
       dispatch(getAllClassrooms(param))
     }, 500)
 
     return () => clearTimeout(delayDebounceFn)
+    } catch (error) {
+      toast.error("Error getting classrooms")
+    }
+
   }, [param.keyword, dispatch, param])
 
   return (
@@ -203,7 +243,7 @@ const Room = () => {
                   {sizeOptions.map((item) => {
                     return (
                       <li
-                        className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
+                        className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-30 hover:bg-gray-200"
                         onClick={() => {
                           setParam({ ...param, pageSize: Number(item.value) })
                           setIsShowSelect(false)
@@ -220,7 +260,7 @@ const Room = () => {
           </div>
           {/* table */}
           <div className="grid gap-4 pt-7 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
-            <table className=" text-sm text-left text-gray-400 z-20">
+            <table className=" text-sm text-left text-gray-400">
               <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
                 <tr>
                   <th scope="col" className="px-6 py-3">
@@ -504,13 +544,13 @@ const Room = () => {
                     <td className="px-6 py-4">{classroom.capacity}</td>
                     <td>
                       <>
-                        {classroom.status === "Active" ? (
+                        {classroom.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : classroom.status === "Inactive" ? (
+                        ) : classroom.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -523,7 +563,7 @@ const Room = () => {
                     </td>
                     <td>
                       <div className="">
-                        {classroom.status === "Active" ? (
+                        {classroom.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button

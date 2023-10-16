@@ -42,6 +42,12 @@ const Sidebar = () => {
         </div>
         <div className="sidebar-content px-4 py-6">
           <ul className="flex flex-col w-full">
+          <li className="my-px">
+              <span className="flex font-medium text-sm text-gray-300 px-4 my-4 uppercase">
+                
+                Home
+              </span>
+            </li>
             {[...makeRoles([1])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
@@ -122,6 +128,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
+            {[...makeRoles([1,2,3,4,5])].includes(user.roleId) && (
             <li className="my-px">
               <Link
                 to="/examschedule"
@@ -140,7 +147,7 @@ const Sidebar = () => {
                 </span>
                 <span className="ml-3">Exam Schedule</span>
               </Link>
-            </li>
+            </li>)}
             {[...makeRoles([1])].includes(user.roleId) && (
               <li className="my-px">
                 <Link

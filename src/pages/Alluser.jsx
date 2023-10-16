@@ -17,6 +17,7 @@ import {
 } from "../store/thunks/alluser";
 import ReactSelect from "react-select";
 import { selectRole } from "../constants/auth";
+import { toast } from "react-toastify";
 const AlluserDashboard = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
@@ -29,7 +30,7 @@ const AlluserDashboard = () => {
   });
   const [currentAlluser, setCurrentAlluser] = useState({});
   const datauser = useSelector((state) => state.alluser);
- 
+
   const allusers = datauser?.contents[alluserTypes.GET_ALLUSERS]?.data;
 
   const pagination = datauser?.paginations[alluserTypes.GET_ALLUSERS];
@@ -39,20 +40,30 @@ const AlluserDashboard = () => {
   const [addData, setAddData] = useState({
     username: "",
     roleId: "",
-    email:""
+    email: "",
   });
   const [loadings, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
 
-
   const UpdateAlluser = () => {
-    dispatch(updateAlluser(currentAlluser));
+    try {
+      dispatch(updateAlluser(currentAlluser));
+      toast.success("User updated successfully")
+    } catch (error) {
+      toast.error("Error updating user");
+    }
+
     setOpenModal(false);
   };
 
-  console.log(addData);
   const AddAlluser = () => {
-    dispatch(createAlluser(addData));
+    try {
+      dispatch(createAlluser(addData));
+      toast.success("User added successfully")
+    } catch (error) {
+      toast.error("Error add user");
+    }
+
     setOpenModalAdd(false);
   };
 
@@ -61,17 +72,37 @@ const AlluserDashboard = () => {
       ...data,
       status: "Inactive",
     };
-    dispatch(deleteAlluser(req));
+    try {
+      dispatch(deleteAlluser(req));
+      toast.success("User deleted successfully")
+    } catch (error) {
+      toast.error("Error delete user");
+    }
+
     setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllusers(param)), 1000);
+    try {
+        setTimeout(() => dispatch(getAllusers(param)), 1000);
+    } catch (error) {
+      toast.error("Error getting user")
+    }
+  
   };
   const restoreAlluser = (data) => {
     const req = {
       ...data,
       status: "Active",
     };
-    dispatch(deleteAlluser(req));
-    setTimeout(() => dispatch(getAllusers(param)), 1000);
+    try {
+      dispatch(deleteAlluser(req));
+      toast.success("User restored successfully")
+    } catch (error) {
+      toast.error("Error restore user");
+    }
+    try {
+      setTimeout(() => dispatch(getAllusers(param)), 1000);
+    } catch (error) {
+      toast.error("Error getting user");
+    }
   };
 
   useEffect(() => {
@@ -85,11 +116,14 @@ const AlluserDashboard = () => {
     else setLoading(false);
   }, [datauser, param]);
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllusers(param));
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
+    try {
+      const delayDebounceFn = setTimeout(() => {
+        dispatch(getAllusers(param));
+        return () => clearTimeout(delayDebounceFn);
+      }, 500);
+    } catch (error) {
+      toast.error("Error getting user");
+    }
   }, [param.keyword, dispatch, param]);
 
   return (
@@ -438,9 +472,10 @@ const AlluserDashboard = () => {
                                           : null
                                       );
 
-                                      setAddData({...addData, roleId: 
-                                        selectedOption.value
-                                      })
+                                      setAddData({
+                                        ...addData,
+                                        roleId: selectedOption.value,
+                                      });
                                     }}
                                   />
                                 </div>
@@ -547,13 +582,13 @@ const AlluserDashboard = () => {
                     <td className="px-6 py-4">{alluser.email}</td>
                     <td>
                       <>
-                        {alluser.status === "Active" ? (
+                        {alluser.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : alluser.status === "Inactive" ? (
+                        ) : alluser.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -567,7 +602,7 @@ const AlluserDashboard = () => {
 
                     <td>
                       <div className="">
-                        {alluser.status === "Active" ? (
+                        {alluser.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button

@@ -6,6 +6,7 @@ import Footer from "../components/Layout/Footer"
 import Header from "../components/Layout/Header"
 
 import userApi from "../apis/user"
+import { ToastContainer } from "react-toastify"
 
 const Login = () => {
   const { loading, signIn } = useAuth()
@@ -19,6 +20,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const response = await signIn(email.trim().toLowerCase(), password.trim())
+    
   }
   
   const onHandleKeydown = (e) => {
@@ -30,9 +32,22 @@ const Login = () => {
   return (
     <div>
       <Header />
-      {/* <img src={bg1} className="w-full "></img> */}
+      
+     
       <div className="my-5 md:my-40 flex justify-center items-center flex-col text-center ">
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
         <form
+        
           onSubmit={handleSubmit}
           className="px-10 pt-4 pb-4 mb-4 box-border border-4 shadow-2xl shadow-slate-600 rounded-3xl md:w-96"
         >

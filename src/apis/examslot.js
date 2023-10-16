@@ -35,6 +35,7 @@ const deleteExamslot = async (data) => {
     const response = await apiInstance.put(`api/ExamSlot/${data.examSlotId}`, {
       ...data,
       examSlotId: data.examSlotId,
+      proctoringId: "",
       status: data.status,
     })
     return response

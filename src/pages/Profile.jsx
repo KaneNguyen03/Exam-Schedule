@@ -1,162 +1,176 @@
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Layout/Sidebar";
-
-// const Profile = () => {
-//   return (
-//     <div>
-//       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
-//        <Sidebar></Sidebar>;
-//         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
-//           <header className="header bg-white shadow py-4 px-4">
-//             <div className="header-content flex items-center flex-row">
-//               <div className="flex ml-auto">
-//                 <a className="flex flex-row items-center">
-//                   <img
-//                     src="https://png.pngtree.com/template/20190316/ourmid/pngtree-books-logo-image_79143.jpg"
-//                     className="h-10 w-10 bg-gray-200 border rounded-full"
-//                   />
-//                   <span className="flex flex-col ml-2">
-//                     <span className="truncate w-20 font-semibold tracking-wide leading-none">
-//                       BAO
-//                     </span>
-//                     <span className="truncate w-20 text-gray-500 text-xs leading-none mt-1">
-//                       Admin
-//                     </span>
-//                   </span>
-//                 </a>
-//               </div>
-//             </div>
-//           </header>
-
-//           <div className=" text-slate-800 font-semibold text-3xl flex p-4">
-//             User Profile
-//           </div>
-//           <div className="text-left p-8 text-xl">
-//             <h1 className="">UserName</h1>
-//             <div className="border w-60  border-black">Le nGuyen Gia Bao</div>
-//           </div>
-//           <div className="text-left p-9 text-xl">
-//             <h1 className="">Role</h1>
-//             <div className="border w-60  border-black">Le nGuyen Gia Bao</div>
-//           </div>
-//           <div className="text-left p-9 text-xl">
-//             <h1 className="">Your Password</h1>
-//             <input type="password" placeholder="input password"></input>
-//           </div>
-//           <div className="text-left p-9 text-xl">
-//             <h1 className="">Confirm password</h1>
-//             <input type="password" placeholder="input password"></input>
-//           </div>
-//         </main>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Profile;
-import { React, useState, setUser } from "react";
-//const dispatch = useDispatch();
-const user = {
-  name: "Bảo Bình Tân",
-  email: "Baobinhtan@fpt.edu.vn",
-  role: "Đệ 5 Cam",
-  avatar:
-    "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?w=740&t=st=1696517012~exp=1696517612~hmac=ca182e634d722a0e809a18564501aa7e0ddd520b16a6f1d1d10746d490eb3fbb",
-  bio: "Giang hồ khét tiếng Việt Nam",
-};
-
+import userApi from "../apis/user"; // Sử dụng `userApi` thay vì Axios
 const Profile = () => {
+  const [user, setUser] = useState({
+    username: "",
+    email: "",
+    roleId: "",
+    avatar: "",
+    //bio: "Đệ 5 cam",
+    status: "",
+  });
   const [isEditing, setIsEditing] = useState(false);
-
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
-
-  const saveChanges = () => {
-    //dispatch;
-    // Lưu các thay đổi vào cơ sở dữ liệu hoặc API tại đây
-    setIsEditing(false); // Kết thúc chế độ chỉnh sửa sau khi lưu
+  const saveChanges = async () => {
+    try {
+      const updatedUserData = {
+        username: user.username,
+        email: user.email,
+        //bio: user.bio,
+        status: user.status,
+        roleId: user.roleID,
+      };
+      // Gọi API để cập nhật thông tin người dùng sử dụng `userApi`
+      const response = await userApi.editUser(
+        user.status,
+        user.email,
+        user.username,
+        user.roleId
+      );
+      // Xử lý kết quả response ở đây
+      if (response) {
+        console.log("Update successful:", response);
+        setIsEditing(false);
+      } else {
+        setIsEditing(false); // Kết thúc chế độ chỉnh sửa sau khi cập nhật thành công
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
-
+  useEffect(() => {
+    // Gọi API để lấy thông tin người dùng sử dụng `userApi`
+    userApi
+      .getCurrentUser()
+      .then((response) => {
+        setUser(response);
+      })
+      .catch((error) => {
+        console.error("Error fetching user profile:", error);
+      });
+  }, []);
   return (
-    <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
+    <div className="relative flex flex-row min-h-screen bg-gray-100 text-gray-800">
       <Sidebar />
       <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
         <div>
-          <header className="bg-blue-500 p-4 text-white">
+          <header className="bg-black p-4 text-white">
             <h1 className="text-2xl font-semibold">My Profile</h1>
-            {!isEditing ? (
+           
+          </header>
+          <main className="container mx-auto p-4">
+            <div className="flex">
+              <div className="w-1/3 p-4">
+                <div className="bg-white rounded-lg p-4 shadow-lg">
+                  <div className="text-center">
+                    <img
+                      src={
+                        "https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg"
+                      }
+                      alt={`${user.roleId}'s profile`}
+                      className="w-32 h-32 mx-auto rounded-full"
+                    />
+                    {!isEditing ? (
+                      <div>
+                        <h2 className="text-2xl font-semibold mt-2">
+                          {user.username}
+                        </h2>
+                        <p className="text-gray-500">{user.email}</p>
+                        <p className="text-gray-500">{user.roleId}</p>
+                        <p
+                          className={`text-${
+                            user.status === "Active" ? "green" : "red"
+                          }-500`}
+                        >
+                          Status: {user.status}
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type="text"
+                          placeholder="Full Name"
+                          className="w-full border rounded-md p-2 mb-2"
+                          value={user.username}
+                          readOnly
+                          // onChange={(e) =>
+                          //   setUser({ ...user, username: e.target.value })
+                          //}
+                        />
+                        <input
+                          type="email"
+                          placeholder="Email"
+                          className="w-full border rounded-md p-2"
+                          value={user.email}
+                          onChange={(e) =>
+                            setUser({ ...user, email: e.target.value })
+                          }
+                        />
+                        <input
+                          type="text"
+                          placeholder="Roles"
+                          className="w-full border rounded-md p-2"
+                          value={user.roleId}
+                          readOnly
+                          // onChange={(e) =>
+                          //   setUser({ ...user, roleId: e.target.value })
+                          //}
+                        />
+                        <select
+                          value={user.status}
+                          readOnly
+                          // onChange={(e) =>
+                          //   setUser({ ...user, status: e.target.value })
+                          // }
+                          className="w-full border rounded-md p-2"
+                        >
+                          <option value="Active">Active</option>
+                          <option value="Inactive">Inactive</option>
+                        </select>
+                        
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                  {!isEditing ? (
               <button
                 onClick={toggleEdit}
-                className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded-md ml-2"
+                className="bg-yellow-500 hover:bg-yellow-700 text-white py-1 px-2 rounded-md ml-2 "
               >
                 Edit
               </button>
             ) : (
               <button
                 onClick={saveChanges}
-                className="bg-green-500 hover:bg-green-600 text-white py-1 px-2 rounded-md ml-2"
+                className="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded-md ml-2"
               >
                 Save
               </button>
             )}
-          </header>
-          <main className="container mx-auto p-4">
-            <div className="bg-white rounded-lg p-4 shadow-lg">
-              <div className="text-center">
-                <img
-                  src={user.avatar}
-                  alt={`${user.name}'s profile`}
-                  className="w-32 h-32 mx-auto rounded-full"
-                />
-                {!isEditing ? (
-                  <div>
-                    <h2 className="text-2xl font-semibold mt-2">{user.name}</h2>
-                    <p className="text-gray-500">{user.email}</p>
-                    <p className="text-gray-500">{user.role}</p>
                   </div>
-                ) : (
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Full Name"
-                      className="w-full border rounded-md p-2 mb-2"
-                      value={user.name}
-                      onChange={(e) =>
-                        setUser({ ...user, name: e.target.value })
-                      }
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      className="w-full border rounded-md p-2"
-                      value={user.email}
-                      onChange={(e) =>
-                        setUser({ ...user, email: e.target.value })
-                      }
-                    />
-                    <input
-                      type="text"
-                      placeholder="Roles"
-                      className="w-full border rounded-md p-2"
-                      value={user.role}
-                      onChange={(e) => setUser({ ...user, role: e.target })}
-                    />
-                  </div>
-                )}
+                </div>
               </div>
-
-              <div className="mt-4">
-                <h3 className="text-xl font-semibold">About Me</h3>
-                {!isEditing ? (
-                  <p className="text-gray-700">{user.bio}</p>
-                ) : (
-                  <textarea
-                    placeholder="Bio"
-                    className="w-full border rounded-md p-2"
-                    value={user.bio}
-                    onChange={(e) => setUser({ ...user, bio: e.target.value })}
-                  />
-                )}
+              <div className="w-2/3 p-4">
+                <div className="bg-white rounded-lg p-4 shadow-lg">
+                  <div className="mt-4">
+                    <h3 className="text-xl font-semibold">About Me</h3>
+                    {/* {!isEditing ? (
+                      <p className="text-gray-700">{user.bio}</p>
+                    ) : (
+                      <textarea
+                        placeholder="Bio"
+                        className="w-full border rounded-md p-2"
+                        value={user.bio}
+                        onChange={(e) =>
+                          setUser({ ...user, bio: e.target.value })
+                        }
+                      />
+                    )} */}
+                  </div>
+                </div>
               </div>
             </div>
           </main>
@@ -165,5 +179,4 @@ const Profile = () => {
     </div>
   );
 };
-
 export default Profile;

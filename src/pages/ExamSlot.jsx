@@ -29,6 +29,7 @@ import classroomTypes from "../constants/classroomTypes"
 import { getAllClassrooms } from "../store/thunks/classroom"
 import courseTypes from "../constants/courseTypes"
 import { getAllCourses } from "../store/thunks/course"
+import { toast } from "react-toastify"
 
 const ExamSlot = () => {
   const dispatch = useDispatch()
@@ -80,29 +81,52 @@ const ExamSlot = () => {
   const [selectedDate, setSelectedDate] = useState(null)
 
   const handleDateChange = (date) => {
+    const nextDay = new Date(date)
+    nextDay.setDate(nextDay.getDate() + 1)
     setCurrentExamslot({
       ...currentExamslot,
-      date: date,
+      date: nextDay,
     })
-    setAddData({ ...addData, date: date })
+    setAddData({ ...addData, date: nextDay })
     setSelectedDate(date)
   }
   const UpdateExamslot = () => {
-    dispatch(updateExamslot(currentExamslot))
+    try {
+         dispatch(updateExamslot(currentExamslot))
+         toast.success("Examslot updated successfully")
+    } catch (error) {
+      toast.error("Error updating examslot")
+    }
+ 
     setOpenModal(false)
   }
 
   const AddExamslot = () => {
-    dispatch(createExamslot(addData))
-    dispatch(
-      createExamschedule({
-        status: "Active",
-        examScheduleId: uuidv4(),
-        classroomId:
-          classrooms[Math.floor(Math.random() * classrooms.length)].classroomId,
-        examSlotId: addData.examSlotId,
-      })
+    try {
+       dispatch(createExamslot(addData))
+       toast.success("Examslot added successfully")
+    } catch (error) {
+      toast.error("Error adding examslot")
+    }
+   try {
+     setTimeout(
+      () =>
+        dispatch(
+          createExamschedule({
+            status: "Active",
+            examScheduleId: uuidv4(),
+            classroomId:
+              classrooms[Math.floor(Math.random() * classrooms.length)]
+                .classroomId,
+            examSlotId: addData.examSlotId,
+          })
+        ),
+      1000
     )
+   } catch (error) {
+    toast.error("Error creating examschedule")
+   }
+   
     setOpenModalAdd(false)
   }
 
@@ -111,17 +135,38 @@ const ExamSlot = () => {
       ...data,
       status: "Inactive",
     }
-    dispatch(deleteExamslot(req))
+    try {
+      dispatch(deleteExamslot(req))
+      toast.success("Examslot deleted successfully")
+    } catch (error) {
+      toast.error("Error deleting examslot")
+    }
+    
     setOpenModalConfirm(false)
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+    try {
+       setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting examslot")
+    }
+   
   }
   const restoreExamslot = (data) => {
     const req = {
       ...data,
       status: "Active",
     }
-    dispatch(deleteExamslot(req))
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+    try {
+      dispatch(deleteExamslot(req))
+      toast.success("Exam slot restored successfully")
+    } catch (error) {
+      toast.error("Error restoring examslot")
+    }
+    try {
+       setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting examslot ")
+    }
+   
   }
   useEffect(() => {
     if (
@@ -135,26 +180,46 @@ const ExamSlot = () => {
   }, [dataexsl, param])
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
+    try {
+      const delayDebounceFn = setTimeout(() => {
       dispatch(getAllExamslots(param))
     }, 500)
-    dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
     return () => clearTimeout(delayDebounceFn)
+    } catch (error) {
+      toast.error("Error getting examslot")
+    }
+    try {
+      dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
+    } catch (error) {
+      toast.error("Error getting teacher")
+    }
+    
+    
   }, [param.keyword, dispatch, param])
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
+    try {
+      const delayDebounceFn = setTimeout(() => {
       dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
     }, 500)
 
     return () => clearTimeout(delayDebounceFn)
+    } catch (error) {
+      toast.error("Error getting exam rooms")
+    }
+    
   }, [dispatch])
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
+    try {
+       const delayDebounceFn = setTimeout(() => {
       dispatch(getAllCourses({ page: 1, pageSize: 999 }))
     }, 500)
     return () => clearTimeout(delayDebounceFn)
+    } catch (error) {
+      toast.error("Error getting courses")
+    }
+   
   }, [dispatch])
   return (
     <div className="relative">
@@ -526,8 +591,8 @@ const ExamSlot = () => {
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
                       {openModal ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
+                        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-[1000]">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"

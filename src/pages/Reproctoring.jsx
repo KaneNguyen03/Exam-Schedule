@@ -1,92 +1,112 @@
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
 
-import { useEffect, useRef, useState } from "react";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { sizeOptions, timeOptions } from "../constants/commons/commons";
-import { Pagination } from "react-headless-pagination";
-import ReactSelect from "react-select";
-import teacherTypes from "../constants/teacherTypes";
-import examslotTypes from "../constants/examslotTypes";
+import { useEffect, useRef, useState } from "react"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import useAuth from "../hooks/useAuth"
+import { sizeOptions, timeOptions } from "../constants/commons/commons"
+import { Pagination } from "react-headless-pagination"
+import ReactSelect from "react-select"
+import teacherTypes from "../constants/teacherTypes"
+import examslotTypes from "../constants/examslotTypes"
 import {
   createExamslot,
   deleteExamslot,
   getAllExamslots,
   updateExamslot,
-} from "../store/thunks/examslot";
+} from "../store/thunks/examslot"
 
-import Sidebar from "../components/Layout/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import { createTeacher, getAllTeachers } from "../store/thunks/teacher";
-import { color } from "../constants/commons/styled";
-import StatusButton from "../components/Status";
-import { v4 as uuidv4 } from "uuid";
+import Sidebar from "../components/Layout/Sidebar"
+import { useDispatch, useSelector } from "react-redux"
+import {
+  createTeacher,
+  deleteTeacher,
+  getAllTeachers,
+} from "../store/thunks/teacher"
+import { color } from "../constants/commons/styled"
+import StatusButton from "../components/Status"
+
+import { v4 as uuidv4 } from "uuid"
+import { differenceInDays } from "date-fns"
+import { toast } from "react-toastify"
 
 const Reproctoring = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  console.log(user);
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  const dispatch = useDispatch()
+  const { user } = useAuth()
+  const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
-  const [currentExamslot, setCurrentExamslot] = useState({});
-
-  const dataexsl = useSelector((state) => state.examslot);
-  const datate = useSelector((state) => state.teacher);
-
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
+  })
+  const [currentExamslot, setCurrentExamslot] = useState({})
+  const dataexsl = useSelector((state) => state.examslot)
+  const datate = useSelector((state) => state.teacher)
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const currentUserExamslot = teachers?.filter((teacher) => {
-    return teacher.proctoringName === user.username;
-  });
-  const remainUserExamslot = teachers?.filter((teacher) => {
-    return teacher.proctoringName !== user.username;
-  });
+    return teacher.proctoringName === user.username
+  })
 
-  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
-  const popupSelect = useRef(null);
+  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
+  const popupSelect = useRef(null)
+  const currentDate = new Date()
+  const [loadings, setLoading] = useState(true)
+  const [selectedOption, setSelectedOption] = useState(null)
 
-  const [addData, setAddData] = useState({
-    examSlotId: "",
-    examSlotName: "",
-    proctoringId: "",
-    proctoringLocation: "",
-    date: "",
-    startTime: "",
-    endTime: "",
-  });
-  const [dataTeacher, setDataTeacher] = useState();
-  const [loadings, setLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(null);
+  // console.log(":rocket: Kha ne ~ file: Reproctoring.jsx:58 ~   differenceInDays(examslots?.data[0]?.date.substring(0, 10), currentDate) > 3:",   differenceInDays(examslots?.data[0]?.date.substring(0, 10), currentDate) > 3)
 
-  const UpdateExamslot = () => {
-    dispatch(createTeacher(dataTeacher));
-    dispatch(updateExamslot(currentExamslot));
-    setOpenModal(false);
-  };
+  const UpdateExamslot = async () => {
+    try {
+         const result = await dispatch(
+      createTeacher({
+        proctoringId: uuidv4(),
+        proctoringName: user.username,
+        examSlotId: currentExamslot.examSlotId,
+      })
+    )
+    
+    dispatch(
+      updateExamslot({
+        ...currentExamslot,
+        proctoringId: result?.payload?.data?.proctoringId,
+      })
+    )
+    toast.success("exam slot registered successfully")
+    } catch (error) {
+      toast.error("Error registering examslot")
+    }
+ 
+    setOpenModal(false)
+  }
 
-  const onDeleteExamslot = (data) => {
+  const onDeleteRegister = (data) => {
     const req = {
       ...data,
-      status: "Inactive",
-    };
-    dispatch(deleteExamslot(req));
-    setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
-  };
-  const restoreExamslot = (data) => {
-    const req = {
-      ...data,
-      status: "Active",
-    };
-    dispatch(deleteExamslot(req));
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
-  };
+      productoringId: "",
+    }
+    try {
+      dispatch(deleteTeacher(data.proctoringId))
+      toast.success("Register exam slot cancelled successfully")
+    } catch (error) {
+      toast.error("Error deleting register")
+    }
+    try {
+     dispatch(deleteExamslot(req)) 
+    } catch (error) {
+      toast.error ("Error deleting examslot")
+    }
+    
+    setOpenModalConfirm(false)
+    try {
+      setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting examslot")
+    }
+
+  }
+
   useEffect(() => {
     if (
       dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
@@ -94,17 +114,27 @@ const Reproctoring = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [dataexsl, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [dataexsl, param])
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllExamslots(param));
-    }, 500);
-    dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
-    return () => clearTimeout(delayDebounceFn);
-  }, [param.keyword, dispatch, param]);
+    try {
+       const delayDebounceFn = setTimeout(() => {
+      dispatch(getAllExamslots(param))
+    }, 500) 
+    return () => clearTimeout(delayDebounceFn)
+    } catch (error) {
+    toast.error("Error getting examsot")  
+    }
+   try {
+     dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
+   } catch (error) {
+    toast.error("Error getting proctoring")
+   }
+   
+   
+  }, [param.keyword, dispatch, param])
 
   return (
     <div className="relative">
@@ -137,7 +167,7 @@ const Reproctoring = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      });
+                      })
                     }}
                     value={param.keyword}
                   />
@@ -160,7 +190,7 @@ const Reproctoring = () => {
               </form>
               <div className="flex ml-auto">
                 <a className="flex flex-row items-center">
-                  <img
+<img
                     src="https://png.pngtree.com/template/20190316/ourmid/pngtree-books-logo-image_79143.jpg"
                     className="h-10 w-10 bg-gray-200 border rounded-full"
                   />
@@ -212,14 +242,14 @@ const Reproctoring = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) });
-                          setIsShowSelect(false);
+                          setParam({ ...param, pageSize: Number(item.value) })
+                          setIsShowSelect(false)
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               )}
@@ -227,16 +257,13 @@ const Reproctoring = () => {
           </div>
           <div className="grid gap-4 pt-7 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
             <table className=" text-sm text-left text-gray-400 ">
-              <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
+<thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
                 <tr>
                   <th scope="col" className="px-6 py-3">
                     examSlotId
                   </th>
                   <th scope="col" className="px-6 py-3">
                     examSlotName
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    proctoringId
                   </th>
 
                   <th scope="col" className="px-6 py-3">
@@ -264,12 +291,11 @@ const Reproctoring = () => {
                     key={examslot.examSlotId}
                   >
                     <td className="px-6 py-4">{examslot.examSlotId}</td>
-
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
                       {openModal ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
@@ -293,7 +319,7 @@ const Reproctoring = () => {
                               </button>
                               <div className="px-6 py-6 lg:px-8">
                                 <h3 className="mb-4 text-xl font-medium  text-white">
-                                  Do you want to register as a protoring for
+Do you want to register as a proctoring for
                                   this exam
                                 </h3>
                                 <div>
@@ -314,9 +340,12 @@ const Reproctoring = () => {
                                   </label>
                                   <input
                                     readOnly
-                                    value={currentExamslot?.date.substring(
-                                      0,
-                                      10
+                                    value={new Intl.DateTimeFormat(
+                                      "en-GB"
+                                    ).format(
+                                      new Date(
+                                        currentExamslot?.date.substring(0, 10)
+                                      )
                                     )}
                                     onChange={(e) =>
                                       setCurrentExamslot({
@@ -327,23 +356,6 @@ const Reproctoring = () => {
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-
-                                {/* <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    End Time
-                                  </label>
-                                  <input
-                                    value={currentExamslot?.endTime}
-                                    onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        endTime: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div> */}
-
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
                                 </div>
@@ -357,7 +369,7 @@ const Reproctoring = () => {
                                   </button>
                                   <button
                                     type="submit"
-                                    className=" text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
+className=" text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
                                     onClick={() => setOpenModal(false)}
                                   >
                                     Cancel
@@ -371,8 +383,8 @@ const Reproctoring = () => {
                         <></>
                       )}
 
-                      {/* {openModalConfirm ? (
-                        <div className="fixed top-0 left-0  w-full h-full bg-gray-200 bg-opacity-5 z-[1000]">
+                      {openModalConfirm ? (
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
                           <div className="absolute top-0 left-0 w-full h-full">
                             <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
                               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -399,20 +411,20 @@ const Reproctoring = () => {
                                   </svg>
                                   <span className="sr-only">Close modal</span>
                                 </button>
-                                <div className="p-10 text-center">
+                                <div className="p-10 text-center my-8 gap-4">
                                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to delete this exam
-                                    slot?
+                                    Are you sure you want to cancel this exam
+                                    registration?
                                   </h3>
                                   <button
                                     data-modal-hide="popup-modal"
-                                    type="button"
+type="button"
                                     className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
                                     onClick={() =>
-                                      onDeleteExamslot(currentExamslot)
+                                      onDeleteRegister(currentExamslot)
                                     }
                                   >
-                                    Delete
+                                    Submit
                                   </button>
                                   <button
                                     data-modal-hide="popup-modal"
@@ -429,75 +441,55 @@ const Reproctoring = () => {
                         </div>
                       ) : (
                         <></>
-                      )} */}
+                      )}
                     </td>
-                    <td className="px-6 py-4">{examslot.examSlotId}</td>
-                    {/* <td className="px-6 py-4">
-                      {examslot.date.substring(0, 10)}
-                    </td> */}
+
                     <td className="px-6 py-4">
-                      {(() => {
-                        // Assuming examslot.date is a string in the format "yyyy-mm-dd"
-                        const dateParts = examslot.date
-                          .substring(0, 10)
-                          .split("-");
-                        if (dateParts.length === 3) {
-                          const year = dateParts[0]; // Get the last two digits of the year
-                          const month = dateParts[1];
-                          const day = dateParts[2];
-                          return `${day}/${month}/${year}`;
-                        } else {
-                          return "Invalid Date"; // Handle the case where the date format is incorrect
-                        }
-                      })()}
+                      {examslot?.date.substring(0, 10)}
                     </td>
                     <td className="px-6 py-4">
                       {examslot.startTime.substring(0, 5)}
                     </td>
                     <td className="px-6 py-4">
-                      {/* {(() => {
-                        const startTime = new Date(
-                          `{examslot.startTime}:00Z`
-                        );
-                        startTime.setMinutes(startTime.getMinutes() + 90);
-
-                        return startTime.toLocaleTimeString("en-US", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }).toString().substring(0,5);
-                      })()} */}
-                      {/* {examslot.startTime} */}
                       {(() => {
                         // Split the startTime into hours and minutes
                         const [hours, minutes] = examslot.startTime
                           .split(":")
-                          .map(Number);
+                          .map(Number)
 
                         // Add 90 minutes
-                        const newMinutes = minutes + 90;
-                        const newHours = hours + Math.floor(newMinutes / 60);
-                        const formattedHours = newHours % 24; // Handle overflow if necessary
-                        const formattedMinutes = newMinutes % 60;
+                        const newMinutes = minutes + 90
+                        const newHours = hours + Math.floor(newMinutes / 60)
+                        const formattedHours = newHours % 24 // Handle overflow if necessary
+                        const formattedMinutes = newMinutes % 60
 
                         // Format the result as "HH:mm"
                         const formattedTime = `${formattedHours
                           .toString()
                           .padStart(2, "0")}:${formattedMinutes
                           .toString()
-                          .padStart(2, "0")}`;
+                          .padStart(2, "0")}`
 
-                        return formattedTime;
+                        return formattedTime
                       })()}
                     </td>
                     <td>
                       <>
-                        {/* {examslot.status === "Active" ? (
+                        {examslot.status.toLowerCase() === "active" &&
+                        examslot.proctoringId ? (
+                          <StatusButton
+                            color={color.blue}
+bgColor={color.blueLight}
+                            title="Enrolled"
+                          />
+                        ) : examslot.status.toLowerCase() === "active" &&
+                          !examslot.proctoringId ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
-                            title="Active"
+                            title="Available"
                           />
-                        ) : examslot?.status === "Inactive" ? (
+                        ) : examslot?.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -505,111 +497,65 @@ const Reproctoring = () => {
                           />
                         ) : (
                           <>-</>
-                        )} */}
-                        {currentUserExamslot.map((item) => {
-                          return (
-                            item.examSlotId === examslot.examSlotId && (
-                              <StatusButton
-                                color={color.gray}
-                                bgColor={color.grayLight}
-                                title="Enrolled"
-                              />
-                            )
-                          );
-                        })}
-                        {remainUserExamslot.map((item) => {
-                          return (
-                            item.examSlotId === examslot.examSlotId && (
-                              <StatusButton
-                                color={color.gray}
-                                bgColor={color.grayLight}
-                                title="Enrolled"
-                              />
-                            )
-                          );
-                        })}
-                        {
-                          <StatusButton
-                            color={color.green}
-                            bgColor={color.greenLight}
-                            title="Available"
-                          />
-                        }
+                        )}
                       </>
                     </td>
                     <td>
-                      {currentUserExamslot.map((item) => {
-                        return (
-                          item.examSlotId === examslot.examSlotId && (
-                            <button
-                              type="button"
-                              id="Delete"
-                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
-                              onClick={() =>
-                                // onDeleteClassroom(classroom)
-                                {
-                                  setCurrentExamslot(examslot);
-                                  setOpenModalConfirm(true);
-                                }
-                              }
-                            >
-                              Cancel
-                            </button>
-                          )
-                        );
-                      })}
-                      {remainUserExamslot.map((item) => {
-                        return (
-                          item.examSlotId === examslot.examSlotId && (
-                            <button
-                              type="button"
-                              id="Delete"
-                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-600 hover:bg-gray-700 focus:ring-gray-900"
-                            >
-                              Unavailable
-                            </button>
-                          )
-                        );
-                      })}
-                      {/* {remainUserExamslot.map((item) => {
-                        return (
-                          item.examSlotId !== examslot.examSlotId  && (
-                            <button
-                              type="button"
-                              id="Edit"
-                              className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
-                              onClick={() => {
-                                setOpenModal(!openModal);
-                                setSelectedOption(examslot.proctoringId);
-                                setCurrentExamslot(examslot);
-                              }}
-                            >
-                              Register
-                            </button>
-                          )
-                        );
-                      })} */}
-                      {
-                        <button
-                          type="button"
-                          id="Edit"
-                          className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
-                          onClick={() => {
-                            setOpenModal(!openModal);
-                            setSelectedOption(examslot.proctoringId);
-                            setCurrentExamslot(examslot);
-                            setDataTeacher({
-                              proctoringId: uuidv4(),
-                              proctoringName: user.username,
-                              status: "Active",
-                              compensation: "0",
-                              examSlotId: examslot.examSlotId,
-                            });
-                          }}
-                        >
-                          Register
-                        </button>
-                      }
+                      <>
+                        {examslot.status.toLowerCase() === "active" &&
+                        currentUserExamslot.find(
+                          (slot) => slot.examSlotId === examslot.examSlotId
+                        ) ? (
+                          <button
+                            type="button"
+                            id="Delete"
+                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
+                            onClick={() => {
+                              setCurrentExamslot(examslot)
+                              setOpenModalConfirm(true)
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        ) : examslot.status.toLowerCase() === "active" &&
+                          !currentUserExamslot.find(
+                            (slot) => slot.examSlotId === examslot.examSlotId
+                          ) &&
+                          examslot.proctoringId ? (
+                          <button
+                            type="button"
+                            id="Delete"
+                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-600 hover:bg-gray-700 focus:ring-gray-900"
+                          >
+                            Unavailable
+                          </button>
+                        ) : examslot.status.toLowerCase() === "active" &&
+                          (!examslot.proctoringId ||
+                            examslot.proctoringId === "") ? (
+                          <button
+                            type="button"
+                            id="Register"
+                            className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
+                            onClick={() => {
+setOpenModal(!openModal)
+                              setSelectedOption(examslot.proctoringId)
+                              setCurrentExamslot(examslot)
+                            }}
+                          >
+                            Register
+                          </button>
+                        ) : examslot?.status.toLowerCase() === "inactive" ? (
+                          <button
+                            type="button"
+                            id="Delete"
+                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-600 hover:bg-gray-700 focus:ring-gray-900"
+                          >
+                            Unavailable
+                          </button>
+                        ) : (
+                          <>-</>
+                        )}
+                      </>
                     </td>
                   </tr>
                 ))}
@@ -620,7 +566,7 @@ const Reproctoring = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 });
+                    setParam({ ...param, page: page + 1 })
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -655,7 +601,7 @@ const Reproctoring = () => {
                       <Pagination.PageButton
                         activeClassName="bg-blue-button border-0 text-white "
                         inactiveClassName="border"
-                        className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
+className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
                       />
                     ) : (
                       <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
@@ -690,7 +636,7 @@ const Reproctoring = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Reproctoring;
+export default Reproctoring

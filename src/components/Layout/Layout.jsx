@@ -1,7 +1,13 @@
-import React from "react"
+import React from "react";
+import { ToastContainer } from "react-toastify";
 
 const Layout = (props) => {
-  return <div className="bg-white">{props?.children}</div>
-}
+  return (
+    <div className="bg-white">
 
-export default Layout
+      {props?.children}
+    </div>
+  );
+};
+
+export default Layout;

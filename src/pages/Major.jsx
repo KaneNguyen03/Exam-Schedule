@@ -20,6 +20,7 @@ import major from "../store/slices/major";
 // import { getAllSemesters } from "../store/thunks/semester";
 import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
+import { toast } from "react-toastify";
 // import semesterTypes from "../constants/semesterTypes";
 
 const MajorDashboard = () => {
@@ -61,12 +62,24 @@ const MajorDashboard = () => {
   const [loadings, setLoading] = useState(true);
 
   const UpdateMajor = () => {
-    dispatch(updateMajor(currentMajor));
+    try {
+        dispatch(updateMajor(currentMajor));
+        toast.success("Major updated successfully")
+    } catch (error) {
+      toast.error("Error updating majors")
+    }
+  
     setOpenModal(false);
   };
 
   const AddMajor = () => {
-    dispatch(createMajor(addData));
+    try {
+       dispatch(createMajor(addData));
+       toast.success("Major added successfully")
+    } catch (error) {
+      toast.error("Error adding major")
+    }
+   
     setOpenModalAdd(false);
   };
 
@@ -75,17 +88,38 @@ const MajorDashboard = () => {
       ...data,
       status: "Inactive",
     };
-    dispatch(deleteMajor(req));
+    try {
+        dispatch(deleteMajor(req));
+        toast.success("Major deleted successfully")
+    } catch (error) {
+      toast.error("Error deleting major")
+    }
+  
     setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllMajors(param)), 1000);
+    try {
+        setTimeout(() => dispatch(getAllMajors(param)), 1000);
+    } catch (error) {
+      toast.error("Error getting major")
+    }
+  
   };
   const restoreMajor = (data) => {
     const req = {
       ...data,
       status: "Active",
     };
-    dispatch(deleteMajor(req));
-    setTimeout(() => dispatch(getAllMajors(param)), 1000);
+   try {
+       dispatch(deleteMajor(req));
+       toast.success("Major restored successfully")
+   } catch (error) {
+    toast.error("Error restoring major")
+   } 
+ try {
+   setTimeout(() => dispatch(getAllMajors(param)), 1000);
+ } catch (error) {
+  toast.error("Error getting majors ")
+ }
+   
   };
 
   useEffect(() => {
@@ -100,11 +134,16 @@ const MajorDashboard = () => {
   }, [datamj, param]);
 
  useEffect(() => {
+  try {
     const delayDebounceFn = setTimeout(() => {
       dispatch(getAllMajors(param));
     }, 500);
     
     return () => clearTimeout(delayDebounceFn);
+  } catch (error) {
+    toast.error("Error getting major")
+  }
+    
   }, [param.keyword, dispatch, param]);
 
   return (
@@ -544,13 +583,13 @@ const MajorDashboard = () => {
                     
                     <td>
                       <>
-                        {major.status === "Active" ? (
+                        {major.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : major.status=== "Inactive" ? (
+                        ) : major.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -563,7 +602,7 @@ const MajorDashboard = () => {
                     </td>
                     <td>
                     <div className="">
-                        {major.status === "Active" ? (
+                        {major.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button

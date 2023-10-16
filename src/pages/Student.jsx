@@ -17,6 +17,7 @@ import useAuth from "../hooks/useAuth";
 import ReactSelect from "react-select";
 import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
+import { toast } from "react-toastify";
 const Student = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
@@ -52,12 +53,25 @@ const Student = () => {
   const [loadings, setLoading] = useState(true);
 
   const UpdateStudent = () => {
-    dispatch(updateStudent(currentStudent));
+    try {
+        dispatch(updateStudent(currentStudent));
+        toast.success("Student updated successfully")
+    } catch (error) {
+      toast.error("Error updating student")
+    }
+  
     setOpenModal(false);
   };
 
   const AddStudent = () => {
-    dispatch(createStudent(addData));
+    try {
+      dispatch(createStudent(addData));
+      toast.success("Student added successfully")
+      
+    } catch (error) {
+      toast.error("Error adding student")
+    }
+    
   };
 
   const onDeleteStudent = (data) => {
@@ -65,17 +79,38 @@ const Student = () => {
       ...data,
       status: "Inactive"
     }
-    dispatch(deleteStudent(req));
+    try {
+       dispatch(deleteStudent(req));
+       toast.success("Student deleted successfully")
+    } catch (error) {
+      toast.error("Error deleting student")
+    }
+   
     setOpenModalConfirm(false);
-    setTimeout(() => dispatch(getAllStudents(param)), 1000);
+    try {
+        setTimeout(() => dispatch(getAllStudents(param)), 1000);
+    } catch (error) {
+      toast.error("Error getting student")
+    }
+  
   };
   const restoreStudent = (data) => {
     const req = {
       ...data,
       status: "Active",
     };
-    dispatch(deleteStudent(req));
-    setTimeout(() => dispatch(getAllStudents(param)), 1000);
+    try {
+        dispatch(deleteStudent(req));
+        toast.success("Student restored successfully")
+    } catch (error) {
+      toast.error("Error restoring student")
+    }
+  try {
+        setTimeout(() => dispatch(getAllStudents(param)), 1000);
+  } catch (error) {
+    toast.error("Error getting student")
+  }
+
   };
   useEffect(() => {
     if (
@@ -88,15 +123,25 @@ const Student = () => {
     else setLoading(false);
   }, [datast, param]);
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
+    try {
+       const delayDebounceFn = setTimeout(() => {
       dispatch(getAllStudents(param));
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
+    } catch (error) {
+      toast.error("Error getting students")
+    }
+   
   }, [param.keyword, dispatch, param]);
 
   useEffect(() => {
-    dispatch(getStudents());
+    try {
+       dispatch(getStudents());
+    } catch (error) {
+      toast.error("Error getting Student")
+    }
+   
   }, [dispatch]);
   return (
     <div>
@@ -554,13 +599,13 @@ const Student = () => {
                       <td className="px-6 py-4">{student.courseId}</td>
                       <td>
                       <>
-                        {student.status === "Active" ? (
+                        {student.status.toLowerCase() === "active" ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Active"
                           />
-                        ) : student?.status=== "Inactive" ? (
+                        ) : student?.status.toLowerCase() === "inactive" ? (
                           <StatusButton
                             color={color.red}
                             bgColor={color.redLight}
@@ -573,7 +618,7 @@ const Student = () => {
                     </td>
                       <td>
                       <div className="">
-                        {student.status === "Active" ? (
+                        {student.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button
