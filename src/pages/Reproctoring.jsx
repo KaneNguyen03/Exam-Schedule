@@ -1,57 +1,57 @@
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
 
-import { useEffect, useRef, useState } from "react"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import { sizeOptions, timeOptions } from "../constants/commons/commons"
-import { Pagination } from "react-headless-pagination"
-import ReactSelect from "react-select"
-import teacherTypes from "../constants/teacherTypes"
-import examslotTypes from "../constants/examslotTypes"
+import { useEffect, useRef, useState } from "react";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import { sizeOptions, timeOptions } from "../constants/commons/commons";
+import { Pagination } from "react-headless-pagination";
+import ReactSelect from "react-select";
+import teacherTypes from "../constants/teacherTypes";
+import examslotTypes from "../constants/examslotTypes";
 import {
   createExamslot,
   deleteExamslot,
   getAllExamslots,
   updateExamslot,
-} from "../store/thunks/examslot"
+} from "../store/thunks/examslot";
 
-import Sidebar from "../components/Layout/Sidebar"
-import { useDispatch, useSelector } from "react-redux"
+import Sidebar from "../components/Layout/Sidebar";
+import { useDispatch, useSelector } from "react-redux";
 import {
   createTeacher,
   deleteTeacher,
   getAllTeachers,
-} from "../store/thunks/teacher"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
+} from "../store/thunks/teacher";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
 
-import { v4 as uuidv4 } from "uuid"
+import { v4 as uuidv4 } from "uuid";
 
 const Reproctoring = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
-  const [currentExamslot, setCurrentExamslot] = useState({})
-  const dataexsl = useSelector((state) => state.examslot)
-  const datate = useSelector((state) => state.teacher)
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
+  });
+  const [currentExamslot, setCurrentExamslot] = useState({});
+  const dataexsl = useSelector((state) => state.examslot);
+  const datate = useSelector((state) => state.teacher);
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
   const currentUserExamslot = teachers?.filter((teacher) => {
-    return teacher.proctoringName === user.username
-  })
+    return teacher.proctoringName === user.username;
+  });
 
-  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
-  const popupSelect = useRef(null)
+  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
+  const popupSelect = useRef(null);
 
-  const [loadings, setLoading] = useState(true)
-  const [selectedOption, setSelectedOption] = useState(null)
+  const [loadings, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const UpdateExamslot = async () => {
     const result = await dispatch(
@@ -60,27 +60,26 @@ const Reproctoring = () => {
         proctoringName: user.username,
         examSlotId: currentExamslot.examSlotId,
       })
-    )
+    );
     dispatch(
       updateExamslot({
         ...currentExamslot,
         proctoringId: result?.payload?.data?.proctoringId,
       })
-    )
-    setOpenModal(false)
-  }
+    );
+    setOpenModal(false);
+  };
 
   const onDeleteRegister = (data) => {
-    console.log("🚀 Kha ne ~ file: Reproctoring.jsx:79 ~ data:", data)
     const req = {
       ...data,
       productoringId: "",
-    }
-    dispatch(deleteTeacher(data.proctoringId))
-    dispatch(deleteExamslot(req))
-    setOpenModalConfirm(false)
-    setTimeout(() => dispatch(getAllExamslots(param)), 1000)
-  }
+    };
+    dispatch(deleteTeacher(data.proctoringId));
+    dispatch(deleteExamslot(req));
+    setOpenModalConfirm(false);
+    setTimeout(() => dispatch(getAllExamslots(param)), 1000);
+  };
 
   useEffect(() => {
     if (
@@ -89,17 +88,17 @@ const Reproctoring = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [dataexsl, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [dataexsl, param]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllExamslots(param))
-    }, 500)
-    dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
-    return () => clearTimeout(delayDebounceFn)
-  }, [param.keyword, dispatch, param])
+      dispatch(getAllExamslots(param));
+    }, 500);
+    dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
+    return () => clearTimeout(delayDebounceFn);
+  }, [param.keyword, dispatch, param]);
 
   return (
     <div className="relative">
@@ -132,7 +131,7 @@ const Reproctoring = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -207,14 +206,14 @@ const Reproctoring = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) })
-                          setIsShowSelect(false)
+                          setParam({ ...param, pageSize: Number(item.value) });
+                          setIsShowSelect(false);
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -420,22 +419,22 @@ const Reproctoring = () => {
                         // Split the startTime into hours and minutes
                         const [hours, minutes] = examslot.startTime
                           .split(":")
-                          .map(Number)
+                          .map(Number);
 
                         // Add 90 minutes
-                        const newMinutes = minutes + 90
-                        const newHours = hours + Math.floor(newMinutes / 60)
-                        const formattedHours = newHours % 24 // Handle overflow if necessary
-                        const formattedMinutes = newMinutes % 60
+                        const newMinutes = minutes + 90;
+                        const newHours = hours + Math.floor(newMinutes / 60);
+                        const formattedHours = newHours % 24; // Handle overflow if necessary
+                        const formattedMinutes = newMinutes % 60;
 
                         // Format the result as "HH:mm"
                         const formattedTime = `${formattedHours
                           .toString()
                           .padStart(2, "0")}:${formattedMinutes
                           .toString()
-                          .padStart(2, "0")}`
+                          .padStart(2, "0")}`;
 
-                        return formattedTime
+                        return formattedTime;
                       })()}
                     </td>
                     <td>
@@ -476,8 +475,8 @@ const Reproctoring = () => {
                             id="Delete"
                             className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
                             onClick={() => {
-                              setCurrentExamslot(examslot)
-                              setOpenModalConfirm(true)
+                              setCurrentExamslot(examslot);
+                              setOpenModalConfirm(true);
                             }}
                           >
                             Cancel
@@ -485,7 +484,8 @@ const Reproctoring = () => {
                         ) : examslot.status.toLowerCase() === "active" &&
                           !currentUserExamslot.find(
                             (slot) => slot.examSlotId === examslot.examSlotId
-                          ) && examslot.proctoringId ? (
+                          ) &&
+                          examslot.proctoringId ? (
                           <button
                             type="button"
                             id="Delete"
@@ -494,15 +494,16 @@ const Reproctoring = () => {
                             Unavailable
                           </button>
                         ) : examslot.status.toLowerCase() === "active" &&
-                          (!examslot.proctoringId || examslot.proctoringId === "") ? (
+                          (!examslot.proctoringId ||
+                            examslot.proctoringId === "") ? (
                           <button
                             type="button"
                             id="Register"
                             className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                             onClick={() => {
-                              setOpenModal(!openModal)
-                              setSelectedOption(examslot.proctoringId)
-                              setCurrentExamslot(examslot)
+                              setOpenModal(!openModal);
+                              setSelectedOption(examslot.proctoringId);
+                              setCurrentExamslot(examslot);
                             }}
                           >
                             Register
@@ -529,7 +530,7 @@ const Reproctoring = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -599,7 +600,7 @@ const Reproctoring = () => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Reproctoring
+export default Reproctoring;

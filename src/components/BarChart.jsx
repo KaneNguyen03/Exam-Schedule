@@ -8,6 +8,12 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+//////////////////////////
+//import { useEffect, useRef, useState } from "react";
+import teacherTypes from "../constants/teacherTypes";
+import { useSelector } from "react-redux";
+
+///////////////////////
 //import TitleCard from "../../../components/Cards/TitleCard";
 
 ChartJS.register(
@@ -20,6 +26,20 @@ ChartJS.register(
 );
 
 function BarChart() {
+  const datate = useSelector((state) => state.teacher);
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data?.data;
+
+  const teacherCounts = {};
+
+  teachers?.forEach((teacher) => {
+    const name = teacher.proctoringName;
+    if (teacherCounts[name]) {
+      teacherCounts[name] += 1;
+    } else {
+      teacherCounts[name] = 1;
+    }
+  });
+
   const options = {
     responsive: true,
     plugins: {
@@ -28,33 +48,23 @@ function BarChart() {
       },
     },
   };
-
-  const labels = [
-    "Proctoring",
-    "StudentList",
-    "Classrooms",
-    "User",
-    "Courses",
-    "Exam Schedules",
-    "Exam Slots",
-    "Majors",
-  ];
-
+  //{teachers?.data?.map((teacher) => (tần xuất xuất hiện của tên giảng viên trong danh sách protoring) )}
+  //
+  const labels = Object.keys(teacherCounts);
+  const counts = Object.values(teacherCounts);
+  const compensations = counts.map((count) => count * 4.25);
+  //
   const data = {
     labels,
     datasets: [
       {
-        label: "Store 1",
-        data: labels.map(() => {
-          return Math.random() * 1000 + 500;
-        }),
+        label: "hours",
+        data: counts,
         backgroundColor: "rgba(255, 99, 132, 1)",
       },
       {
-        label: "Store 2",
-        data: labels.map(() => {
-          return Math.random() * 1000 + 500;
-        }),
+        label: "compensations",
+        data: compensations,
         backgroundColor: "rgba(53, 162, 235, 1)",
       },
     ],

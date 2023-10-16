@@ -1,84 +1,85 @@
-import { useDispatch, useSelector } from "react-redux"
-import Sidebar from "../components/Layout/Sidebar"
-import teacherTypes from "../constants/teacherTypes"
-import { useEffect, useRef, useState } from "react"
+import { useDispatch, useSelector } from "react-redux";
+import Sidebar from "../components/Layout/Sidebar";
+import teacherTypes from "../constants/teacherTypes";
+import { useEffect, useRef, useState } from "react";
 import {
   createTeacher,
   deleteTeacher,
   getAllTeachers,
   updateTeacher,
-} from "../store/thunks/teacher"
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+} from "../store/thunks/teacher";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
 
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import { sizeOptions } from "../constants/commons/commons"
-import { Pagination } from "react-headless-pagination"
-import { getAllClassrooms } from "../store/thunks/classroom"
-import classroomTypes from "../constants/classroomTypes"
-import ReactSelect from "react-select"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import { sizeOptions } from "../constants/commons/commons";
+import { Pagination } from "react-headless-pagination";
+import { getAllClassrooms } from "../store/thunks/classroom";
+import classroomTypes from "../constants/classroomTypes";
+import ReactSelect from "react-select";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
 const TeacherDashboard = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
-  const [currentTeacher, setCurrentTeacher] = useState({})
-  const datate = useSelector((state) => state.teacher)
-  const datacl = useSelector((state) => state.classroom)
-  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data
-  const pagination = datate?.paginations[teacherTypes.GET_TEACHERS]
-  const popupSelect = useRef(null)
-  const [openModalAdd, setOpenModalAdd] = useState(false)
+  });
+  const [currentTeacher, setCurrentTeacher] = useState({});
+  const datate = useSelector((state) => state.teacher);
+  const datacl = useSelector((state) => state.classroom);
+  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data;
+
+  const pagination = datate?.paginations[teacherTypes.GET_TEACHERS];
+  const popupSelect = useRef(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
     proctoringId: "",
     proctoringName: "",
     proctoringLocation: "",
     compensation: 0,
-  })
-  const [loadings, setLoading] = useState(true)
-  const [selectedOption, setSelectedOption] = useState(null)
+  });
+  const [loadings, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const options = classrooms?.map((classroom) => ({
     value: classroom.classroomId,
     label: classroom.classroomId + " : " + classroom.name,
-  }))
+  }));
 
   const UpdateTeacher = () => {
-    dispatch(updateTeacher(currentTeacher))
-    setOpenModal(false)
-  }
+    dispatch(updateTeacher(currentTeacher));
+    setOpenModal(false);
+  };
 
   const AddTeacher = () => {
-    dispatch(createTeacher(addData))
-    setOpenModalAdd(false)
-  }
+    dispatch(createTeacher(addData));
+    setOpenModalAdd(false);
+  };
 
   const onDeleteTeacher = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    }
-    dispatch(deleteTeacher(req))
-    setOpenModalConfirm(false)
-    setTimeout(() => dispatch(getAllTeachers(param)), 1000)
-  }
+    };
+    dispatch(deleteTeacher(req));
+    setOpenModalConfirm(false);
+    setTimeout(() => dispatch(getAllTeachers(param)), 1000);
+  };
   const restoreTeacher = (data) => {
     const req = {
       ...data,
       status: "Active",
-    }
-    dispatch(deleteTeacher(req))
-    setTimeout(() => dispatch(getAllTeachers(param)), 1000)
-  }
+    };
+    dispatch(deleteTeacher(req));
+    setTimeout(() => dispatch(getAllTeachers(param)), 1000);
+  };
   useEffect(() => {
     if (
       datate?.loadings[teacherTypes.GET_TEACHERS] ||
@@ -86,17 +87,17 @@ const TeacherDashboard = () => {
       datate?.loadings[teacherTypes.UPDATE_TEACHER] ||
       datate?.loadings[teacherTypes.DELETE_TEACHER]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [datate, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [datate, param]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllTeachers(param))
-    }, 500)
-    dispatch(getAllClassrooms({ page: 1, pageSize: 999 }))
-    return () => clearTimeout(delayDebounceFn)
-  }, [param.keyword, dispatch, param])
+      dispatch(getAllTeachers(param));
+    }, 500);
+    dispatch(getAllClassrooms({ page: 1, pageSize: 999 }));
+    return () => clearTimeout(delayDebounceFn);
+  }, [param.keyword, dispatch, param]);
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -128,7 +129,7 @@ const TeacherDashboard = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -210,14 +211,14 @@ const TeacherDashboard = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) })
-                          setIsShowSelect(false)
+                          setParam({ ...param, pageSize: Number(item.value) });
+                          setIsShowSelect(false);
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -331,14 +332,14 @@ const TeacherDashboard = () => {
                                         proctoringLocation: selectedOption
                                           ? selectedOption.value
                                           : null,
-                                      }))
+                                      }));
 
                                       // Update the selectedOption state
                                       setSelectedOption(
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      )
+                                      );
                                     }}
                                   />
                                 </div>
@@ -454,11 +455,11 @@ const TeacherDashboard = () => {
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      )
+                                      );
                                       setAddData({
                                         ...addData,
                                         proctoringLocation: data.value,
-                                      })
+                                      });
                                     }}
                                   />
                                 </div>
@@ -595,8 +596,8 @@ const TeacherDashboard = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentTeacher(teacher)
-                                  setOpenModalConfirm(true)
+                                  setCurrentTeacher(teacher);
+                                  setOpenModalConfirm(true);
                                 }
                               }
                             >
@@ -607,9 +608,9 @@ const TeacherDashboard = () => {
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal)
-                                setSelectedOption(teacher.proctoringLocation)
-                                setCurrentTeacher(teacher)
+                                setOpenModal(!openModal);
+                                setSelectedOption(teacher.proctoringLocation);
+                                setCurrentTeacher(teacher);
                               }}
                             >
                               Edit
@@ -644,7 +645,7 @@ const TeacherDashboard = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -714,6 +715,6 @@ const TeacherDashboard = () => {
         </main>
       </div>
     </div>
-  )
-}
-export default TeacherDashboard
+  );
+};
+export default TeacherDashboard;
