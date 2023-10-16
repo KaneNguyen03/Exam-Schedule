@@ -57,7 +57,7 @@ const Profile = () => {
       <Sidebar />
       <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
         <div>
-          <header className="bg-black p-4 text-white">
+          <header  className="header bg-white shadow py-4 px-4">
             <h1 className="text-2xl font-semibold">My Profile</h1>
            
           </header>

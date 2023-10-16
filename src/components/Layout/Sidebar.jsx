@@ -42,13 +42,8 @@ const Sidebar = () => {
         </div>
         <div className="sidebar-content px-4 py-6">
           <ul className="flex flex-col w-full">
-          <li className="my-px">
-              <span className="flex font-medium text-sm text-gray-300 px-4 my-4 uppercase">
-                
-                Home
-              </span>
-            </li>
-            {[...makeRoles([1])].includes(user.roleId) && (
+          
+            {[...makeRoles([1,2])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/"
@@ -68,7 +63,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {[...makeRoles([1])].includes(user.roleId) && (
+            {[...makeRoles([1,2])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/semester"
@@ -88,7 +83,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {[...makeRoles([1])].includes(user.roleId) && (
+            {[...makeRoles([1,2])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/major"
@@ -108,7 +103,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {[...makeRoles([1])].includes(user.roleId) && (
+            {[...makeRoles([1,2])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/course"
@@ -168,7 +163,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {[...makeRoles([1])].includes(user.roleId) && (
+            {[...makeRoles([1,2])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/room"
@@ -188,7 +183,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {[...makeRoles([1])].includes(user.roleId) && (
+            {[...makeRoles([1,2])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/alluser"
@@ -209,7 +204,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {[...makeRoles([1])].includes(user.roleId) && (
+            {[...makeRoles([1,2])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/proctoring"
@@ -229,7 +224,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {[...makeRoles([1, 4])].includes(user.roleId) && (
+            {[...makeRoles([1,2, 4])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/reproctoring"
