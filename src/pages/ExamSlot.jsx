@@ -42,10 +42,7 @@ const ExamSlot = () => {
     keyword: "",
   })
   const [currentExamslot, setCurrentExamslot] = useState({})
-  console.log(
-    "🚀 Kha ne ~ file: ExamSlot.jsx:45 ~ currentExamslot:",
-    currentExamslot
-  )
+
   const dataexsl = useSelector((state) => state.examslot)
   const datate = useSelector((state) => state.teacher)
   const datacl = useSelector((state) => state.classroom)
@@ -260,7 +257,7 @@ const ExamSlot = () => {
               Add
             </button>
             {openModalAdd ? (
-              <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+              <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
                 <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                   <div className="relativerounded-lg shadow bg-gray-700">
                     <button
@@ -536,7 +533,7 @@ const ExamSlot = () => {
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
                       {openModal ? (
-                        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-[1000]">
+                        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-10 z-[1000]">
                           <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button

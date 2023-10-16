@@ -40,13 +40,16 @@ const Reproctoring = () => {
     keyword: "",
   })
   const [currentExamslot, setCurrentExamslot] = useState({})
+
   const dataexsl = useSelector((state) => state.examslot)
   const datate = useSelector((state) => state.teacher)
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
+
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const currentUserExamslot = teachers?.filter((teacher) => {
     return teacher.proctoringName === user.username
   })
+
 
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
   const popupSelect = useRef(null)
@@ -72,13 +75,14 @@ const Reproctoring = () => {
   }
 
   const onDeleteRegister = (data) => {
-    console.log("🚀 Kha ne ~ file: Reproctoring.jsx:79 ~ data:", data)
+
     const req = {
       ...data,
       productoringId: "",
     }
     dispatch(deleteTeacher(data.proctoringId))
-    dispatch(deleteExamslot(req))
+    setTimeout(() => dispatch(deleteExamslot(req)), 1000)
+
     setOpenModalConfirm(false)
     setTimeout(() => dispatch(getAllExamslots(param)), 1000)
   }
@@ -260,7 +264,7 @@ const Reproctoring = () => {
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
                       {openModal ? (
-                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
                           <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
@@ -350,7 +354,7 @@ const Reproctoring = () => {
                       )}
 
                       {openModalConfirm ? (
-                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-10 z-[1000]">
                           <div className="absolute top-0 left-0 w-full h-full">
                             <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
                               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">

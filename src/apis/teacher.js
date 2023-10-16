@@ -39,7 +39,6 @@ const deleteTeacher = async (data) => {
 }
 
 const createTeacher = async (data) => {
-  console.log("🚀 Kha ne ~ file: teacher.js:47 ~ data:", data)
   try {
     const response = await apiInstance.post(`api/Proctoring`, {
       proctoringId: data.proctoringId,

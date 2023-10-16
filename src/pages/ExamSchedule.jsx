@@ -97,8 +97,6 @@ const ExamscheduleDashboard = () => {
   const localizer = momentLocalizer(moment)
 
   const eventStyleGetter = (event, start, end, isSelected) => {
-    console.log("🚀 Kha ne ~ file: ExamSchedule.jsx:116 ~ event:", event)
-
     const currentTime = new Date()
     const isEventInProgress =
       event.start <= currentTime && event.end >= currentTime
@@ -162,7 +160,7 @@ const ExamscheduleDashboard = () => {
             />
           </div>
           {openModal ? (
-            <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+            <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
               <div className="modal absolute w-[30%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                 <div className="modal-content ">
                   <div className="relativerounded-lg shadow bg-gray-700">

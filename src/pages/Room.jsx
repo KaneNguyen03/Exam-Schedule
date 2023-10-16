@@ -33,7 +33,6 @@ const Room = () => {
   const [currentClassroom, setCurrentClassroom] = useState({})
   const datacl = useSelector((state) => state.classroom)
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data
-  console.log("🚀 Kha ne ~ file: Room.jsx:36 ~ classrooms:", classrooms)
   const pagination = datacl?.paginations[classroomTypes.GET_CLASSROOMS]
   const popupSelect = useRef(null)
   const [openModalAdd, setOpenModalAdd] = useState(false)
