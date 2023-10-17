@@ -10,6 +10,9 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import teacherTypes from "/FPT/Hoc ki 5/SWP391/Exam_FE/Exam-Schedule/src/constants/teacherTypes";
+import { useSelector } from "react-redux";
+//import { components } from "react-select";
 
 ChartJS.register(
   CategoryScale,
@@ -32,25 +35,30 @@ function LineChart() {
     },
   };
 
-  const labels = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-  ];
+  const datate = useSelector((state) => state.teacher);
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data?.data;
+
+  const teacherCounts = {};
+  teachers?.forEach((teacher) => {
+    const name = teacher.proctoringName;
+    if (teacherCounts[name]) {
+      teacherCounts[name] += 1;
+    } else {
+      teacherCounts[name] = 1;
+    }
+  });
+
+  const labels = teachers?.map((teacher) => teacher.proctoringName);
+  const counts = Object.values(teacherCounts);
+  const compensations = counts.map((count) => count * 4.25);
 
   const data = {
     labels,
     datasets: [
       {
         fill: true,
-        label: "MAU",
-        data: labels.map(() => {
-          return Math.random() * 100 + 500;
-        }),
+        label: "compensations in semesters",
+        data: compensations,
         borderColor: "rgb(53, 162, 235)",
         backgroundColor: "rgba(53, 162, 235, 0.5)",
       },

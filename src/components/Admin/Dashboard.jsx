@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import BarChart from "../BarChart";
 import LineChart from "../Status/LineChart";
 import PieChart from "../Status/PieChart";
-import LoadingSpinner from "../../constants/commons/loading-spinner/LoadingSpinner";
+//import LoadingSpinner from "../../constants/commons/loading-spinner/LoadingSpinner";
 import { makeRoles } from "../../utils/common";
 import useAuth from "../../hooks/useAuth";
 
@@ -17,7 +17,7 @@ const Dashboard = ({
   majors,
   //semesters,
   allusers,
-  loadings,
+  //loadings,
 }) => {
   const { user } = useAuth();
   return (
@@ -77,17 +77,64 @@ const Dashboard = ({
               </div>
             </Link>
           </div>
-          <div className="flex first-letter:grid-cols-2 grid grid-cols-2 overflow-auto">
-            <div className="">
-              <div className="">
-                <p>Protoring</p>
+          <div className="grid grid-cols-2 overflow-auto">
+            <div className="lg:w-full">
+              <BarChart />
+              <p>Protoring</p>
+            </div>
+            <div className="object-contain  items-center">
+              <PieChart />
+              <p>Exam slot on semester</p>
+            </div>
+          </div>
+        </>
+      )}
+      {[...makeRoles([3, 4])].includes(user.roleId) && (
+        <>
+          <div className="flex flex-row justify-between mt-3 grid grid-cols-4">
+            <div className=" bg-white rounded-lg shadow-md ">
+              <h2 className="text-inherit font-bold p-4">Course</h2>
+              <p className="p-4">{courses?.length}</p>
+            </div>
+            <Link to="/examschedule">
+              <div className=" bg-white rounded-lg shadow-md">
+                <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
+                <p className="p-4">{examschedules?.length}</p>
               </div>
-              {/* <LineChart /> */}
+            </Link>
+            <div className=" bg-white rounded-lg shadow-md">
+              <h2 className="text-inherit font-bold p-4">Exam Slot</h2>
+              <p className="p-4">{examslots?.length}</p>
+            </div>
+            <div className=" bg-white rounded-lg shadow-md">
+              <h2 className="text-inherit font-bold p-4">Major</h2>
+              <p className="p-4">{majors?.length}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 overflow-auto">
+            <div className="">
+              <p>Protoring</p>
               <BarChart />
             </div>
-            <div className="">
-              <PieChart />
+            <div>
+              <LineChart />
             </div>
+          </div>
+        </>
+      )}
+      {[...makeRoles([5])].includes(user.roleId) && (
+        <>
+          <div className="flex flex-row justify-between mt-3 grid grid-cols-2">
+            <div className=" bg-white rounded-lg shadow-md ">
+              <h2 className="text-inherit font-bold p-4">Course</h2>
+              <p className="p-4">{courses?.length}</p>
+            </div>
+            <Link to="/examschedule">
+              <div className=" bg-white rounded-lg shadow-md">
+                <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
+                <p className="p-4">{examschedules?.length}</p>
+              </div>
+            </Link>
           </div>
         </>
       )}

@@ -8,13 +8,8 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-//////////////////////////
-//import { useEffect, useRef, useState } from "react";
 import teacherTypes from "../constants/teacherTypes";
 import { useSelector } from "react-redux";
-
-///////////////////////
-//import TitleCard from "../../../components/Cards/TitleCard";
 
 ChartJS.register(
   CategoryScale,
@@ -24,13 +19,11 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
 function BarChart() {
   const datate = useSelector((state) => state.teacher);
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data?.data;
 
   const teacherCounts = {};
-
   teachers?.forEach((teacher) => {
     const name = teacher.proctoringName;
     if (teacherCounts[name]) {

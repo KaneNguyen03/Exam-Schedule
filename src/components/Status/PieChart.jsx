@@ -44,6 +44,7 @@ function PieChart() {
     const semester = semesters?.find(
       (semester) => semester.semesterId === course.semesterId
     );
+
     const major = majors?.find((major) => major.majorId === semester.majorId);
 
     if (course && semester && major) {
@@ -88,11 +89,7 @@ function PieChart() {
     })),
   };
 
-  return (
-    <div>
-      <Pie options={options} data={data} />
-    </div>
-  );
+  return <Pie options={options} data={data} />;
 }
 
 export default PieChart;
