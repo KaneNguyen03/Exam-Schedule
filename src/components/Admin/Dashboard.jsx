@@ -22,122 +22,124 @@ const Dashboard = ({
   const { user } = useAuth();
   return (
     <div className="W-full items-center mt-4">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-      {[...makeRoles([1, 2])].includes(user.roleId) && (
-        <>
-          <div className="flex flex-row justify-between mt-8 grid grid-cols-4 ">
-            <Link to="/proctoring">
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">Proctoring</h2>
-                <p className="p-4">{teachers?.length}</p>
+      <main>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        {[...makeRoles([1, 2])].includes(user.roleId) && (
+          <>
+            <div className=" justify-between mt-8 grid grid-cols-4 ">
+              <Link to="/proctoring">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Proctoring</h2>
+                  <p className="p-4">{teachers?.length}</p>
+                </div>
+              </Link>
+              <Link to="/student">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">StudentList</h2>
+                  <p className="p-4">{students?.length}</p>
+                </div>
+              </Link>
+              <Link to="/room">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Classrooms</h2>
+                  <p className="p-4">{classrooms?.length}</p>
+                </div>
+              </Link>
+              <Link to="/alluser">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">User</h2>
+                  <p className="p-4">{allusers?.length}</p>
+                </div>
+              </Link>
+            </div>
+            <div className=" justify-between mt-3 grid grid-cols-4">
+              <Link to="/course">
+                <div className=" bg-white rounded-lg shadow-md ">
+                  <h2 className="text-inherit font-bold p-4">Course</h2>
+                  <p className="p-4">{courses?.length}</p>
+                </div>
+              </Link>
+              <Link to="/examschedule">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
+                  <p className="p-4">{examschedules?.length}</p>
+                </div>
+              </Link>
+              <Link to="/examslot">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Exam Slot</h2>
+                  <p className="p-4">{examslots?.length}</p>
+                </div>
+              </Link>
+              <Link to="/major">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Major</h2>
+                  <p className="p-4">{majors?.length}</p>
+                </div>
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 overflow-auto">
+              <div className="lg:w-full">
+                <BarChart />
+                <p>Protoring</p>
               </div>
-            </Link>
-            <Link to="/student">
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">StudentList</h2>
-                <p className="p-4">{students?.length}</p>
+              <div className="object-contain  items-center">
+                <PieChart />
+                <p>Exam slot on semester</p>
               </div>
-            </Link>
-            <Link to="/room">
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">Classrooms</h2>
-                <p className="p-4">{classrooms?.length}</p>
-              </div>
-            </Link>
-            <Link to="/alluser">
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">User</h2>
-                <p className="p-4">{allusers?.length}</p>
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-row justify-between mt-3 grid grid-cols-4">
-            <Link to="/course">
+            </div>
+          </>
+        )}
+        {[...makeRoles([3, 4])].includes(user.roleId) && (
+          <>
+            <div className="flex flex-row justify-between mt-3 grid grid-cols-4">
               <div className=" bg-white rounded-lg shadow-md ">
                 <h2 className="text-inherit font-bold p-4">Course</h2>
                 <p className="p-4">{courses?.length}</p>
               </div>
-            </Link>
-            <Link to="/examschedule">
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
-                <p className="p-4">{examschedules?.length}</p>
-              </div>
-            </Link>
-            <Link to="/examslot">
+              <Link to="/examschedule">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
+                  <p className="p-4">{examschedules?.length}</p>
+                </div>
+              </Link>
               <div className=" bg-white rounded-lg shadow-md">
                 <h2 className="text-inherit font-bold p-4">Exam Slot</h2>
                 <p className="p-4">{examslots?.length}</p>
               </div>
-            </Link>
-            <Link to="/major">
               <div className=" bg-white rounded-lg shadow-md">
                 <h2 className="text-inherit font-bold p-4">Major</h2>
                 <p className="p-4">{majors?.length}</p>
               </div>
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 overflow-auto">
-            <div className="lg:w-full">
-              <BarChart />
-              <p>Protoring</p>
             </div>
-            <div className="object-contain  items-center">
-              <PieChart />
-              <p>Exam slot on semester</p>
-            </div>
-          </div>
-        </>
-      )}
-      {[...makeRoles([3, 4])].includes(user.roleId) && (
-        <>
-          <div className="flex flex-row justify-between mt-3 grid grid-cols-4">
-            <div className=" bg-white rounded-lg shadow-md ">
-              <h2 className="text-inherit font-bold p-4">Course</h2>
-              <p className="p-4">{courses?.length}</p>
-            </div>
-            <Link to="/examschedule">
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
-                <p className="p-4">{examschedules?.length}</p>
+            <div className="grid grid-cols-2 overflow-auto">
+              <div className="">
+                <p>Protoring</p>
+                <BarChart />
               </div>
-            </Link>
-            <div className=" bg-white rounded-lg shadow-md">
-              <h2 className="text-inherit font-bold p-4">Exam Slot</h2>
-              <p className="p-4">{examslots?.length}</p>
-            </div>
-            <div className=" bg-white rounded-lg shadow-md">
-              <h2 className="text-inherit font-bold p-4">Major</h2>
-              <p className="p-4">{majors?.length}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 overflow-auto">
-            <div className="">
-              <p>Protoring</p>
-              <BarChart />
-            </div>
-            <div>
-              <LineChart />
-            </div>
-          </div>
-        </>
-      )}
-      {[...makeRoles([5])].includes(user.roleId) && (
-        <>
-          <div className="flex flex-row justify-between mt-3 grid grid-cols-2">
-            <div className=" bg-white rounded-lg shadow-md ">
-              <h2 className="text-inherit font-bold p-4">Course</h2>
-              <p className="p-4">{courses?.length}</p>
-            </div>
-            <Link to="/examschedule">
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
-                <p className="p-4">{examschedules?.length}</p>
+              <div>
+                <LineChart />
               </div>
-            </Link>
-          </div>
-        </>
-      )}
+            </div>
+          </>
+        )}
+        {[...makeRoles([5])].includes(user.roleId) && (
+          <>
+            <div className="flex flex-row justify-between mt-3 grid grid-cols-2">
+              <div className=" bg-white rounded-lg shadow-md ">
+                <h2 className="text-inherit font-bold p-4">Course</h2>
+                <p className="p-4">{courses?.length}</p>
+              </div>
+              <Link to="/examschedule">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
+                  <p className="p-4">{examschedules?.length}</p>
+                </div>
+              </Link>
+            </div>
+          </>
+        )}
+      </main>
     </div>
   );
 };

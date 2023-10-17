@@ -9,10 +9,10 @@ import {
 import { Pie } from "react-chartjs-2";
 ////////////////////////////////////////////////////////////////
 import { useSelector } from "react-redux";
-import examslotTypes from "/FPT/Hoc ki 5/SWP391/Exam_FE/Exam-Schedule/src/constants/examslotTypes";
-import semesterTypes from "/FPT/Hoc ki 5/SWP391/Exam_FE/Exam-Schedule/src/constants/semesterTypes";
-import courseTypes from "/FPT/Hoc ki 5/SWP391/Exam_FE/Exam-Schedule/src/constants/courseTypes";
-import majorTypes from "/FPT/Hoc ki 5/SWP391/Exam_FE/Exam-Schedule/src/constants/majorTypes";
+import examslotTypes from "../../constants/examslotTypes";
+import semesterTypes from "../../constants/semesterTypes";
+import courseTypes from "../../constants/courseTypes";
+import majorTypes from "../../constants/majorTypes";
 
 ////////////////////////////////
 

@@ -10,7 +10,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import teacherTypes from "/FPT/Hoc ki 5/SWP391/Exam_FE/Exam-Schedule/src/constants/teacherTypes";
+import teacherTypes from "../../constants/teacherTypes";
 import { useSelector } from "react-redux";
 //import { components } from "react-select";
 
