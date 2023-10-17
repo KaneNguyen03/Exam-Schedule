@@ -255,7 +255,7 @@ const ExamSlot = () => {
               Add
             </button>
             {openModalAdd ? (
-              <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+              <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
                 <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                   <div className="relativerounded-lg shadow bg-gray-700">
                     <button
@@ -374,6 +374,7 @@ const ExamSlot = () => {
                           onChange={handleDateChange}
                           dateFormat="dd-MM-yyyy"
                           className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white flex justify-start"
+                          minDate={maxDate}
                         />
                       </div>
                       <div>
@@ -530,7 +531,7 @@ const ExamSlot = () => {
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
                       {openModal ? (
-                        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-[1000]">
+                        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-10 z-[1000]">
                           <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
@@ -622,7 +623,8 @@ const ExamSlot = () => {
                                     Date
                                   </label>
                                   <ReactDatePicker
-                                    selected={selectedDate}
+                                    minDate={maxDate}
+                                    selected={new Date(currentExamslot.date)}
                                     onChange={handleDateChange}
                                     dateFormat="dd-MM-yyyy"
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -636,10 +638,11 @@ const ExamSlot = () => {
                                     options={timeOptions}
                                     isMulti={false}
                                     defaultValue={
-                                      selectedOption
+                                      timeOptions
                                         ? timeOptions.find(
                                             (option) =>
-                                              option.value === selectedOption
+                                              option.value[0] ===
+                                              currentExamslot?.startTime
                                           )
                                         : null
                                     }

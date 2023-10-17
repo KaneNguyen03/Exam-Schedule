@@ -25,7 +25,7 @@ const updateStudent = async (data) => {
       `api/StudentList/${data.studentListId}`,
       {
         studentListId: data.studentListId,
-        studentId: data.studentId,
+        listStudent: data.listStudent,
         courseId: data.courseId,
         status: "Active",
       }

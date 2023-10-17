@@ -5,7 +5,7 @@ import { useState } from "react"
 import Footer from "../components/Layout/Footer"
 import Header from "../components/Layout/Header"
 
-import userApi from "../apis/user"
+import LoadingAnimated from "../assets/loading_new.gif"
 
 const Login = () => {
   const { loading, signIn } = useAuth()
@@ -20,7 +20,7 @@ const Login = () => {
     e.preventDefault()
     const response = await signIn(email.trim().toLowerCase(), password.trim())
   }
-  
+
   const onHandleKeydown = (e) => {
     if (e.which === 32 && e.target.selectionStart === 0) {
       return false
@@ -32,6 +32,20 @@ const Login = () => {
       <Header />
       {/* <img src={bg1} className="w-full "></img> */}
       <div className="my-5 md:my-40 flex justify-center items-center flex-col text-center ">
+        {loading && (
+          <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+            <div className="absolute top-0 left-0 w-full h-full">
+              <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
+                <img
+                  src={LoadingAnimated}
+                  className="w-40 h-40"
+                  alt="Loading"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         <form
           onSubmit={handleSubmit}
           className="px-10 pt-4 pb-4 mb-4 box-border border-4 shadow-2xl shadow-slate-600 rounded-3xl md:w-96"
@@ -93,7 +107,6 @@ const Login = () => {
               Sign In
             </button>
           </div>
-        
         </form>
       </div>
       <Footer />

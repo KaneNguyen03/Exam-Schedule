@@ -26,6 +26,7 @@ import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
 
 import { v4 as uuidv4 } from "uuid";
+import { differenceInDays, parseISO } from "date-fns";
 
 const Reproctoring = () => {
   const dispatch = useDispatch();
@@ -258,7 +259,7 @@ const Reproctoring = () => {
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
                       {openModal ? (
-                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
                           <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
@@ -348,7 +349,7 @@ const Reproctoring = () => {
                       )}
 
                       {openModalConfirm ? (
-                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-40 z-[1000]">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-10 z-[1000]">
                           <div className="absolute top-0 left-0 w-full h-full">
                             <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
                               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -469,7 +470,11 @@ const Reproctoring = () => {
                         {examslot.status.toLowerCase() === "active" &&
                         currentUserExamslot.find(
                           (slot) => slot.examSlotId === examslot.examSlotId
-                        ) ? (
+                        ) &&
+                        differenceInDays(
+                          parseISO(examslot.date.substring(0, 10)),
+                          currentDate
+                        ) > 3 ? (
                           <button
                             type="button"
                             id="Delete"
@@ -517,7 +522,16 @@ const Reproctoring = () => {
                             Unavailable
                           </button>
                         ) : (
-                          <>-</>
+                          <>
+                            {" "}
+                            <button
+                              type="button"
+                              id="Delete"
+                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
+                            >
+                              Disabled
+                            </button>
+                          </>
                         )}
                       </>
                     </td>
