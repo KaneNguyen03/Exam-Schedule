@@ -107,7 +107,7 @@ const ExamscheduleDashboard = () => {
   const localizer = momentLocalizer(moment);
 
   const eventStyleGetter = (event, start, end, isSelected) => {
-    const currentTime = new Date();
+    const currentTime = new Date()
     const isEventInProgress =
       event.start <= currentTime && event.end >= currentTime;
     let backgroundColor = event.start < new Date() ? "#ccc" : "#dc3454";

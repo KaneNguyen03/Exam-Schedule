@@ -1,126 +1,122 @@
-import Sidebar from "../components/Layout/Sidebar"
-import { useDispatch, useSelector } from "react-redux"
-import { useEffect, useRef, useState } from "react"
-import semesterTypes from "../constants/semesterTypes"
-import { Pagination } from "react-headless-pagination"
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
-import { sizeOptions } from "../constants/commons/commons"
-import ReactSelect from "react-select"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
+import Sidebar from "../components/Layout/Sidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import semesterTypes from "../constants/semesterTypes";
+import { Pagination } from "react-headless-pagination";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import { sizeOptions } from "../constants/commons/commons";
+import ReactSelect from "react-select";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
 import {
   getAllSemesters,
   createSemester,
   updateSemester,
   deleteSemester,
-} from "../store/thunks/semester"
+} from "../store/thunks/semester";
 
-import majorTypes from "../constants/majorTypes"
-import { getAllMajors } from "../store/thunks/major"
-import { toast } from "react-toastify"
+import majorTypes from "../constants/majorTypes";
+import { getAllMajors } from "../store/thunks/major";
+import { toast } from "react-toastify";
 const SemesterDashboard = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const datase = useSelector((state) => state.semester)
-  const datamj = useSelector((state) => state.major)
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
-  const [selectedOption, setSelectedOption] = useState(null)
-  const [openModalAdd, setOpenModalAdd] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const datase = useSelector((state) => state.semester);
+  const datamj = useSelector((state) => state.major);
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   //const [selectedOptionAdd, setSelectedOptionAdd] = useState(null);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
 
   const [currentSemester, setCurrentSemester] = useState({
     semesterId: "",
     semesterName: "",
     course: "",
     majorId: "",
-  })
+  });
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keywords: "",
-  })
-  const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data
-  const popupSelect = useRef(null)
-  const [loadings, setLoading] = useState(true)
+  });
+  const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data;
+  const popupSelect = useRef(null);
+  const [loadings, setLoading] = useState(true);
   const options = majors?.map((major) => ({
     value: major.majorId,
     label: major.majorId + " : " + major.majorName,
-  }))
+  }));
 
-  const pagination = datase?.paginations[semesterTypes.GET_SEMESTERS]
-  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data
+  const pagination = datase?.paginations[semesterTypes.GET_SEMESTERS];
+  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
 
   const UpdateSemester = () => {
     try {
-     dispatch(updateSemester(currentSemester)) 
-     toast.success("Semester updated successfully")
+      dispatch(updateSemester(currentSemester));
+      toast.success("Semester updated successfully");
     } catch (error) {
-      toast.error("Error updating semester")
+      toast.error("Error updating semester");
     }
-    
-    setOpenModal(false)
-  }
+
+    setOpenModal(false);
+  };
   const AddSemester = () => {
     try {
-      dispatch(createSemester(currentSemester))
-      toast.success("Semester added successfully")
+      dispatch(createSemester(currentSemester));
+      toast.success("Semester added successfully");
     } catch (error) {
-      toast.error("Error adding semester")
+      toast.error("Error adding semester");
     }
-    
-    setOpenModalAdd(false)
-  }
+
+    setOpenModalAdd(false);
+  };
   const onDeleteSemester = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    }
+    };
     try {
-        dispatch(deleteSemester(req))
-        toast.success("Semester deleted successfully")
+      dispatch(deleteSemester(req));
+      toast.success("Semester deleted successfully");
     } catch (error) {
-      toast.error("Error deleting semester")
+      toast.error("Error deleting semester");
     }
-    
-  
-    setOpenModalConfirm(false)
+
+    setOpenModalConfirm(false);
     try {
-       setTimeout(() => dispatch(getAllSemesters(param)), 1000)
+      setTimeout(() => dispatch(getAllSemesters(param)), 1000);
     } catch (error) {
-      toast.error("Error getting semester")
+      toast.error("Error getting semester");
     }
-   
-  }
+  };
   const restoreSemester = (data) => {
     const req = {
       ...data,
       status: "Active",
+    };
+    try {
+      dispatch(deleteSemester(req));
+      toast.success("Semester restored successfully");
+    } catch (error) {
+      toast.error("Error restoring semester");
     }
     try {
-        dispatch(deleteSemester(req))
-        toast.success("Semester restored successfully")
+      setTimeout(() => dispatch(getAllSemesters(param)), 1000);
     } catch (error) {
-      toast.error("Error restoring semester")
+      toast.error("Error getting semester ");
     }
-  try {
-      setTimeout(() => dispatch(getAllSemesters(param)), 1000)
-  } catch (error) {
-    toast.error("Error getting semester ")
-  }
-  
-  }
+  };
   useEffect(() => {
     try {
-        dispatch(getAllSemesters(param))
+      dispatch(getAllSemesters(param));
     } catch (error) {
-      toast.error("Error getting semester")
+      toast.error("Error getting semester");
     }
-  
-  }, [dispatch, param])
+  }, [dispatch, param]);
 
   useEffect(() => {
     if (
@@ -129,26 +125,24 @@ const SemesterDashboard = () => {
       datase?.loadings[semesterTypes.DELETE_SEMESTER] ||
       datase?.loadings[semesterTypes.CREATE_SEMESTER]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [datase, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [datase, param]);
   useEffect(() => {
     try {
-       const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllSemesters(param))
-    }, 500) 
-       return () => clearTimeout(delayDebounceFn)
+      const delayDebounceFn = setTimeout(() => {
+        dispatch(getAllSemesters(param));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting semester")
+      toast.error("Error getting semester");
     }
-   try {
-       dispatch(getAllMajors({ page: 1, pageSize: 999 }))
-   } catch (error) {
-    toast.error("Error getting major")
-   }
- 
-
-  }, [param.keyword, dispatch, param])
+    try {
+      dispatch(getAllMajors({ page: 1, pageSize: 999 }));
+    } catch (error) {
+      toast.error("Error getting major");
+    }
+  }, [param.keyword, dispatch, param]);
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -180,7 +174,7 @@ const SemesterDashboard = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -266,14 +260,14 @@ const SemesterDashboard = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) })
-                          setIsShowSelect(false)
+                          setParam({ ...param, pageSize: Number(item.value) });
+                          setIsShowSelect(false);
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -293,9 +287,7 @@ const SemesterDashboard = () => {
                   <th scope="col" className="px-6 py-3">
                     Major Id
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                    Course
-                  </th>
+
                   <th scope="col" className="px-6 py-3">
                     Status
                   </th>
@@ -403,7 +395,7 @@ const SemesterDashboard = () => {
                                     isMulti={false}
                                     defaultValue={
                                       selectedOption
-                                        ? options.find(
+                                        ? options?.find(
                                             (option) =>
                                               option.value === selectedOption
                                           )
@@ -411,12 +403,12 @@ const SemesterDashboard = () => {
                                     }
                                     onChange={(selectedOption) => {
                                       // Update the selectedOption state
-                                      setSelectedOption(selectedOption)
+                                      setSelectedOption(selectedOption);
 
                                       setCurrentSemester({
                                         ...currentSemester,
                                         majorId: selectedOption.value,
-                                      })
+                                      });
                                     }}
                                   />
                                 </div>
@@ -521,12 +513,12 @@ const SemesterDashboard = () => {
                                     }
                                     onChange={(selectedOption) => {
                                       // Update the selectedOption state
-                                      setSelectedOption(selectedOption)
+                                      setSelectedOption(selectedOption);
 
                                       setCurrentSemester({
                                         ...currentSemester,
                                         majorId: selectedOption.value,
-                                      })
+                                      });
                                     }}
                                   />
                                 </div>
@@ -618,7 +610,7 @@ const SemesterDashboard = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{semester.majorId}</td>
-                    <td className="px-6 py-4">{semester.course}</td>
+
                     <td>
                       <>
                         {semester.status.toLowerCase() === "active" ? (
@@ -650,8 +642,8 @@ const SemesterDashboard = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentSemester(semester)
-                                  setOpenModalConfirm(true)
+                                  setCurrentSemester(semester);
+                                  setOpenModalConfirm(true);
                                 }
                               }
                             >
@@ -662,9 +654,9 @@ const SemesterDashboard = () => {
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal)
-                                setSelectedOption(semester.majorId)
-                                setCurrentSemester(semester)
+                                setOpenModal(!openModal);
+                                setSelectedOption(semester.majorId);
+                                setCurrentSemester(semester);
                               }}
                             >
                               Edit
@@ -700,7 +692,7 @@ const SemesterDashboard = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -770,7 +762,7 @@ const SemesterDashboard = () => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SemesterDashboard
+export default SemesterDashboard;
