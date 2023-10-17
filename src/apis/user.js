@@ -23,6 +23,7 @@ const signUp = async (email, username, password) => {
   return data
 }
 
+
 const getCurrentUser = async (token = localStorage.getItem(TOKEN_KEY)) => {
   try {
     const { data } = await apiInstance.get("api/Auth")
@@ -31,6 +32,8 @@ const getCurrentUser = async (token = localStorage.getItem(TOKEN_KEY)) => {
     console.log(error)
   }
 }
+
+
 
 const logOutApp = async () => {
   await localStorage.clear()

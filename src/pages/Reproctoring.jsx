@@ -26,7 +26,7 @@ import { color } from "../constants/commons/styled"
 import StatusButton from "../components/Status"
 
 import { v4 as uuidv4 } from "uuid"
-import { differenceInDays } from "date-fns"
+import { differenceInDays, parseISO } from "date-fns"
 import { toast } from "react-toastify"
 
 const Reproctoring = () => {
@@ -505,7 +505,11 @@ bgColor={color.blueLight}
                         {examslot.status.toLowerCase() === "active" &&
                         currentUserExamslot.find(
                           (slot) => slot.examSlotId === examslot.examSlotId
-                        ) ? (
+                        ) &&
+                        differenceInDays(
+                          parseISO(examslot.date.substring(0, 10)),
+                          currentDate
+                        ) > 3 ? (
                           <button
                             type="button"
                             id="Delete"
@@ -553,7 +557,16 @@ setOpenModal(!openModal)
                             Unavailable
                           </button>
                         ) : (
-                          <>-</>
+                          <>
+                            {" "}
+                            <button
+                              type="button"
+                              id="Delete"
+                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
+                            >
+                              Disabled
+                            </button>
+                          </>
                         )}
                       </>
                     </td>

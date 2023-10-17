@@ -1,46 +1,30 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Layout/Sidebar";
 import userApi from "../apis/user"; // Sử dụng `userApi` thay vì Axios
+import authApi from "../apis/auth";
+import { toast } from "react-toastify";
 const Profile = () => {
   const [user, setUser] = useState({
     username: "",
-    email: "",
-    roleId: "",
-    avatar: "",
-    //bio: "Đệ 5 cam",
-    status: "",
+    oldpassword: "",
+    newpassword: "",
   });
+
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
-  const saveChanges = async () => {
+
+  const updatePassword = async () => {
     try {
-      const updatedUserData = {
-        username: user.username,
-        email: user.email,
-        //bio: user.bio,
-        status: user.status,
-        roleId: user.roleID,
-      };
-      // Gọi API để cập nhật thông tin người dùng sử dụng `userApi`
-      const response = await userApi.editUser(
-        user.status,
-        user.email,
-        user.username,
-        user.roleId
-      );
-      // Xử lý kết quả response ở đây
-      if (response) {
-        console.log("Update successful:", response);
-        setIsEditing(false);
-      } else {
-        setIsEditing(false); // Kết thúc chế độ chỉnh sửa sau khi cập nhật thành công
-      }
+      await authApi.changePassword(user);
+      toast.success("Updated password!");
     } catch (error) {
-      console.error("Error updating user:", error);
+      toast.error("Wrong password!");
     }
+    setUser({ ...user, oldpassword: "", newPassword: "" });
   };
+
   useEffect(() => {
     // Gọi API để lấy thông tin người dùng sử dụng `userApi`
     userApi
@@ -57,118 +41,106 @@ const Profile = () => {
       <Sidebar />
       <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
         <div>
-          <header  className="header bg-white shadow py-4 px-4">
+          <header className="bg-black p-4 text-white">
             <h1 className="text-2xl font-semibold">My Profile</h1>
-           
           </header>
           <main className="container mx-auto p-4">
-            <div className="flex">
-              <div className="w-1/3 p-4">
+            <div className="flex flex-col">
+              <div className="w-full p-4">
                 <div className="bg-white rounded-lg p-4 shadow-lg">
-                  <div className="text-center">
-                    <img
-                      src={
-                        "https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg"
-                      }
-                      alt={`${user.roleId}'s profile`}
-                      className="w-32 h-32 mx-auto rounded-full"
-                    />
-                    {!isEditing ? (
-                      <div>
-                        <h2 className="text-2xl font-semibold mt-2">
-                          {user.username}
-                        </h2>
-                        <p className="text-gray-500">{user.email}</p>
-                        <p className="text-gray-500">{user.roleId}</p>
-                        <p
-                          className={`text-${
-                            user.status === "Active" ? "green" : "red"
-                          }-500`}
-                        >
-                          Status: {user.status}
-                        </p>
+                  <div className="mt-4 flex ">
+                    <div className="w-1/3 p-4">
+                      <div className="bg-white rounded-lg p-4 shadow-lg">
+                        <div className="text-center">
+                          <img
+                            src={
+                              "https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg"
+                            }
+                            alt={`${user.roleId}'s profile`}
+                            className="w-32 h-32 mx-auto rounded-full"
+                          />
+                          {!isEditing ? (
+                            <div>
+                              <h2 className="text-2xl font-semibold mt-2">
+                                {user.username}
+                              </h2>
+                              <p className="text-gray-500">{user.email}</p>
+                              <p className="text-gray-500">{user.roleId}</p>
+                              <p
+                                className={`text-${
+                                  user.status === "Active" ? "green" : "red"
+                                }-500`}
+                              >
+                                Status: {user.status}
+                              </p>
+                            </div>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
                       </div>
-                    ) : (
-                      <div>
-                        <input
-                          type="text"
-                          placeholder="Full Name"
-                          className="w-full border rounded-md p-2 mb-2"
-                          value={user.username}
-                          readOnly
-                          // onChange={(e) =>
-                          //   setUser({ ...user, username: e.target.value })
-                          //}
-                        />
-                        <input
-                          type="email"
-                          placeholder="Email"
-                          className="w-full border rounded-md p-2"
-                          value={user.email}
-                          onChange={(e) =>
-                            setUser({ ...user, email: e.target.value })
-                          }
-                        />
-                        <input
-                          type="text"
-                          placeholder="Roles"
-                          className="w-full border rounded-md p-2"
-                          value={user.roleId}
-                          readOnly
-                          // onChange={(e) =>
-                          //   setUser({ ...user, roleId: e.target.value })
-                          //}
-                        />
-                        <select
-                          value={user.status}
-                          readOnly
-                          // onChange={(e) =>
-                          //   setUser({ ...user, status: e.target.value })
-                          // }
-                          className="w-full border rounded-md p-2"
-                        >
-                          <option value="Active">Active</option>
-                          <option value="Inactive">Inactive</option>
-                        </select>
-                        
+                    </div>
+                    <div className="w-2/3 p-4">
+                      <h3 className="text-lg font-semibold w-full mb-5">
+                        About Me
+                      </h3>
+                      <div className="p-12 mx-4 w-[80%]">
+                        <div className="">
+                          <div className="flex justify-between  mb-3">
+                            <label className=" text-sm font-medium  text-black flex">
+                              Username
+                            </label>
+                            <input
+                              className=" border  text-sm rounded-lg inline-block w-1/2 p-2.5 border-gray-500 placeholder-gray-400 text-black"
+                              value={user.username}
+                              readOnly
+                            />
+                          </div>
+                          <div className="flex justify-between  mb-3">
+                            <label className=" text-sm font-medium text-black flex">
+                              Password
+                            </label>
+                            <input
+                              type="password"
+                              placeholder=""
+                              className=" border text-sm rounded-lg  w-1/2 p-2.5 border-gray-500 placeholder-gray-400 text-black"
+                              onChange={(e) =>
+                                setUser({
+                                  ...user,
+                                  oldPassword: e.target.value,
+                                })
+                              }
+                              value={user.oldpassword}
+                            />
+                          </div>
+                          <div className="flex justify-between mb-3">
+                            <label className=" text-sm font-medium text-black flex">
+                              New Password
+                            </label>
+                            <input
+                              type="password"
+                              className=" border text-sm rounded-lg block w-1/2 p-2.5   border-gray-500 placeholder-gray-400 text-black"
+                              onChange={(e) =>
+                                setUser({
+                                  ...user,
+                                  newPassword: e.target.value,
+                                })
+                              }
+                              value={user.newPassword}
+                            />
+                          </div>
+                          <div className="">
+                            <button
+                              type="submit"
+                              className=" text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 mt-2 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
+                              onClick={() => updatePassword()}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                  <div>
-                  {!isEditing ? (
-              <button
-                onClick={toggleEdit}
-                className="bg-yellow-500 hover:bg-yellow-700 text-white py-1 px-2 rounded-md ml-2 "
-              >
-                Edit
-              </button>
-            ) : (
-              <button
-                onClick={saveChanges}
-                className="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded-md ml-2"
-              >
-                Save
-              </button>
-            )}
-                  </div>
-                </div>
-              </div>
-              <div className="w-2/3 p-4">
-                <div className="bg-white rounded-lg p-4 shadow-lg">
-                  <div className="mt-4">
-                    <h3 className="text-xl font-semibold">About Me</h3>
-                    {/* {!isEditing ? (
-                      <p className="text-gray-700">{user.bio}</p>
-                    ) : (
-                      <textarea
-                        placeholder="Bio"
-                        className="w-full border rounded-md p-2"
-                        value={user.bio}
-                        onChange={(e) =>
-                          setUser({ ...user, bio: e.target.value })
-                        }
-                      />
-                    )} */}
+                    </div>
                   </div>
                 </div>
               </div>

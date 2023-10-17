@@ -385,7 +385,7 @@ const Room = () => {
                         <></>
                       )}
                       {openModalAdd ? (
-                        <div className="modal absolute top-5 w-[30%]">
+                        <div className="modal absolute top-5 w-[30%] z-20">
                           <div className="modal-content ">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button

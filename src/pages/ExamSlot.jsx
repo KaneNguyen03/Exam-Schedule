@@ -43,6 +43,7 @@ const ExamSlot = () => {
     keyword: "",
   })
   const [currentExamslot, setCurrentExamslot] = useState({})
+
   const dataexsl = useSelector((state) => state.examslot)
   const datate = useSelector((state) => state.teacher)
   const datacl = useSelector((state) => state.classroom)
@@ -66,7 +67,9 @@ const ExamSlot = () => {
   })
   const [loadings, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState(null)
-
+  const today = new Date()
+  const maxDate = new Date(today)
+  maxDate.setDate(today.getDate() + 7)
   const options = teachers?.map((teacher) => ({
     value: teacher.proctoringId,
     label: teacher.proctoringId + " : " + teacher.proctoringName,
@@ -432,6 +435,7 @@ const ExamSlot = () => {
                           onChange={handleDateChange}
                           dateFormat="dd-MM-yyyy"
                           className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white flex justify-start"
+                          minDate={maxDate}
                         />
                       </div>
                       <div>
@@ -716,7 +720,8 @@ const ExamSlot = () => {
                                     Date
                                   </label>
                                   <ReactDatePicker
-                                    selected={selectedDate}
+                                    minDate={maxDate}
+                                    selected={new Date(currentExamslot.date)}
                                     onChange={handleDateChange}
                                     dateFormat="dd-MM-yyyy"
                                     className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
@@ -730,10 +735,11 @@ const ExamSlot = () => {
                                     options={timeOptions}
                                     isMulti={false}
                                     defaultValue={
-                                      selectedOption
+                                      timeOptions
                                         ? timeOptions.find(
                                             (option) =>
-                                              option.value === selectedOption
+                                              option.value[0] ===
+                                              currentExamslot?.startTime
                                           )
                                         : null
                                     }
