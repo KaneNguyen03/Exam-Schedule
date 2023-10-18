@@ -27,8 +27,6 @@ import { createExamschedule } from "../store/thunks/examschedule"
 import { v4 as uuidv4 } from "uuid"
 import classroomTypes from "../constants/classroomTypes"
 import { getAllClassrooms } from "../store/thunks/classroom"
-import courseTypes from "../constants/courseTypes"
-import { getAllCourses } from "../store/thunks/course"
 import { toast } from "react-toastify"
 
 const ExamSlot = () => {
@@ -47,23 +45,20 @@ const ExamSlot = () => {
   const dataexsl = useSelector((state) => state.examslot)
   const datate = useSelector((state) => state.teacher)
   const datacl = useSelector((state) => state.classroom)
-  const dataco = useSelector((state) => state.course)
+
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
   const popupSelect = useRef(null)
   const [openModalAdd, setOpenModalAdd] = useState(false)
   const [addData, setAddData] = useState({
     examSlotId: "",
     examSlotName: "",
-    courseId: "",
     proctoringId: "",
     date: "",
     startTime: "",
     endTime: "",
-  
   })
   const [loadings, setLoading] = useState(true)
   const [selectedOption, setSelectedOption] = useState(null)
@@ -73,11 +68,6 @@ const ExamSlot = () => {
   const options = teachers?.map((teacher) => ({
     value: teacher.proctoringId,
     label: teacher.proctoringId + " : " + teacher.proctoringName,
-  }))
-
-  const optionsCourse = courses?.map((course) => ({
-    value: course.courseId,
-    label: course.courseId + " : " + course.courseName,
   }))
 
   //setup DATE selection
@@ -95,41 +85,41 @@ const ExamSlot = () => {
   }
   const UpdateExamslot = () => {
     try {
-         dispatch(updateExamslot(currentExamslot))
-         toast.success("Examslot updated successfully")
+      dispatch(updateExamslot(currentExamslot))
+      toast.success("Examslot updated successfully")
     } catch (error) {
       toast.error("Error updating examslot")
     }
- 
+
     setOpenModal(false)
   }
 
   const AddExamslot = () => {
     try {
-       dispatch(createExamslot(addData))
-       toast.success("Examslot added successfully")
+      dispatch(createExamslot(addData))
+      toast.success("Examslot added successfully")
     } catch (error) {
       toast.error("Error adding examslot")
     }
-   try {
-     setTimeout(
-      () =>
-        dispatch(
-          createExamschedule({
-            status: "Active",
-            examScheduleId: uuidv4(),
-            classroomId:
-              classrooms[Math.floor(Math.random() * classrooms.length)]
-                .classroomId,
-            examSlotId: addData.examSlotId,
-          })
-        ),
-      1000
-    )
-   } catch (error) {
-    toast.error("Error creating examschedule")
-   }
-   
+    try {
+      setTimeout(
+        () =>
+          dispatch(
+            createExamschedule({
+              status: "Active",
+              examScheduleId: uuidv4(),
+              classroomId:
+                classrooms[Math.floor(Math.random() * classrooms.length)]
+                  .classroomId,
+              examSlotId: addData.examSlotId,
+            })
+          ),
+        1000
+      )
+    } catch (error) {
+      toast.error("Error creating examschedule")
+    }
+
     setOpenModalAdd(false)
   }
 
@@ -144,14 +134,13 @@ const ExamSlot = () => {
     } catch (error) {
       toast.error("Error deleting examslot")
     }
-    
+
     setOpenModalConfirm(false)
     try {
-       setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+      setTimeout(() => dispatch(getAllExamslots(param)), 1000)
     } catch (error) {
       toast.error("Error getting examslot")
     }
-   
   }
   const restoreExamslot = (data) => {
     const req = {
@@ -165,11 +154,10 @@ const ExamSlot = () => {
       toast.error("Error restoring examslot")
     }
     try {
-       setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+      setTimeout(() => dispatch(getAllExamslots(param)), 1000)
     } catch (error) {
       toast.error("Error getting examslot ")
     }
-   
   }
   useEffect(() => {
     if (
@@ -185,9 +173,9 @@ const ExamSlot = () => {
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllExamslots(param))
-    }, 500)
-    return () => clearTimeout(delayDebounceFn)
+        dispatch(getAllExamslots(param))
+      }, 500)
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
       toast.error("Error getting examslot")
     }
@@ -196,34 +184,20 @@ const ExamSlot = () => {
     } catch (error) {
       toast.error("Error getting teacher")
     }
-    
-    
-  }, [param.keyword, dispatch, param])
+  }, [dispatch, param])
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
-    }, 500)
+        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
+      }, 500)
 
-    return () => clearTimeout(delayDebounceFn)
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
       toast.error("Error getting exam rooms")
     }
-    
   }, [dispatch])
 
-  useEffect(() => {
-    try {
-       const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllCourses({ page: 1, pageSize: 999 }))
-    }, 500)
-    return () => clearTimeout(delayDebounceFn)
-    } catch (error) {
-      toast.error("Error getting courses")
-    }
-   
-  }, [dispatch])
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -392,26 +366,6 @@ const ExamSlot = () => {
                           }}
                         />
                       </div>
-                      <div>
-                        <label className="mb-2 text-sm font-medium  text-white flex">
-                          Course
-                        </label>
-                        <ReactSelect
-                          className="text-sm text-start"
-                          options={optionsCourse}
-                          isMulti={false}
-                          onChange={(data) => {
-                            // Update the selectedOption state
-                            setSelectedOption(
-                              selectedOption ? selectedOption.value : null
-                            )
-                            setAddData({
-                              ...addData,
-                              courseId: data.value,
-                            })
-                          }}
-                        />
-                      </div>
                       {/* <div>
                         <label className="mb-2 text-sm font-medium  text-white flex">
                           date
@@ -564,9 +518,7 @@ const ExamSlot = () => {
                   <th scope="col" className="px-6 py-3">
                     proctoringId
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                    Course
-                  </th>
+
                   <th scope="col" className="px-6 py-3">
                     date
                   </th>
@@ -650,39 +602,6 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    Course
-                                  </label>
-                                  <ReactSelect
-                                    options={optionsCourse}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? optionsCourse.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentExamslot((prevExamslot) => ({
-                                        ...prevExamslot,
-                                        courseId: selectedOption
-                                          ? selectedOption.value
-                                          : null,
-                                      }))
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      )
-                                    }}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
                                     proctoring id
                                   </label>
                                   <ReactSelect
@@ -714,7 +633,7 @@ const ExamSlot = () => {
                                     }}
                                   />
                                 </div>
-                                
+
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     Date
@@ -874,7 +793,6 @@ const ExamSlot = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{examslot.proctoringId}</td>
-                    <td className="px-6 py-4">{examslot.courseId}</td>
                     <td className="px-6 py-4">
                       {moment(examslot.date).format("DD/MM/YYYY")}
                     </td>
@@ -979,7 +897,7 @@ const ExamSlot = () => {
                 ))}
               </tbody>
             </table>
-            <div className="sticky bottom-0 bg-white p-2">
+            <div className="sticky bottom-0 bg-white p-2 -z-10">
               {examslots?.data?.length ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}
