@@ -28,6 +28,7 @@ import { v4 as uuidv4 } from "uuid"
 import classroomTypes from "../constants/classroomTypes"
 import { getAllClassrooms } from "../store/thunks/classroom"
 import { toast } from "react-toastify"
+import { differenceInDays, parseISO } from "date-fns"
 
 const ExamSlot = () => {
   const dispatch = useDispatch()
@@ -61,6 +62,7 @@ const ExamSlot = () => {
     endTime: "",
   })
   const [loadings, setLoading] = useState(true)
+  const currentDate = new Date()
   const [selectedOption, setSelectedOption] = useState(null)
   const today = new Date()
   const maxDate = new Date(today)
@@ -824,7 +826,11 @@ const ExamSlot = () => {
                     </td>
                     <td>
                       <>
-                        {examslot.status === "Active" ? (
+                        {examslot.status === "Active" &&
+                        differenceInDays(
+                          parseISO(examslot.date.substring(0, 10)),
+                          currentDate
+                        ) > 0 ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
@@ -835,6 +841,16 @@ const ExamSlot = () => {
                             color={color.red}
                             bgColor={color.redLight}
                             title="Inactive"
+                          />
+                        ) : examslot.status.toLowerCase() === "active" &&
+                          differenceInDays(
+                            parseISO(examslot.date.substring(0, 10)),
+                            currentDate
+                          ) < 0 ? (
+                          <StatusButton
+                            color={color.yellow}
+                            bgColor={color.yellowLight}
+                            title="Completed"
                           />
                         ) : (
                           <>-</>
