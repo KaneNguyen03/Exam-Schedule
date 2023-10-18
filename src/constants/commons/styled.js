@@ -11,8 +11,8 @@ export const color = {
   gray: "#808080",
   grayLight: "#d9d9d9",
 
-  yellow: "#808080",
-  yellowLight: "#e2e2c0",
+  yellow: "#FFFF00",
+  yellowLight: "#fca130",
 
   opacity: "#8083A3",
   primary: "#171721",

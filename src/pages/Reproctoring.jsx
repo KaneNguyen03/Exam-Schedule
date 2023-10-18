@@ -51,7 +51,6 @@ const Reproctoring = () => {
     return teacher.proctoringName === user.username
   })
 
-
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
   const popupSelect = useRef(null)
   const currentDate = new Date()
@@ -465,18 +464,34 @@ const Reproctoring = () => {
                     <td>
                       <>
                         {examslot.status.toLowerCase() === "active" &&
-                        examslot.proctoringId ? (
+                        differenceInDays(
+                          parseISO(examslot.date.substring(0, 10)),
+                          currentDate
+                        ) > 0 ? (
                           <StatusButton
                             color={color.blue}
                             bgColor={color.blueLight}
                             title="Enrolled"
                           />
                         ) : examslot.status.toLowerCase() === "active" &&
-                          !examslot.proctoringId ? (
+                          differenceInDays(
+                            parseISO(examslot.date.substring(0, 10)),
+                            currentDate
+                          ) >= 0 ? (
                           <StatusButton
                             color={color.green}
                             bgColor={color.greenLight}
                             title="Available"
+                          />
+                        ) : examslot.status.toLowerCase() === "active" &&
+                          differenceInDays(
+                            parseISO(examslot.date.substring(0, 10)),
+                            currentDate
+                          ) < 0 ? (
+                          <StatusButton
+                            color={color.yellow}
+                            bgColor={color.yellowLight}
+                            title="Completed"
                           />
                         ) : examslot?.status.toLowerCase() === "inactive" ? (
                           <StatusButton
