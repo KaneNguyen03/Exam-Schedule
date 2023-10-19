@@ -1,36 +1,47 @@
 // hooks
-import useAuth from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth"
 
-import { useState } from "react";
-import Footer from "../components/Layout/Footer";
-import Header from "../components/Layout/Header";
+import { useState } from "react"
+import Footer from "../components/Layout/Footer"
+import Header from "../components/Layout/Header"
 
-import LoadingAnimated from "../assets/loading_new.gif";
+import LoadingAnimated from "../assets/loading_new.gif"
+import { ToastContainer } from "react-toastify"
 
 const Login = () => {
-  const { loading, signIn } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { loading, signIn } = useAuth()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [inputError, setInputError] = useState({
     email: false,
     password: false,
-  });
+  })
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await signIn(email.trim().toLowerCase(), password.trim());
-  };
+    e.preventDefault()
+    await signIn(email.trim().toLowerCase(), password.trim())
+  }
 
   const onHandleKeydown = (e) => {
     if (e.which === 32 && e.target.selectionStart === 0) {
-      return false;
+      return false
     }
-  };
+  }
 
   return (
     <div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Header />
-
       <div className="my-5 md:my-40 flex justify-center items-center flex-col text-center ">
         {loading && (
           <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
@@ -111,7 +122,7 @@ const Login = () => {
       </div>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
