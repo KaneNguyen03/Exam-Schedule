@@ -17,12 +17,12 @@ const updateExamslot = async (data) => {
     const response = await apiInstance.put(`api/ExamSlot/${data.examSlotId}`, {
       examSlotId: data.examSlotId,
       examSlotName: data.examSlotName,
-      proctoringId: data.proctoringId,
+      listProctoring: data.listProctoring,
       date: oneDayLater,
       startTime: data.startTime,
       endTime: data.endTime,
       status: "Active",
-      courseId: data.courseId
+      courseId: data.courseId,
     })
     return response
   } catch (error) {
@@ -53,7 +53,7 @@ const createExamslot = async (data) => {
       startTime: data.startTime,
       endTime: data.endTime,
       status: "Active",
-      courseId: data.courseId,
+      listProctoring: data.listProctoring ? data.listProctoring : [],
     })
     return response
   } catch (error) {

@@ -47,9 +47,9 @@ const Reproctoring = () => {
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
 
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
-  const currentUserExamslot = teachers?.filter((teacher) => {
-    return teacher.proctoringName === user.username
-  })
+  const currentUserExamslot = examslots?.data?.filter((item) =>
+    item.listProctoring.find((item) => item?.proctoringName === user.username)
+  )
 
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
   const popupSelect = useRef(null)
@@ -59,21 +59,42 @@ const Reproctoring = () => {
 
   const UpdateExamslot = async () => {
     try {
-      const result = await dispatch(
-        createTeacher({
-          proctoringId: uuidv4(),
-          proctoringName: user.username,
-          examSlotId: currentExamslot.examSlotId,
-        })
+      const temp = teachers.find(
+        (item) => item.proctoringName === user.username
       )
+      if (!temp) {
+        const result = await dispatch(
+          createTeacher({
+            proctoringId: uuidv4(),
+            proctoringName: user.username,
+            examSlotId: currentExamslot.examSlotId,
+          })
+        )
+        const newListProctoring = [
+          ...currentExamslot.listProctoring,
+          result?.payload?.data,
+        ]
+        dispatch(
+          updateExamslot({
+            ...currentExamslot,
+            listProctoring: newListProctoring,
+          })
+        )
+        toast.success("exam slot registered successfully")
+      }
 
-      dispatch(
-        updateExamslot({
-          ...currentExamslot,
-          proctoringId: result?.payload?.data?.proctoringId,
-        })
-      )
-      toast.success("exam slot registered successfully")
+      try {
+        const newListProctoring = [...currentExamslot.listProctoring, temp]
+        dispatch(
+          updateExamslot({
+            ...currentExamslot,
+            listProctoring: newListProctoring,
+          })
+        )
+        toast.success("exam slot registered successfully")
+      } catch (err) {
+        toast.error("Error registering examslot")
+      }
     } catch (error) {
       toast.error("Error registering examslot")
     }
@@ -82,22 +103,19 @@ const Reproctoring = () => {
   }
 
   const onDeleteRegister = (data) => {
-    const req = {
-      ...data,
-      productoringId: "",
-    }
     try {
-      dispatch(deleteTeacher(data.proctoringId))
-      toast.success("Register exam slot cancelled successfully")
-    } catch (error) {
-      toast.error("Error deleting register")
+      const newListProctoring = [...currentExamslot.listProctoring].filter(
+        (item) => item.proctoringName !== user.username
+      )
+      const req = {
+        ...data,
+        listProctoring: newListProctoring,
+      }
+      dispatch(updateExamslot(req))
+      toast.success("exam slot registered successfully")
+    } catch (err) {
+      toast.error("Error registering examslot")
     }
-    try {
-      setTimeout(() => dispatch(deleteExamslot(req)), 1000)
-    } catch (error) {
-      toast.error("Error deleting examslot")
-    }
-
     setOpenModalConfirm(false)
   }
 
@@ -467,7 +485,10 @@ const Reproctoring = () => {
                         differenceInDays(
                           parseISO(examslot.date.substring(0, 10)),
                           currentDate
-                        ) > 0 ? (
+                        ) >= 0 &&
+                        currentUserExamslot?.find(
+                          (slot) => slot.examSlotId === examslot.examSlotId
+                        ) ? (
                           <StatusButton
                             color={color.blue}
                             bgColor={color.blueLight}

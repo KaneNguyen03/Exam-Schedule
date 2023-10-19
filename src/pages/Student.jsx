@@ -39,7 +39,7 @@ const Student = () => {
   const [openModalAdd, setOpenModalAdd] = useState(false)
   const [addData, setAddData] = useState({
     studentListId: "",
-    studentId: "",
+    listStudent: [],
     courseId: "",
   })
 
@@ -51,12 +51,17 @@ const Student = () => {
     email: student.email,
   }))
   const [selectedOption, setSelectedOption] = useState(null)
+  console.log(
+    "🚀 Kha ne ~ file: Student.jsx:54 ~ selectedOption:",
+    selectedOption
+  )
   const listStudent = selectedOption?.map((item) => {
     return {
       username: item.value,
       email: item.email,
     }
   })
+  console.log("🚀 Kha ne ~ file: Student.jsx:60 ~ listStudent:", listStudent)
 
   const [loadings, setLoading] = useState(true)
 
@@ -367,6 +372,7 @@ const Student = () => {
                                               " - " +
                                               item.email,
                                             value: item.username,
+                                            email: item.email,
                                           }
                                         }
                                       )}

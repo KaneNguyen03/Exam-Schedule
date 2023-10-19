@@ -96,7 +96,6 @@ const ExamscheduleDashboard = () => {
         status: item.status,
       };
     });
-  console.log(convertDataExamSlots);
   //setup DATE selection
   const [selectedDate, setSelectedDate] = useState(null);
 

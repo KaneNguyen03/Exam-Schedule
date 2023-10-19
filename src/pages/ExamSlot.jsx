@@ -60,6 +60,7 @@ const ExamSlot = () => {
     date: "",
     startTime: "",
     endTime: "",
+    listProctoring: [],
   })
   const [loadings, setLoading] = useState(true)
   const currentDate = new Date()
@@ -103,24 +104,25 @@ const ExamSlot = () => {
     } catch (error) {
       toast.error("Error adding examslot")
     }
-    try {
-      setTimeout(
-        () =>
-          dispatch(
-            createExamschedule({
-              status: "Active",
-              examScheduleId: uuidv4(),
-              classroomId:
-                classrooms[Math.floor(Math.random() * classrooms.length)]
-                  .classroomId,
-              examSlotId: addData.examSlotId,
-            })
-          ),
-        1000
-      )
-    } catch (error) {
-      toast.error("Error creating examschedule")
-    }
+    // try {
+    //   setTimeout(
+    //     () =>
+    //       dispatch(
+    //         createExamschedule({
+    //           status: "Active",
+    //           examScheduleId: uuidv4(),
+    //           classroomId:
+    //             classrooms[Math.floor(Math.random() * classrooms.length)]
+    //               .classroomId,
+    //           examSlotId: addData.examSlotId,
+    //           courseId: addData?.courseId
+    //         })
+    //       ),
+    //     1000
+    //   )
+    // } catch (error) {
+    //   toast.error("Error creating examschedule")
+    // }
 
     setOpenModalAdd(false)
   }
