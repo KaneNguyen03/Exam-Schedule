@@ -56,12 +56,12 @@ const ExamSlot = () => {
   const [addData, setAddData] = useState({
     examSlotId: "",
     examSlotName: "",
-    proctoringId: "",
     date: "",
     startTime: "",
     endTime: "",
     listProctoring: [],
   })
+
   const [loadings, setLoading] = useState(true)
   const currentDate = new Date()
   const [selectedOption, setSelectedOption] = useState(null)
@@ -69,8 +69,8 @@ const ExamSlot = () => {
   const maxDate = new Date(today)
   maxDate.setDate(today.getDate() + 7)
   const options = teachers?.map((teacher) => ({
-    value: teacher.proctoringId,
-    label: teacher.proctoringId + " : " + teacher.proctoringName,
+    value: teacher,
+    label: teacher.proctoringName,
   }))
 
   //setup DATE selection
@@ -194,6 +194,7 @@ const ExamSlot = () => {
     try {
       const delayDebounceFn = setTimeout(() => {
         dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
+        dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
       }, 500)
 
       return () => clearTimeout(delayDebounceFn)
@@ -357,15 +358,18 @@ const ExamSlot = () => {
                         <ReactSelect
                           className="text-sm text-start"
                           options={options}
-                          isMulti={false}
+                          isMulti={true}
                           onChange={(data) => {
+                            const newListProctoring = data.map(
+                              (item) => item.value
+                            )
                             // Update the selectedOption state
                             setSelectedOption(
                               selectedOption ? selectedOption.value : null
                             )
                             setAddData({
                               ...addData,
-                              proctoringId: data.value,
+                              listProctoring: newListProctoring,
                             })
                           }}
                         />
@@ -610,28 +614,28 @@ const ExamSlot = () => {
                                   </label>
                                   <ReactSelect
                                     options={options}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
+                                    isMulti={true}
+                                    defaultValue={currentExamslot.listProctoring.map(
+                                      (proctoring) => ({
+                                        value: proctoring.proctoringName,
+                                        label: proctoring.proctoringName,
+                                      })
+                                    )}
                                     onChange={(selectedOption) => {
                                       // Update the proctoringLocation in the currentTeacher state
+                                      const newListProctoring =
+                                        selectedOption.map((item) => item.value)
                                       setCurrentExamslot((prevExamslot) => ({
                                         ...prevExamslot,
-                                        proctoringId: selectedOption
-                                          ? selectedOption.value
+                                        listProctoring: newListProctoring
+                                          ? newListProctoring
                                           : null,
                                       }))
 
                                       // Update the selectedOption state
                                       setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
+                                        newListProctoring
+                                          ? newListProctoring
                                           : null
                                       )
                                     }}
@@ -796,7 +800,11 @@ const ExamSlot = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-6 py-4">{examslot.proctoringId}</td>
+                    <td className="px-6 py-4">
+                      {examslot.listProctoring
+                        .map((item) => item.proctoringName)
+                        .join(", ")}
+                    </td>
                     <td className="px-6 py-4">
                       {moment(examslot.date).format("DD/MM/YYYY")}
                     </td>
@@ -830,7 +838,7 @@ const ExamSlot = () => {
                       <>
                         {examslot.status === "Active" &&
                         differenceInDays(
-                          parseISO(examslot.date.substring(0, 10)),
+                          parseISO(examslot?.date?.substring(0, 10)),
                           currentDate
                         ) > 0 ? (
                           <StatusButton

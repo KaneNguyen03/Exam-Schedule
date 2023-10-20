@@ -48,7 +48,6 @@ const createExamslot = async (data) => {
     const response = await apiInstance.post(`api/ExamSlot`, {
       examSlotId: data.examSlotId,
       examSlotName: data.examSlotName,
-      proctoringId: data.proctoringId,
       date: data.date,
       startTime: data.startTime,
       endTime: data.endTime,
