@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import BarChart from "../BarChart";
 import LineChart from "../Status/LineChart";
@@ -14,11 +16,23 @@ const Dashboard = ({
   examschedules,
   examslots,
   majors,
-  //semesters,
   allusers,
-  //loadings,
 }) => {
+  const location = useLocation();
+  const history = useNavigate();
+  const [refreshKey, setRefreshKey] = useState(0);
   const { user } = useAuth();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const refreshParam = searchParams.get("refresh");
+    if (refreshParam) {
+      setRefreshKey((prevKey) => prevKey + 1);
+      // Xóa tham số 'refresh' khỏi URL sau khi làm mới dữ liệu
+      searchParams.delete("refresh");
+      history.replace({ search: searchParams.toString() });
+    }
+  }, [location.search, history]);
   return (
     <div className="W-full items-center mt-4">
       <main>
@@ -80,13 +94,13 @@ const Dashboard = ({
             <div className="grid grid-cols-1 lg:grid-cols-2 ">
               {/* First Column */}
               <div className="lg:w-full">
-                <BarChart />
+                <BarChart key={refreshKey} />
                 <p>Protoring</p>
               </div>
 
               {/* Second Column */}
               <div className="place-content-center w-2/3 ">
-                <PieChart />
+                <PieChart key={refreshKey} />
                 <p>Exam slot on semester</p>
               </div>
             </div>
@@ -117,10 +131,10 @@ const Dashboard = ({
             <div className="grid grid-cols-2 overflow-auto">
               <div className="">
                 <p>Protoring</p>
-                <BarChart />
+                <BarChart key={refreshKey} />
               </div>
               <div>
-                <LineChart />
+                <LineChart key={refreshKey} />
               </div>
             </div>
           </>
@@ -145,11 +159,7 @@ const Dashboard = ({
     </div>
   );
 };
-{
-  /* <div className=" grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-  <BarChart />
-</div>; */
-}
+
 Dashboard.propTypes = {
   classrooms: PropTypes.array,
   courses: PropTypes.array,
