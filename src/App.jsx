@@ -21,6 +21,7 @@ import Management from "./components/Layout/Management"
 import useAuth from "./hooks/useAuth"
 import AlluserDashboard from "./pages/Alluser"
 import ReproctoringDashboard from "./pages/Reproctoring"
+import ExamscheduleDetails from "./pages/ExamscheduleDetails"
 
 function App() {
   const { user } = useAuth()
@@ -61,6 +62,7 @@ function App() {
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/course" element={<CourseDashboard />} />
             <Route path="/examschedule" element={<ExamscheduleDashboard />} />
+            <Route path="/examschedule/:id" element={<ExamscheduleDetails />} />
             <Route path="/major" element={<MajorDashboard />} />
             <Route path="/semester" element={<SemesterDashboard />} />
             <Route path="/examslot" element={<ExamslotDashboard />} />

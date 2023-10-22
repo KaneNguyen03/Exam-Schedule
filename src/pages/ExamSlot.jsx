@@ -836,9 +836,9 @@ const ExamSlot = () => {
                     </td>
                     <td>
                       <>
-                        {examslot.status === "Active" &&
+                        {examslot?.status?.toLowerCase() === "active" &&
                         differenceInDays(
-                          parseISO(examslot?.date?.substring(0, 10)),
+                          parseISO(examslot?.date?.toString().substring(0, 10)),
                           currentDate
                         ) > 0 ? (
                           <StatusButton
@@ -852,9 +852,11 @@ const ExamSlot = () => {
                             bgColor={color.redLight}
                             title="Inactive"
                           />
-                        ) : examslot.status.toLowerCase() === "active" &&
+                        ) : examslot?.status.toLowerCase() === "active" &&
                           differenceInDays(
-                            parseISO(examslot.date.substring(0, 10)),
+                            parseISO(
+                              examslot?.date?.toString().substring(0, 10)
+                            ),
                             currentDate
                           ) < 0 ? (
                           <StatusButton
@@ -869,7 +871,7 @@ const ExamSlot = () => {
                     </td>
                     <td>
                       <div className="">
-                        {examslot.status === "Active" ? (
+                        {examslot?.status?.toLowerCase() === "active" ? (
                           <>
                             {" "}
                             <button

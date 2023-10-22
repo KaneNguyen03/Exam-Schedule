@@ -1,173 +1,197 @@
-import SubHeader from "../components/Layout/SubHeader";
-import Sidebar from "../components/Layout/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import examscheduleTypes from "../constants/examscheduleTypes";
-import "../pages/CalendarStyles.css";
+import SubHeader from "../components/Layout/SubHeader"
+import Sidebar from "../components/Layout/Sidebar"
+import { useDispatch, useSelector } from "react-redux"
+import examscheduleTypes from "../constants/examscheduleTypes"
+import "../pages/CalendarStyles.css"
 import {
   createExamschedule,
   getAllExamschedules,
-} from "../store/thunks/examschedule";
-import { useEffect } from "react";
+} from "../store/thunks/examschedule"
+import { useEffect } from "react"
 
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import moment from "moment";
-import { useState } from "react";
-import { getAllExamslots } from "../store/thunks/examslot";
-import examslotTypes from "../constants/examslotTypes";
-import classroomTypes from "../constants/classroomTypes";
-import { getAllClassrooms } from "../store/thunks/classroom";
-import ReactSelect from "react-select";
-import teacherTypes from "../constants/teacherTypes";
-import { getAllTeachers } from "../store/thunks/teacher";
-import ReactDatePicker from "react-datepicker";
-import { timeOptions } from "../constants/commons/commons";
-import { toast } from "react-toastify";
-import useAuth from "../hooks/useAuth";
-import { makeRoles } from "../utils/common";
+import { Calendar, momentLocalizer } from "react-big-calendar"
+import "react-big-calendar/lib/css/react-big-calendar.css"
+import moment from "moment"
+import { useState } from "react"
+import { getAllExamslots } from "../store/thunks/examslot"
+import examslotTypes from "../constants/examslotTypes"
+import classroomTypes from "../constants/classroomTypes"
+import { getAllClassrooms } from "../store/thunks/classroom"
+import ReactSelect from "react-select"
+import teacherTypes from "../constants/teacherTypes"
+import { getAllTeachers } from "../store/thunks/teacher"
+import ReactDatePicker from "react-datepicker"
+import { timeOptions } from "../constants/commons/commons"
+import { toast } from "react-toastify"
+import useAuth from "../hooks/useAuth"
+import { makeRoles } from "../utils/common"
+import { useNavigate } from "react-router-dom"
 
 const ExamscheduleDashboard = () => {
+  const navigate = useNavigate()
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
-  const { user } = useAuth();
-  const dispatch = useDispatch();
-  const dataexs = useSelector((state) => state.examschedule);
-  const dataexsl = useSelector((state) => state.examslot);
-  const datacl = useSelector((state) => state.classroom);
-  const datate = useSelector((state) => state.teacher);
-  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
+  })
+  const { user } = useAuth()
+  const dispatch = useDispatch()
+  const dataexs = useSelector((state) => state.examschedule)
+  const dataexsl = useSelector((state) => state.examslot)
+  const datacl = useSelector((state) => state.classroom)
+  const datate = useSelector((state) => state.teacher)
+  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const examschedules =
-    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
+    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
 
   const allExamSlots =
-    dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data;
+    dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data
 
-  const [openModal, setOpenModal] = useState(false);
-  const [currentExamSchedule, setCurrentExamSchedule] = useState();
+  const [openModal, setOpenModal] = useState(false)
+  const [currentExamSchedule, setCurrentExamSchedule] = useState()
 
   const options = teachers?.map((teacher) => ({
     value: teacher.proctoringId,
     label: teacher.proctoringId + " : " + teacher.proctoringName,
-  }));
+  }))
   const optionsClassroom = classrooms?.map((classroom) => ({
     value: classroom.classroomId,
     label: classroom.classroomId + " : " + classroom.name,
-  }));
+  }))
   // Create a dictionary to map examSlotId to examSlot data
-  const examSlotDict = {};
-  allExamSlots?.forEach((exam) => {
-    examSlotDict[exam.examSlotId] = exam;
-  });
+  // const examSlotDict = {};
+  // allExamSlots?.forEach((exam) => {
+  //   examSlotDict[exam.examSlotId] = exam;
+  // });
 
-  // Connect the data based on examSlotId
-  const connectedData = examschedules?.map((schedule) => {
-    const examSlotData = examSlotDict[schedule.examSlotId];
-    if (examSlotData) {
-      return { ...schedule, ...examSlotData };
+  // // Connect the data based on examSlotId
+  // const connectedData = examschedules?.map((schedule) => {
+  //   const examSlotData = examSlotDict[schedule.examSlotId];
+  //   if (examSlotData) {
+  //     return { ...schedule, ...examSlotData };
+  //   }
+  // });
+  const [selectedOption, setSelectedOption] = useState(null)
+
+  const convertDataExamSlots = allExamSlots?.map((item) => {
+    const startDate = new Date(item.date)
+    const endDate = new Date(item.date)
+    startDate.setHours(item.startTime.substring(0, 2))
+    endDate.setHours(item.endTime.substring(0, 2))
+    startDate.setMinutes(item.startTime.substring(3, 5))
+    endDate.setMinutes(item.endTime.substring(3, 5))
+    startDate.setSeconds(0)
+    endDate.setSeconds(0)
+    return {
+      title: item.examSlotId, // You can customize the title as needed
+      start: startDate, // Convert the date string to a Date object
+      end: endDate,
+      listProctoring: item.listProctoring,
+      examSlotId: item.examSlotId,
+      examSlotName: item.examSlotName,
+      status: item.status,
     }
-  });
-  const [selectedOption, setSelectedOption] = useState(null);
+  })
 
-  const convertDataExamSlots = connectedData
-    ?.filter((item) => item?.status === "Active")
-    ?.map((item) => {
-      const startDate = new Date(item.date);
-      const endDate = new Date(item.date);
-      startDate.setHours(item.startTime.substring(0, 2));
-      endDate.setHours(item.endTime.substring(0, 2));
-      startDate.setMinutes(item.startTime.substring(3, 5));
-      endDate.setMinutes(item.endTime.substring(3, 5));
-      startDate.setSeconds(0);
-      endDate.setSeconds(0);
-      return {
-        title: item.examSlotId, // You can customize the title as needed
-        start: startDate, // Convert the date string to a Date object
-        end: endDate,
-        proctoringId: item.proctoringId,
-        classroomId: item.classroomId,
-        courseId: item.courseId,
-        examScheduleId: item.examScheduleId,
-        examSlotId: item.examSlotId,
-        examSlotName: item.examSlotName,
-        status: item.status,
-      };
-    });
+  // const convertDataExamSlots = connectedData
+  //   ?.filter((item) => item?.status === "Active")
+  //   ?.map((item) => {
+  //     const startDate = new Date(item.date);
+  //     const endDate = new Date(item.date);
+  //     startDate.setHours(item.startTime.substring(0, 2));
+  //     endDate.setHours(item.endTime.substring(0, 2));
+  //     startDate.setMinutes(item.startTime.substring(3, 5));
+  //     endDate.setMinutes(item.endTime.substring(3, 5));
+  //     startDate.setSeconds(0);
+  //     endDate.setSeconds(0);
+  //     return {
+  //       title: item.examSlotId, // You can customize the title as needed
+  //       start: startDate, // Convert the date string to a Date object
+  //       end: endDate,
+  //       proctoringId: item.proctoringId,
+  //       classroomId: item.classroomId,
+  //       courseId: item.courseId,
+  //       examScheduleId: item.examScheduleId,
+  //       examSlotId: item.examSlotId,
+  //       examSlotName: item.examSlotName,
+  //       status: item.status,
+  //     };
+  //   });
   //setup DATE selection
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null)
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
+    setSelectedDate(date)
+  }
 
-  const localizer = momentLocalizer(moment);
+  const localizer = momentLocalizer(moment)
 
   const eventStyleGetter = (event, start, end, isSelected) => {
     const currentTime = new Date()
     const isEventInProgress =
-      event.start <= currentTime && event.end >= currentTime;
-    let backgroundColor = event.start < new Date() ? "#ccc" : "#dc3454";
+      event.start <= currentTime && event.end >= currentTime
+    let backgroundColor = event.start < new Date() ? "#ccc" : "#dc3454"
     if (event.proctoringId && event.start > new Date() && event.classroomId) {
-      backgroundColor = "#3174ad";
+      backgroundColor = "#3174ad"
     }
-    if (isEventInProgress) backgroundColor = "#ffd700";
+    if (isEventInProgress) backgroundColor = "#ffd700"
     // Add more conditions for custom styling
 
     return {
       style: {
         backgroundColor,
       },
-    };
-  };
+    }
+  }
 
   const handleEventClick = (event) => {
-    setCurrentExamSchedule(event);
+    console.log("🚀 Kha ne ~ file: ExamSchedule.jsx:153 ~ event:", event)
+    navigate(`/examschedule/${event.examSlotId}`)
+    setCurrentExamSchedule(event)
     // Handle the event click here
     // if (!event.proctoring)
-    setOpenModal(true);
+    setOpenModal(true)
     // You can show more details or perform actions as needed
-  };
+  }
 
   const UpdateExamSchedule = () => {
     try {
-      dispatch(createExamschedule(currentExamSchedule));
-      toast.success("Exam Schedule updated");
+      dispatch(createExamschedule(currentExamSchedule))
+      toast.success("Exam Schedule updated")
     } catch (error) {
-      toast.error("Error updating exam schedule");
+      toast.error("Error updating exam schedule")
     }
-  };
+  }
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }));
-      }, 500);
-      return () => clearTimeout(delayDebounceFn);
+        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
+      }, 500)
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
-      toast.error("Error getting exam rooms");
+      toast.error("Error getting exam rooms")
     }
     try {
-      dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
+      dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
     } catch (error) {
-      toast.error("Error getting proctoring");
+      toast.error("Error getting proctoring")
     }
-  }, [dispatch]);
+  }, [dispatch])
 
   useEffect(() => {
     try {
-      dispatch(getAllExamschedules());
+      dispatch(getAllExamschedules())
     } catch (error) {
-      toast.error("Error getting examschedule");
+      toast.error("Error getting examschedule")
     }
     try {
-      dispatch(getAllExamslots());
+      dispatch(getAllExamslots())
     } catch (error) {
-      toast.error("Error getting examslots");
+      toast.error("Error getting examslots")
     }
-  }, [dispatch]);
+  }, [dispatch])
 
   return (
     <div>
@@ -200,7 +224,7 @@ const ExamscheduleDashboard = () => {
                         setParam({
                           ...param,
                           keyword: e.target.value,
-                        });
+                        })
                       }}
                       value={param.keyword}
                     />
@@ -409,7 +433,7 @@ const ExamscheduleDashboard = () => {
                               // Update the selectedOption state
                               setSelectedOption(
                                 selectedOption ? selectedOption.value : null
-                              );
+                              )
 
                               // setAddData({
                               //   ...addData,
@@ -562,7 +586,7 @@ const ExamscheduleDashboard = () => {
                         setParam({
                           ...param,
                           keyword: e.target.value,
-                        });
+                        })
                       }}
                       value={param.keyword}
                     />
@@ -644,20 +668,39 @@ const ExamscheduleDashboard = () => {
                     >
                       <td className="px-6 py-4">{examschedule.courseId}</td>
                       <td className="px-6 py-4">{examschedule.classroomId}</td>
-                      <td className="px-6 py-4">{examschedule?.start.toString().split(' ').slice(1, 4).join(' ')}</td>
-                      <td className="px-6 py-4">{examschedule?.start.toString().split(' ')[4].split(':').slice(0, 2).join(':')}</td>
-                      <td className="px-6 py-4">{examschedule?.end.toString().split(' ')[4].split(':').slice(0, 2).join(':')}</td>
+                      <td className="px-6 py-4">
+                        {examschedule?.start
+                          .toString()
+                          .split(" ")
+                          .slice(1, 4)
+                          .join(" ")}
+                      </td>
+                      <td className="px-6 py-4">
+                        {examschedule?.start
+                          .toString()
+                          .split(" ")[4]
+                          .split(":")
+                          .slice(0, 2)
+                          .join(":")}
+                      </td>
+                      <td className="px-6 py-4">
+                        {examschedule?.end
+                          .toString()
+                          .split(" ")[4]
+                          .split(":")
+                          .slice(0, 2)
+                          .join(":")}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              
             </div>
           </main>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ExamscheduleDashboard;
+export default ExamscheduleDashboard
