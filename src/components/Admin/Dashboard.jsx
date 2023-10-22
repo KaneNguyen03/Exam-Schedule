@@ -84,7 +84,6 @@ const Dashboard = ({
                 <p>Protoring</p>
               </div>
               <div className="object-contain  items-center">
-                <PieChart />
                 <p>Exam slot on semester</p>
               </div>
             </div>
