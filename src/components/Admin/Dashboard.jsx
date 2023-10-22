@@ -1,46 +1,10 @@
-import React from "react"
-import { Bar } from "react-chartjs-2"
-import PropTypes from "prop-types"
-import LoadingSpinner from "../../constants/commons/loading-spinner/LoadingSpinner"
-
-const BarChart = ({ data }) => {
-  const chartData = {
-    labels: [
-      "Proctoring",
-      "StudentList",
-      "Exam rooms",
-      "Semester",
-      "Number of Courses",
-      "Major",
-      "Exam Slot",
-      "Exam Schedule",
-    ],
-    datasets: [
-      {
-        label: "Data",
-        data,
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-        borderRadius: 10,
-      },
-    ],
-  }
-
-  const chartOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  }
-
-  return <Bar data={chartData} options={chartOptions} />
-}
-
-BarChart.propTypes = {
-  data: PropTypes.array.isRequired,
-}
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import BarChart from "../BarChart";
+import LineChart from "../Status/LineChart";
+import PieChart from "../Status/PieChart";
+import { makeRoles } from "../../utils/common";
+import useAuth from "../../hooks/useAuth";
 
 const Dashboard = ({
   classrooms,
@@ -50,105 +14,142 @@ const Dashboard = ({
   examschedules,
   examslots,
   majors,
-  semesters,
+  //semesters,
   allusers,
-  loadings,
-  reproctoring,
-  
+  //loadings,
 }) => {
+  const { user } = useAuth();
   return (
-    <div className="h-full p-8">
-      {loadings && <LoadingSpinner />}
-      <div className="text-slate-800 font-semibold text-3xl">Dashboard</div>
-      <div className="grid grid-cols-2 gap-8 justify-items-center p-24">
-        <div className="border border-black rounded-lg cursor-pointer w-64 font-medium text-base">
-          <div className="flex">
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Proctoring</h4>
-              <p>{teachers?.length}</p>
+    <div className="W-full items-center mt-4">
+      <main>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        {[...makeRoles([1, 2])].includes(user.roleId) && (
+          <>
+            <div className=" justify-between mt-8 grid grid-cols-4 ">
+              <Link to="/proctoring">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Proctoring</h2>
+                  <p className="p-4">{teachers?.length}</p>
+                </div>
+              </Link>
+              <Link to="/student">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">StudentList</h2>
+                  <p className="p-4">{students?.length}</p>
+                </div>
+              </Link>
+              <Link to="/room">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Classrooms</h2>
+                  <p className="p-4">{classrooms?.length}</p>
+                </div>
+              </Link>
+              <Link to="/alluser">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">User</h2>
+                  <p className="p-4">{allusers?.length}</p>
+                </div>
+              </Link>
             </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Student List</h4>
-              <p>{students?.length}</p>
+            <div className=" justify-between mt-3 grid grid-cols-4">
+              <Link to="/course">
+                <div className=" bg-white rounded-lg shadow-md ">
+                  <h2 className="text-inherit font-bold p-4">Course</h2>
+                  <p className="p-4">{courses?.length}</p>
+                </div>
+              </Link>
+              <Link to="/examschedule">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
+                  <p className="p-4">{examschedules?.length}</p>
+                </div>
+              </Link>
+              <Link to="/examslot">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Exam Slot</h2>
+                  <p className="p-4">{examslots?.length}</p>
+                </div>
+              </Link>
+              <Link to="/major">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Major</h2>
+                  <p className="p-4">{majors?.length}</p>
+                </div>
+              </Link>
             </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Exam Rooms</h4>
-              <p>{classrooms?.length}</p>
-            </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Semester</h4>
-              <p>{semesters?.length}</p>
-            </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Number of Courses</h4>
-              <p>{courses?.length}</p>
-            </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Major</h4>
-              <p>{majors?.length}</p>
-            </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Exam Slot</h4>
-              <p>{examslots?.length}</p>
-            </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Exam Schedule</h4>
-              <p>{examschedules?.length}</p>
-            </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Number of Courses</h4>
-              <p>{courses?.length}</p>
-            </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Major</h4>
-              <p>{majors?.length}</p>
-            </div>
-            <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-              {/* Your icon here */}
-            </span>
-            <div>
-              <h4>Exam Slot</h4>
-              <p>{examslots?.length}</p>
-            </div>
-          </div>
-          {/**BarChart đã xóa */}
-        </div>
-        {/* ... Other chart components ... */}
-      </div>
-    </div>
-  )
-}
+            <div className="grid grid-cols-1 lg:grid-cols-2 ">
+              {/* First Column */}
+              <div className="lg:w-full">
+                <BarChart />
+                <p>Protoring</p>
+              </div>
 
+              {/* Second Column */}
+              <div className="place-content-center w-2/3 ">
+                <PieChart />
+                <p>Exam slot on semester</p>
+              </div>
+            </div>
+          </>
+        )}
+        {[...makeRoles([3, 4])].includes(user.roleId) && (
+          <>
+            <div className="flex flex-row justify-between mt-3 grid grid-cols-4">
+              <div className=" bg-white rounded-lg shadow-md ">
+                <h2 className="text-inherit font-bold p-4">Course</h2>
+                <p className="p-4">{courses?.length}</p>
+              </div>
+              <Link to="/examschedule">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
+                  <p className="p-4">{examschedules?.length}</p>
+                </div>
+              </Link>
+              <div className=" bg-white rounded-lg shadow-md">
+                <h2 className="text-inherit font-bold p-4">Exam Slot</h2>
+                <p className="p-4">{examslots?.length}</p>
+              </div>
+              <div className=" bg-white rounded-lg shadow-md">
+                <h2 className="text-inherit font-bold p-4">Major</h2>
+                <p className="p-4">{majors?.length}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 overflow-auto">
+              <div className="">
+                <p>Protoring</p>
+                <BarChart />
+              </div>
+              <div>
+                <LineChart />
+              </div>
+            </div>
+          </>
+        )}
+        {[...makeRoles([5])].includes(user.roleId) && (
+          <>
+            <div className="flex flex-row justify-between mt-3 grid grid-cols-2">
+              <div className=" bg-white rounded-lg shadow-md ">
+                <h2 className="text-inherit font-bold p-4">Course</h2>
+                <p className="p-4">{courses?.length}</p>
+              </div>
+              <Link to="/examschedule">
+                <div className=" bg-white rounded-lg shadow-md">
+                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
+                  <p className="p-4">{examschedules?.length}</p>
+                </div>
+              </Link>
+            </div>
+          </>
+        )}
+      </main>
+    </div>
+  );
+};
+{
+  /* <div className=" grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
+  <BarChart />
+</div>; */
+}
 Dashboard.propTypes = {
   classrooms: PropTypes.array,
   courses: PropTypes.array,
@@ -158,137 +159,7 @@ Dashboard.propTypes = {
   examslots: PropTypes.array,
   majors: PropTypes.array,
   allusers: PropTypes.array,
-  semesters: PropTypes.array,
-  loadings: PropTypes.bool.isRequired,
-  registers: PropTypes.array,
-  reproctoring: PropTypes.array,
-}
+  //semesters: PropTypes.array,
+};
 
-export default Dashboard
-
-// import React, { useEffect, useState } from "react";
-// import { Bar } from "react-chartjs-2";
-// import PropTypes from "prop-types";
-// import LoadingSpinner from "../../constants/commons/loading-spinner/LoadingSpinner";
-
-// const Dashboard = ({
-//   classrooms,
-//   courses,
-//   teachers,
-//   students,
-//   examschedules,
-//   examslots,
-//   majors,
-//   semesters,
-//   loadings,
-// }) => {
-//   const [chartData, setChartData] = useState({
-//     labels: [
-//       "Proctoring",
-//       "StudentList",
-//       "Exam rooms",
-//       "Semester",
-//       "Number of Courses",
-//       "Major",
-//       "Exam Slot",
-//       "Exam Schedule",
-//     ],
-//     datasets: [
-//       {
-//         label: "Data",
-//         data: [
-//           teachers?.length || 0,
-//           students?.length || 0,
-//           examschedules?.length || 0,
-//           examslots?.length || 0,
-//           classrooms?.length || 0,
-//           courses?.length || 0,
-//           majors?.length || 0,
-//           semesters?.length || 0,
-//         ],
-//         backgroundColor: "rgba(75, 192, 192, 0.2)",
-//         borderColor: "rgba(75, 192, 192, 1)",
-//         borderWidth: 1,
-//         borderRadius: 10,
-//       },
-//     ],
-//   });
-
-//   const chartOptions = {
-//     scales: {
-//       y: {
-//         beginAtZero: true,
-//       },
-//     },
-//   };
-
-//   useEffect(() => {
-//     // Update chart data when any of the data arrays change
-//     const newChartData = {
-//       ...chartData,
-//       datasets: [
-//         {
-//           ...chartData.datasets[0],
-//           data: [
-//             teachers?.length || 0,
-//             students?.length || 0,
-//             examschedules?.length || 0,
-//             examslots?.length || 0,
-//             classrooms?.length || 0,
-//             courses?.length || 0,
-//             majors?.length || 0,
-//             semesters?.length || 0,
-//           ],
-//         },
-//       ],
-//     };
-//     setChartData(newChartData);
-//   }, [
-//     teachers,
-//     students,
-//     examschedules,
-//     examslots,
-//     classrooms,
-//     courses,
-//     majors,
-//     semesters,
-//   ]);
-
-//   return (
-//     <div className="h-full p-8">
-//       {loadings && <LoadingSpinner />}
-//       <div className="text-slate-800 font-semibold text-3xl">Dashboard</div>
-//       <div className="grid grid-cols-2 gap-8 justify-items-center p-24">
-//         <div className="border border-black rounded-lg cursor-pointer w-64 font-medium text-base">
-//           <div className="flex">
-//             <span className="flex items-center justify-center text-lg text-gray-400 p-1">
-//               {/* Your icon here */}
-//             </span>
-//             <div>
-//               <h4>Data Dashboard</h4>
-//               <p>{chartData?.length}</p>
-//             </div>
-//           </div>
-//           <div className="chart-container">
-//             <Bar data={chartData} options={chartOptions} />
-//           </div>
-//         </div>
-//         {/* ... Other chart components ... */}
-//       </div>
-//     </div>
-//   );
-// };
-
-// Dashboard.propTypes = {
-//   classrooms: PropTypes.array,
-//   courses: PropTypes.array,
-//   teachers: PropTypes.array,
-//   students: PropTypes.array,
-//   examschedules: PropTypes.array,
-//   examslots: PropTypes.array,
-//   majors: PropTypes.array,
-//   semesters: PropTypes.array,
-//   loadings: PropTypes.bool.isRequired,
-// };
-
-// export default Dashboard;
+export default Dashboard;

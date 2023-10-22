@@ -60,6 +60,7 @@ const ExamSlot = () => {
     startTime: "",
     endTime: "",
     listProctoring: [],
+    status: "active",
   })
 
   const [loadings, setLoading] = useState(true)
@@ -925,7 +926,7 @@ const ExamSlot = () => {
                 ))}
               </tbody>
             </table>
-            <div className="sticky bottom-0 bg-white p-2 -z-10">
+            <div className="sticky bottom-0 bg-white p-2 z-10">
               {examslots?.data?.length ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}

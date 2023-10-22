@@ -45,14 +45,18 @@ const deleteExamslot = async (data) => {
 }
 const createExamslot = async (data) => {
   try {
+    const newListProctoring = data.listProctoring?.map((proctoring) => ({
+      ...proctoring,
+      listExamSlot: [],
+    }))
     const response = await apiInstance.post(`api/ExamSlot`, {
       examSlotId: data.examSlotId,
       examSlotName: data.examSlotName,
       date: data.date,
       startTime: data.startTime,
       endTime: data.endTime,
-      status: "Active",
-      listProctoring: data.listProctoring ? data.listProctoring : [],
+      status: "active",
+      listProctoring: data.listProctoring ? newListProctoring : [],
     })
     return response
   } catch (error) {
