@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import BarChart from "../BarChart";
 import LineChart from "../Status/LineChart";
 import PieChart from "../Status/PieChart";
-//import LoadingSpinner from "../../constants/commons/loading-spinner/LoadingSpinner";
 import { makeRoles } from "../../utils/common";
 import useAuth from "../../hooks/useAuth";
 
@@ -78,12 +77,15 @@ const Dashboard = ({
                 </div>
               </Link>
             </div>
-            <div className="grid grid-cols-2 overflow-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 ">
+              {/* First Column */}
               <div className="lg:w-full">
                 <BarChart />
                 <p>Protoring</p>
               </div>
-              <div className="items-center">
+
+              {/* Second Column */}
+              <div className="place-content-center w-2/3 ">
                 <PieChart />
                 <p>Exam slot on semester</p>
               </div>

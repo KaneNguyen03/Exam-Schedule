@@ -2,7 +2,7 @@ import {
   Chart as ChartJS,
   Filler,
   ArcElement,
-  Title,
+  //Title,
   Tooltip,
   Legend,
 } from "chart.js";
@@ -45,19 +45,22 @@ function PieChart() {
     const b = Math.floor(Math.random() * 256);
     return `rgba(${r}, ${g}, ${b}, 0.8)`;
   }
+
   const values = Object.values(slotsCount);
   const labels = Object.keys(slotsCount);
   const backgroundColors = labels.map(() => randomColor());
 
   const data = {
     labels,
-    datasets: labels.map((label, index) => ({
-      label: label,
-      data: [values[index]],
-      backgroundColor: [backgroundColors[index]],
-      borderColor: [backgroundColors[index].replace("0.8", "1")],
-      borderWidth: 1,
-    })),
+    datasets: [
+      {
+        label: "Exam current cases",
+        data: values,
+        backgroundColor: backgroundColors, // Assign the generated colors here
+        borderColor: backgroundColors.map((color) => color.replace("0.8", "1")),
+        borderWidth: 1,
+      },
+    ],
   };
 
   return <Pie options={options} data={data} />;
