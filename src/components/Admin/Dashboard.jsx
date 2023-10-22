@@ -83,7 +83,8 @@ const Dashboard = ({
                 <BarChart />
                 <p>Protoring</p>
               </div>
-              <div className="object-contain  items-center">
+              <div className="items-center">
+                <PieChart />
                 <p>Exam slot on semester</p>
               </div>
             </div>
