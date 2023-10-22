@@ -10,9 +10,6 @@ import { Pie } from "react-chartjs-2";
 ////////////////////////////////////////////////////////////////
 import { useSelector } from "react-redux";
 import examslotTypes from "../../constants/examslotTypes";
-//import semesterTypes from "../../constants/semesterTypes";
-import courseTypes from "../../constants/courseTypes";
-import majorTypes from "../../constants/majorTypes";
 
 ////////////////////////////////
 
@@ -29,24 +26,13 @@ function PieChart() {
   };
   // từ / Major /semesterID / couser / Exam slots
   const dataexsl = useSelector((state) => state.examslot);
-  const dataco = useSelector((state) => state.course);
-  //const datase = useSelector((state) => state.semester);
-  const datamj = useSelector((state) => state.major);
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data;
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data;
-  //const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data?.data;
-  const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data?.data;
   const slotsCount = {};
 
   examslots?.forEach((examSlot) => {
     const examSlotId = examSlot.examSlotId;
 
-    //const course = courses?.find((course) => course.courseId === courseId);
-    //const major = majors?.find((major) => major.majorId);
-    //const major = majors?.find((major) => major.majorId === courseId);
     if (examSlotId) {
-      // Include semesterId
-      //const majorId = major.majorId; // Include majorId
       const key = `${examSlotId}`;
 
       // Kiểm tra xem khóa đã tồn tại trong bảng thống kê chưa, nếu chưa thì tạo mới
@@ -62,18 +48,7 @@ function PieChart() {
   const values = Object.values(slotsCount);
   const labels = Object.keys(slotsCount);
   const backgroundColors = labels.map(() => randomColor());
-  // const data = {
-  //   labels,
-  //   datasets: [
-  //     {
-  //       label: "Exam current cases",
-  //       data: values,
-  //       backgroundColor: ["rgba(255, 99, 132, 0.8)", "rgba(54, 162, 235, 0.8)"],
-  //       borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // };
+
   const data = {
     labels,
     datasets: labels.map((label, index) => ({
