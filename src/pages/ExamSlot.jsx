@@ -89,7 +89,15 @@ const ExamSlot = () => {
   }
   const UpdateExamslot = () => {
     try {
-      dispatch(updateExamslot(currentExamslot))
+      const newListProctorings = currentExamslot.listProctoring.map((item) => ({
+        ...item,
+        listExamSlot: [],
+      }))
+      const submitData = {
+        ...currentExamslot,
+        listProctoring: newListProctorings,
+      }
+      dispatch(updateExamslot(submitData))
       toast.success("Examslot updated successfully")
     } catch (error) {
       toast.error("Error updating examslot")
@@ -865,6 +873,18 @@ const ExamSlot = () => {
                             bgColor={color.yellowLight}
                             title="Completed"
                           />
+                        ) : examslot?.status?.toLowerCase() === "pending" &&
+                          differenceInDays(
+                            parseISO(
+                              examslot?.date?.toString().substring(0, 10)
+                            ),
+                            currentDate
+                          ) > 0 ? (
+                          <StatusButton
+                            color={color.blue}
+                            bgColor={color.blueLight}
+                            title="Pending"
+                          />
                         ) : (
                           <>-</>
                         )}
@@ -872,7 +892,8 @@ const ExamSlot = () => {
                     </td>
                     <td>
                       <div className="">
-                        {examslot?.status?.toLowerCase() === "active" ? (
+                        {examslot?.status?.toLowerCase() === "active" ||
+                        examslot?.status?.toLowerCase() === "pending" ? (
                           <>
                             {" "}
                             <button

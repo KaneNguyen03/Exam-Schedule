@@ -42,7 +42,7 @@ const AdminDashboard = () => {
   const allusers = datauser?.contents[alluserTypes.GET_ALLUSERS]?.data.data;
   const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data.data;
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data;
   const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data;
   const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data;
   const examschedules =

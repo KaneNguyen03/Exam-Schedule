@@ -11,18 +11,14 @@ const getAllExamslots = async (data) => {
 }
 const updateExamslot = async (data) => {
   try {
-    const originalDate = data.date
-    const oneDayLater = new Date(originalDate)
-    oneDayLater.setDate(oneDayLater.getDate() + 1)
     const response = await apiInstance.put(`api/ExamSlot/${data.examSlotId}`, {
       examSlotId: data.examSlotId,
       examSlotName: data.examSlotName,
       listProctoring: data.listProctoring,
-      date: oneDayLater,
+      date: data.date,
       startTime: data.startTime,
       endTime: data.endTime,
-      status: "Active",
-      courseId: data.courseId,
+      status: data.status,
     })
     return response
   } catch (error) {
