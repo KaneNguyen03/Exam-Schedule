@@ -861,7 +861,7 @@ const ExamSlot = () => {
                             bgColor={color.redLight}
                             title="Inactive"
                           />
-                        ) : examslot?.status.toLowerCase() === "active" &&
+                        ) : (examslot?.status.toLowerCase() === "active" ||  examslot?.status.toLowerCase() === "pending")&&
                           differenceInDays(
                             parseISO(
                               examslot?.date?.toString().substring(0, 10)

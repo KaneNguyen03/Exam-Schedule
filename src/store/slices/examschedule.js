@@ -65,9 +65,10 @@ const examscheduleSlice = createSlice({
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS] = true
       state.errors[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS] = ""
     },
-    [getExamscheduleDetails.fulfilled]: (state, payload) => {
+    [getExamscheduleDetails.fulfilled]: (state, {payload}) => {
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS] = false
       state.contents[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS] = payload
+      state.paginations[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS] = payload.data?.pagination
     },
     [getExamscheduleDetails.rejected]: (state, { payload }) => {
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS] = false

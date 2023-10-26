@@ -53,19 +53,16 @@ const ExamscheduleDashboard = () => {
 
   const [openModal, setOpenModal] = useState(false)
   const [currentExamSchedule, setCurrentExamSchedule] = useState()
-  console.log(
-    "🚀 Kha ne ~ file: ExamSchedule.jsx:50 ~ currentExamSchedule:",
-    currentExamSchedule
-  )
 
-  const options = teachers?.map((teacher) => ({
-    value: teacher.proctoringId,
-    label: teacher.proctoringId + " : " + teacher.proctoringName,
-  }))
-  const optionsClassroom = classrooms?.map((classroom) => ({
-    value: classroom.classroomId,
-    label: classroom.classroomId + " : " + classroom.name,
-  }))
+
+  // const options = teachers?.map((teacher) => ({
+  //   value: teacher.proctoringId,
+  //   label: teacher.proctoringId + " : " + teacher.proctoringName,
+  // }))
+  // const optionsClassroom = classrooms?.map((classroom) => ({
+  //   value: classroom.classroomId,
+  //   label: classroom.classroomId + " : " + classroom.name,
+  // }))
   const optionsCourses = courses?.map((course) => ({
     value: course.courseId,
     label: course.courseId,
@@ -147,6 +144,7 @@ const ExamscheduleDashboard = () => {
       endTime: currentExamSchedule.endTime,
       status: "pending",
       listProctoring: newListProctorings,
+      courseId: currentExamSchedule.courseId,
     }
 
     await dispatch(updateExamslot(updateStatusExamslot))
@@ -182,23 +180,24 @@ const ExamscheduleDashboard = () => {
     setOpenModalChoosingCourse(
       currentExamSchedule?.status.toLowerCase() === "active"
     )
-    // if (currentExamSchedule?.status === "pending") {
-    //   navigate(`/examschedule/${event.examSlotId}`)
-    // }
+
+    if (currentExamSchedule?.status === "pending") {
+      navigate(`/examschedule/${currentExamSchedule.examSlotId}`)
+    }
     // Handle the event click here
     // if (!event.proctoring)
     setOpenModal(true)
     // You can show more details or perform actions as needed
   }
 
-  const UpdateExamSchedule = () => {
-    try {
-      dispatch(createExamschedule(currentExamSchedule))
-      toast.success("Exam Schedule updated")
-    } catch (error) {
-      toast.error("Error updating exam schedule")
-    }
-  }
+  // const UpdateExamSchedule = () => {
+  //   try {
+  //     dispatch(createExamschedule(currentExamSchedule))
+  //     toast.success("Exam Schedule updated")
+  //   } catch (error) {
+  //     toast.error("Error updating exam schedule")
+  //   }
+  // }
 
   useEffect(() => {
     if (
@@ -562,6 +561,10 @@ const ExamscheduleDashboard = () => {
                           onChange={(data) => {
                             setSubmitDataGenerator({
                               examSlotId: currentExamSchedule.examSlotId,
+                              courseId: data.value,
+                            })
+                            setCurrentExamSchedule({
+                              ...currentExamSchedule,
                               courseId: data.value,
                             })
                           }}

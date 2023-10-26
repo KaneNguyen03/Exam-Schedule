@@ -45,6 +45,7 @@ const createTeacher = async (data) => {
       proctoringName: data.proctoringName,
       compensation: data.compensation ? data.compensation : "0",
       examSlotId: data.examSlotId,
+      listExamSlot: data.listExamSlot,
       status: "Active",
     })
     return response

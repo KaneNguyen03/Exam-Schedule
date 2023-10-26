@@ -45,7 +45,7 @@ const Reproctoring = () => {
   const dataexsl = useSelector((state) => state.examslot)
   const datate = useSelector((state) => state.teacher)
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
-  console.log("🚀 Kha ne ~ file: Reproctoring.jsx:48 ~ examslots:", examslots.data)
+
 
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const currentUserExamslot = examslots?.data?.filter((item) =>
@@ -69,6 +69,7 @@ const Reproctoring = () => {
             proctoringId: uuidv4(),
             proctoringName: user.username,
             examSlotId: currentExamslot.examSlotId,
+            listExamSlot: [currentExamslot]
           })
         )
         const newListProctoring = [
@@ -495,7 +496,8 @@ const Reproctoring = () => {
                             bgColor={color.blueLight}
                             title="Enrolled"
                           />
-                        ) : (examslot.status.toLowerCase() === "active" || examslot.status.toLowerCase() === "pending") &&
+                        ) : (examslot.status.toLowerCase() === "active" ||
+                            examslot.status.toLowerCase() === "pending") &&
                           differenceInDays(
                             parseISO(examslot.date.substring(0, 10)),
                             currentDate
@@ -505,9 +507,12 @@ const Reproctoring = () => {
                             bgColor={color.greenLight}
                             title="Available"
                           />
-                        ) : examslot.status.toLowerCase() === "active" &&
+                        ) : (examslot?.status.toLowerCase() === "active" ||
+                            examslot?.status.toLowerCase() === "pending") &&
                           differenceInDays(
-                            parseISO(examslot.date.substring(0, 10)),
+                            parseISO(
+                              examslot?.date?.toString().substring(0, 10)
+                            ),
                             currentDate
                           ) < 0 ? (
                           <StatusButton
@@ -528,7 +533,8 @@ const Reproctoring = () => {
                     </td>
                     <td>
                       <>
-                        {(examslot.status.toLowerCase() === "active" || examslot.status.toLowerCase() === "pending") &&
+                        {(examslot.status.toLowerCase() === "active" ||
+                          examslot.status.toLowerCase() === "pending") &&
                         currentUserExamslot?.find(
                           (slot) => slot.examSlotId === examslot.examSlotId
                         ) &&
@@ -559,7 +565,8 @@ const Reproctoring = () => {
                           >
                             Unavailable
                           </button>
-                        ) : (examslot.status.toLowerCase() === "active" || examslot.status.toLowerCase() === "pending") &&
+                        ) : (examslot.status.toLowerCase() === "active" ||
+                            examslot.status.toLowerCase() === "pending") &&
                           differenceInDays(
                             parseISO(examslot.date.substring(0, 10)),
                             currentDate

@@ -1,23 +1,23 @@
-import apiInstance from "./config";
+import apiInstance from "./config"
 
 const getAllStudents = async (data) => {
-  const url = "?" + new URLSearchParams(data).toString();
+  const url = "?" + new URLSearchParams(data).toString()
   try {
-    const data = await apiInstance.get(`api/StudentList${url}`);
-    return data;
+    const data = await apiInstance.get(`api/StudentList${url}`)
+    return data
   } catch (error) {
-    throw new Error("Error geting students");
+    throw new Error("Error geting students")
   }
-};
+}
 
 const getStudents = async () => {
   try {
-    const data = await apiInstance.get(`api/Auth/AllStudents`);
-    return data;
+    const data = await apiInstance.get(`api/Auth/AllStudents`)
+    return data
   } catch (error) {
-    throw new Error("Error geting students");
+    throw new Error("Error geting students")
   }
-};
+}
 
 const updateStudent = async (data) => {
   try {
@@ -27,14 +27,15 @@ const updateStudent = async (data) => {
         studentListId: data.studentListId,
         listStudent: data.listStudent,
         courseId: data.courseId,
-        status: "Active",
+        numberOfProctoring: data.numberOfProctoring,
+        status: data.status ? data.status : "active",
       }
-    );
-    return response;
+    )
+    return response
   } catch (error) {
-    throw new Error("Error update studentlist");
+    throw new Error("Error update studentlist")
   }
-};
+}
 
 const deleteStudent = async (data) => {
   try {
@@ -43,28 +44,29 @@ const deleteStudent = async (data) => {
       {
         ...data,
         studentListId: data.studentListId,
-        status: data.status
+        status: data.status,
       }
-    );
-    return response;
+    )
+    return response
   } catch (error) {
-    throw new Error("Error delete studentlist");
+    throw new Error("Error delete studentlist")
   }
-};
+}
 
 const createStudent = async (data) => {
   try {
     const response = await apiInstance.post(`api/StudentList`, {
       studentListId: data.studentListId,
-      studentId: data.studentId,
-      courseId: data.courseId,
+      listStudent: data.listStudent,
+      courseId: data.courseId ? data.courseId : "",
+      numberOfProctoring: data.numberOfProctoring,
       status: "Active",
-    });
-    return response;
+    })
+    return response
   } catch (error) {
-    throw new Error("Error create studentlist");
+    throw new Error("Error create studentlist")
   }
-};
+}
 
 const studentApi = {
   getAllStudents,
@@ -72,6 +74,6 @@ const studentApi = {
   deleteStudent,
   createStudent,
   getStudents,
-};
+}
 
-export default studentApi;
+export default studentApi

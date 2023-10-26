@@ -34,6 +34,7 @@ const getExamScheduleByCourseIdAndExamSlotId = async (res) => {
     const data = await apiInstance.get(
       `api/ExamSchedule/GetExamSchedulesByCourseIDAndExamSlotID?CourseId=${res.courseId}&ExamSlotId=${res.examSlotId}${url}`
     )
+    return data;
   } catch (error) {
     throw new Error("Error getting exam schedule details")
   }

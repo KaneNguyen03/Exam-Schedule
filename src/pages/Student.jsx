@@ -31,6 +31,7 @@ const Student = () => {
   const [openModalConfirm, setOpenModalConfirm] = useState(false)
 
   const [currentStudent, setCurrentStudent] = useState({})
+  console.log("🚀 Kha ne ~ file: Student.jsx:34 ~ currentStudent:", currentStudent)
 
   const datast = useSelector((state) => state.student)
   const students = datast?.contents[studentTypes.GET_STUDENTS]?.data
@@ -41,6 +42,7 @@ const Student = () => {
     studentListId: "",
     listStudent: [],
     courseId: "",
+    numberOfProctorings: "",
   })
 
   const allStudents = datast?.contents[studentTypes.GET_ALL_STUDENTS]?.data
@@ -49,33 +51,34 @@ const Student = () => {
     value: student.username,
     label: student.username + " - " + student.email,
     email: student.email,
+    username: student.username,
   }))
   const [selectedOption, setSelectedOption] = useState(null)
-
-  const listStudent = selectedOption?.map((item) => {
-    return {
-      username: item.value,
-      email: item.email,
-    }
-  })
 
   const [loadings, setLoading] = useState(true)
 
   const UpdateStudent = () => {
     try {
+      const listStudent = currentStudent.listStudent?.map((item) => {
+        return {
+          username: item.username,
+          email: item.email,
+        }
+      })
+
       dispatch(updateStudent({ ...currentStudent, listStudent: listStudent }))
+      setOpenModal(false)
       toast.success("Student updated successfully")
     } catch (error) {
       toast.error("Error updating student")
     }
-
-    setOpenModal(false)
   }
 
   const AddStudent = () => {
     try {
       dispatch(createStudent(addData))
       toast.success("Student added successfully")
+      setOpenModalAdd(false)
     } catch (error) {
       toast.error("Error adding student")
     }
@@ -130,7 +133,7 @@ const Student = () => {
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents(param))
+        dispatch(getAllStudents({ pagesize: 9999, page: 1 }))
       }, 500)
 
       return () => clearTimeout(delayDebounceFn)
@@ -245,7 +248,11 @@ const Student = () => {
                   className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
                   onClick={() => setIsShowSelect(!isShowSelect)}
                 >
-                  <span className="pl-4">Show {pagination?.pageSize} item</span>
+                  <span className="pl-4">
+                    Show{" "}
+                    {pagination?.pageSize > 15 ? "10" : pagination?.pageSize}{" "}
+                    item
+                  </span>
                   <img
                     src={DropdownSelectIcon}
                     className="pointer-events-none leading-[16px] md:leading-[20px] md:mr-4"
@@ -295,6 +302,9 @@ const Student = () => {
                     <th scope="col" className="px-6 py-3">
                       Status
                     </th>
+                    <th scope="col" className="px-6 py-3">
+                      Number of proctorings
+                    </th>
 
                     <th scope="col" className="px-6 py-3">
                       Action
@@ -313,12 +323,12 @@ const Student = () => {
                           .map((item) => item.username)
                           .join(", ")}
                         {openModal ? (
-                          <div className="modal absolute top-5 w-[30%] z-20">
-                            <div className="modal-content ">
-                              <div className="relativerounded-lg shadow bg-gray-700">
+                          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-20 z-[1000]">
+                            <div className="modal absolute w-[28%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+                              <div className="rounded-lg shadow bg-gray-700">
                                 <button
                                   type="button"
-                                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
+                                  className="absolute top-3 right-2.5 text-gray-400 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
                                   data-modal-hide="authentication-modal"
                                   onClick={() => setOpenModal(false)}
                                 >
@@ -375,9 +385,9 @@ const Student = () => {
                                       onChange={(data) => {
                                         // Update the selectedOption state
                                         setSelectedOption(data)
-                                        setAddData({
-                                          ...addData,
-                                          proctoringLocation: data.value,
+                                        setCurrentStudent({
+                                          ...currentStudent,
+                                          listStudent: data,
                                         })
                                       }}
                                     />
@@ -394,6 +404,23 @@ const Student = () => {
                                           courseId: e.target.value,
                                         })
                                       }
+                                      className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="mb-2 text-sm font-medium text-white flex">
+                                      Number of proctorings
+                                    </label>
+                                    <input
+                                      value={currentStudent?.numberOfProctoring}
+                                      onChange={(e) =>
+                                        setCurrentStudent({
+                                          ...currentStudent,
+                                          numberOfProctoring: e.target.value,
+                                        })
+                                      }
+                                      min="1"
+                                      type="number"
                                       className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                     />
                                   </div>
@@ -425,9 +452,9 @@ const Student = () => {
                           <></>
                         )}
                         {openModalAdd ? (
-                          <div className="modal absolute top-5 w-[30%] z-20">
-                            <div className="modal-content ">
-                              <div className="relativerounded-lg shadow bg-gray-700">
+                          <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                            <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                              <div className="relative rounded-lg shadow bg-gray-700">
                                 <button
                                   type="button"
                                   className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -474,13 +501,12 @@ const Student = () => {
                                     <ReactSelect
                                       options={options}
                                       isMulti={true}
-                                      defaultValue={student.contains}
                                       onChange={(data) => {
                                         // Update the selectedOption state
                                         setSelectedOption(data)
                                         setAddData({
                                           ...addData,
-                                          proctoringLocation: data.value,
+                                          listStudent: data,
                                         })
                                       }}
                                     />
@@ -496,6 +522,26 @@ const Student = () => {
                                           courseId: e.target.value,
                                         })
                                       }
+                                      className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="mb-2 text-sm font-medium  text-white flex">
+                                      Number of proctoring
+                                    </label>
+                                    <input
+                                      onChange={(e) =>
+                                        setAddData({
+                                          ...addData,
+                                          numberOfProctoring:
+                                            e.target.value != null
+                                              ? e.target.value
+                                              : 1,
+                                        })
+                                      }
+                                      min={1}
+                                      defaultValue={1}
+                                      type="number"
                                       className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                     />
                                   </div>
@@ -587,7 +633,7 @@ const Student = () => {
                         )}
                       </td>
                       <td className="px-6 py-4">{student.courseId}</td>
-                      <td>
+                      <td className="px-6 py-4">
                         <>
                           {student.status.toLowerCase() === "active" ? (
                             <StatusButton
@@ -606,9 +652,14 @@ const Student = () => {
                           )}
                         </>
                       </td>
-                      <td>
+                      <td className="px-6 py-4">
+                        {student.numberOfProctoring}
+                      </td>
+
+                      <td className="px-6 py-4">
                         <div className="">
-                          {student.status.toLowerCase() === "active" ? (
+                          {student.status.toLowerCase() === "active" ||
+                          student.status.toLowerCase() === "pending" ? (
                             <>
                               {" "}
                               <button

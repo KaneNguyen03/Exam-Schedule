@@ -19,6 +19,7 @@ const updateExamslot = async (data) => {
       startTime: data.startTime,
       endTime: data.endTime,
       status: data.status,
+      courseId: data.courseId ? data.courseId : "",
     })
     return response
   } catch (error) {
@@ -53,6 +54,7 @@ const createExamslot = async (data) => {
       endTime: data.endTime,
       status: "active",
       listProctoring: data.listProctoring ? newListProctoring : [],
+      courseId: data.courseId ? data.courseId : "",
     })
     return response
   } catch (error) {
