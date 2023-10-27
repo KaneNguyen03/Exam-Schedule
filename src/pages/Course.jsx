@@ -1,121 +1,119 @@
-import { useDispatch, useSelector } from "react-redux"
-import Sidebar from "../components/Layout/Sidebar"
-import { useEffect, useRef, useState } from "react"
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
-import ReactSelect from "react-select"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import { sizeOptions } from "../constants/commons/commons"
-import { Pagination } from "react-headless-pagination"
+import { useDispatch, useSelector } from "react-redux";
+import Sidebar from "../components/Layout/Sidebar";
+import { useEffect, useRef, useState } from "react";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import ReactSelect from "react-select";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import { sizeOptions } from "../constants/commons/commons";
+import { Pagination } from "react-headless-pagination";
 
-import courseTypes from "../constants/courseTypes"
+import courseTypes from "../constants/courseTypes";
 import {
   createCourse,
   deleteCourse,
   getAllCourses,
   updateCourse,
-} from "../store/thunks/course"
-import semesterTypes from "../constants/semesterTypes"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
-import { getAllSemesters } from "../store/thunks/semester"
-import { toast } from "react-toastify"
+} from "../store/thunks/course";
+import semesterTypes from "../constants/semesterTypes";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
+import { getAllSemesters } from "../store/thunks/semester";
+import { toast } from "react-toastify";
 const Course = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
 
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
-  const [currentCourse, setCurrentCourse] = useState({})
-  const dataco = useSelector((state) => state.course)
+  });
+  const [currentCourse, setCurrentCourse] = useState({});
+  const dataco = useSelector((state) => state.course);
 
-  const datase = useSelector((state) => state.semester)
-  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data
-  const pagination = dataco?.paginations[courseTypes.GET_COURSES]
+  const datase = useSelector((state) => state.semester);
+  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data;
+  const pagination = dataco?.paginations[courseTypes.GET_COURSES];
 
-  const popupSelect = useRef(null)
-  const [openModalAdd, setOpenModalAdd] = useState(false)
+  const popupSelect = useRef(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
     courseId: "",
     courseName: "",
     semesterId: "",
     studentListId: "",
-  })
-  const [loadings, setLoading] = useState(true)
-  const [selectedOption, setSelectedOption] = useState(null)
+  });
+  const [loadings, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const options = semesters?.map((semester) => ({
     value: semester.semesterId,
     label: semester.semesterId + " : " + semester.semesterName,
-  }))
+  }));
 
   const UpdateCourse = () => {
     try {
-       dispatch(updateCourse(currentCourse))
-       toast.success("Course updated successfully")
+      dispatch(updateCourse(currentCourse));
+      toast.success("Course updated successfully");
     } catch (error) {
-      toast.error("Error update course")
+      toast.error("Error update course");
     }
-   
-    setOpenModal(false)
-  }
+
+    setOpenModal(false);
+  };
 
   const AddCourse = () => {
     try {
-      dispatch(createCourse(addData))
-      toast.success("Course added successfully")
+      dispatch(createCourse(addData));
+      toast.success("Course added successfully");
     } catch (error) {
-      toast.error("Error adding course")
+      toast.error("Error adding course");
     }
-    
-    setOpenModalAdd(false)
-  }
+
+    setOpenModalAdd(false);
+  };
 
   const onDeleteCourse = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    }
-    try { 
-      dispatch(deleteCourse(req))
-      toast.success("Course deleted successfully")
-    } catch (error) {
-      toast.error("Error deleting course")
-    }
-   
-    setOpenModalConfirm(false)
+    };
     try {
-      setTimeout(() => dispatch(getAllCourses(param)), 1000)
+      dispatch(deleteCourse(req));
+      toast.success("Course deleted successfully");
     } catch (error) {
-      toast.error("Error getting course")
+      toast.error("Error deleting course");
     }
-    
-  }
+
+    setOpenModalConfirm(false);
+    try {
+      setTimeout(() => dispatch(getAllCourses(param)), 1000);
+    } catch (error) {
+      toast.error("Error getting course");
+    }
+  };
   const restoreCourse = (data) => {
     const req = {
       ...data,
       status: "Active",
-    }
+    };
     try {
-      dispatch(deleteCourse(req))
-      toast.success("Course restored successfully")
+      dispatch(deleteCourse(req));
+      toast.success("Course restored successfully");
     } catch (error) {
-      toast.error("Error restore course")
+      toast.error("Error restore course");
     }
     try {
-      setTimeout(() => dispatch(getAllCourses(param)), 1000)
+      setTimeout(() => dispatch(getAllCourses(param)), 1000);
     } catch (error) {
       toast.error("Error getting course");
     }
-    
-  }
+  };
   useEffect(() => {
     if (
       dataco?.loadings[courseTypes.GET_COURSES] ||
@@ -123,27 +121,25 @@ const Course = () => {
       dataco?.loadings[courseTypes.UPDATE_COURSE] ||
       dataco?.loadings[courseTypes.DELETE_COURSE]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [dataco, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [dataco, param]);
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllCourses(param))
-    }, 500);
-     return () => clearTimeout(delayDebounceFn)
+        dispatch(getAllCourses(param));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting course")
+      toast.error("Error getting course");
     }
     try {
-       dispatch(getAllSemesters({ page: 1, pageSize: 999 }))
+      dispatch(getAllSemesters({ page: 1, pageSize: 999 }));
     } catch (error) {
-      toast.error("Error getting semesters")
+      toast.error("Error getting semesters");
     }
-   
-   
-  }, [param.keyword, dispatch, param])
+  }, [param.keyword, dispatch, param]);
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -175,7 +171,7 @@ const Course = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -252,19 +248,19 @@ const Course = () => {
                   ref={popupSelect}
                   className="text-left cursor-pointer absolute"
                 >
-                  {sizeOptions.map((item) => {
+                  {sizeOptions?.map((item) => {
                     return (
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) })
-                          setIsShowSelect(false)
+                          setParam({ ...param, pageSize: Number(item.value) });
+                          setIsShowSelect(false);
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -304,8 +300,8 @@ const Course = () => {
                     <td className="px-6 py-4">
                       {course.courseName}
                       {openModal ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
@@ -364,7 +360,7 @@ const Course = () => {
                                   <ReactSelect
                                     options={options}
                                     isMulti={false}
-                                    defaultValue={
+                                    value={
                                       selectedOption
                                         ? options.find(
                                             (option) =>
@@ -379,14 +375,14 @@ const Course = () => {
                                         semesterId: selectedOption
                                           ? selectedOption.value
                                           : null,
-                                      }))
+                                      }));
 
                                       // Update the selectedOption state
                                       setSelectedOption(
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      )
+                                      );
                                     }}
                                   />
                                 </div>
@@ -432,8 +428,8 @@ const Course = () => {
                         <></>
                       )}
                       {openModalAdd ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
@@ -501,11 +497,11 @@ const Course = () => {
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      )
+                                      );
                                       setAddData({
                                         ...addData,
                                         semesterId: data.value,
-                                      })
+                                      });
                                     }}
 
                                     ////////////////////////////////
@@ -643,8 +639,8 @@ const Course = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentCourse(course)
-                                  setOpenModalConfirm(true)
+                                  setCurrentCourse(course);
+                                  setOpenModalConfirm(true);
                                 }
                               }
                             >
@@ -655,9 +651,9 @@ const Course = () => {
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal)
-                                setSelectedOption(course.semesterId)
-                                setCurrentCourse(course)
+                                setOpenModal(!openModal);
+                                setSelectedOption(course.semesterId);
+                                setCurrentCourse(course);
                               }}
                             >
                               Edit
@@ -692,7 +688,7 @@ const Course = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -762,7 +758,7 @@ const Course = () => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Course
+export default Course;

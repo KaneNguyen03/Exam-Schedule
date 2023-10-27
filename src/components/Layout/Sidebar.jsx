@@ -143,7 +143,7 @@ const Sidebar = () => {
                 <span className="ml-3">Exam Schedule</span>
               </Link>
             </li>)}
-            {[...makeRoles([1])].includes(user.roleId) && (
+            {[...makeRoles([1,2,3,4])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/examslot"
@@ -224,7 +224,7 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            {[...makeRoles([1,2, 4])].includes(user.roleId) && (
+            {[...makeRoles([4])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/reproctoring"

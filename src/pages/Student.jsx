@@ -1,61 +1,62 @@
-import { useEffect, useRef, useState } from "react"
-import Sidebar from "../components/Layout/Sidebar"
+import { useEffect, useRef, useState } from "react";
+import Sidebar from "../components/Layout/Sidebar";
 import {
   createStudent,
   deleteStudent,
   getAllStudents,
   getStudents,
   updateStudent,
-} from "../store/thunks/student"
-import studentTypes from "../constants/studentTypes"
-import { useDispatch, useSelector } from "react-redux"
-import { Pagination } from "react-headless-pagination"
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
-import { sizeOptions } from "../constants/commons/commons"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import ReactSelect from "react-select"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
-import { toast } from "react-toastify"
+} from "../store/thunks/student";
+import studentTypes from "../constants/studentTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { Pagination } from "react-headless-pagination";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import { sizeOptions } from "../constants/commons/commons";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import ReactSelect from "react-select";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
+import { toast } from "react-toastify";
 const Student = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  });
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
 
-  const [currentStudent, setCurrentStudent] = useState({})
-  console.log("🚀 Kha ne ~ file: Student.jsx:34 ~ currentStudent:", currentStudent)
+  const [currentStudent, setCurrentStudent] = useState({});
 
-  const datast = useSelector((state) => state.student)
-  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data
-  const pagination = datast?.paginations[studentTypes.GET_STUDENTS]
-  const popupSelect = useRef(null)
-  const [openModalAdd, setOpenModalAdd] = useState(false)
+
+  const datast = useSelector((state) => state.student);
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data;
+  const pagination = datast?.paginations[studentTypes.GET_STUDENTS];
+  const popupSelect = useRef(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
     studentListId: "",
     listStudent: [],
     courseId: "",
     numberOfProctorings: "",
-  })
+  });
 
-  const allStudents = datast?.contents[studentTypes.GET_ALL_STUDENTS]?.data
+  const allStudents = datast?.contents[studentTypes.GET_ALL_STUDENTS]?.data;
 
   const options = allStudents?.map((student) => ({
     value: student.username,
     label: student.username + " - " + student.email,
     email: student.email,
     username: student.username,
-  }))
-  const [selectedOption, setSelectedOption] = useState(null)
+  }));
 
-  const [loadings, setLoading] = useState(true)
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const [loadings, setLoading] = useState(true);
 
   const UpdateStudent = () => {
     try {
@@ -63,63 +64,63 @@ const Student = () => {
         return {
           username: item.username,
           email: item.email,
-        }
-      })
+        };
+      });
 
-      dispatch(updateStudent({ ...currentStudent, listStudent: listStudent }))
-      setOpenModal(false)
-      toast.success("Student updated successfully")
+      dispatch(updateStudent({ ...currentStudent, listStudent: listStudent }));
+      setOpenModal(false);
+      toast.success("Student updated successfully");
     } catch (error) {
-      toast.error("Error updating student")
+      toast.error("Error updating student");
     }
-  }
+  };
 
   const AddStudent = () => {
     try {
-      dispatch(createStudent(addData))
-      toast.success("Student added successfully")
-      setOpenModalAdd(false)
+      dispatch(createStudent(addData));
+      toast.success("Student added successfully");
+      setOpenModalAdd(false);
     } catch (error) {
-      toast.error("Error adding student")
+      toast.error("Error adding student");
     }
-  }
+  };
 
   const onDeleteStudent = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    }
+    };
     try {
-      dispatch(deleteStudent(req))
-      toast.success("Student deleted successfully")
+      dispatch(deleteStudent(req));
+      toast.success("Student deleted successfully");
     } catch (error) {
-      toast.error("Error deleting student")
+      toast.error("Error deleting student");
     }
 
-    setOpenModalConfirm(false)
+    setOpenModalConfirm(false);
     try {
-      setTimeout(() => dispatch(getAllStudents(param)), 1000)
+      setTimeout(() => dispatch(getAllStudents(param)), 1000);
     } catch (error) {
-      toast.error("Error getting student")
+      toast.error("Error getting student");
     }
-  }
+  };
   const restoreStudent = (data) => {
     const req = {
       ...data,
       status: "Active",
+    };
+    try {
+      dispatch(deleteStudent(req));
+      toast.success("Student restored successfully");
+    } catch (error) {
+      toast.error("Error restoring student");
     }
     try {
-      dispatch(deleteStudent(req))
-      toast.success("Student restored successfully")
+      setTimeout(() => dispatch(getAllStudents(param)), 1000);
     } catch (error) {
-      toast.error("Error restoring student")
+      toast.error("Error getting student");
     }
-    try {
-      setTimeout(() => dispatch(getAllStudents(param)), 1000)
-    } catch (error) {
-      toast.error("Error getting student")
-    }
-  }
+  };
   useEffect(() => {
     if (
       datast?.loadings[studentTypes.GET_STUDENTS] ||
@@ -127,28 +128,28 @@ const Student = () => {
       datast?.loadings[studentTypes.UPDATE_STUDENT] ||
       datast?.loadings[studentTypes.DELETE_STUDENT]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [datast, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [datast, param]);
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents({ pagesize: 9999, page: 1 }))
-      }, 500)
+        dispatch(getAllStudents({ ...param, pagesize: 9999, page: 1 }));
+      }, 500);
 
-      return () => clearTimeout(delayDebounceFn)
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting students")
+      toast.error("Error getting students");
     }
-  }, [param.keyword, dispatch, param])
+  }, [param.keyword, dispatch, param]);
 
   useEffect(() => {
     try {
-      dispatch(getStudents())
+      dispatch(getStudents());
     } catch (error) {
-      toast.error("Error getting Student")
+      toast.error("Error getting Student");
     }
-  }, [dispatch])
+  }, [dispatch]);
   return (
     <div>
       <div className="relative">
@@ -181,7 +182,7 @@ const Student = () => {
                         setParam({
                           ...param,
                           keyword: e.target.value,
-                        })
+                        });
                       }}
                       value={param.keyword}
                     />
@@ -272,14 +273,14 @@ const Student = () => {
                             setParam({
                               ...param,
                               pageSize: Number(item.value),
-                            })
-                            setIsShowSelect(false)
+                            });
+                            setIsShowSelect(false);
                           }}
                           key={item.value}
                         >
                           Show {item.value} items
                         </li>
-                      )
+                      );
                     })}
                   </ul>
                 )}
@@ -323,9 +324,9 @@ const Student = () => {
                           .map((item) => item.username)
                           .join(", ")}
                         {openModal ? (
-                          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-20 z-[1000]">
-                            <div className="modal absolute w-[28%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-                              <div className="rounded-lg shadow bg-gray-700">
+                          <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                            <div className="modal absolute translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
+                              <div className="relative rounded-lg shadow bg-gray-700">
                                 <button
                                   type="button"
                                   className="absolute top-3 right-2.5 text-gray-400 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -355,9 +356,7 @@ const Student = () => {
                                       StudentList Id
                                     </label>
                                     <input
-                                      defaultValue={
-                                        currentStudent?.studentListId
-                                      }
+                                      value={currentStudent?.studentListId}
                                       className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                       placeholder=""
                                       readOnly
@@ -370,25 +369,22 @@ const Student = () => {
                                     <ReactSelect
                                       options={options}
                                       isMulti={true}
-                                      defaultValue={student.listStudent.map(
-                                        (item) => {
-                                          return {
-                                            label:
-                                              item.username +
-                                              " - " +
-                                              item.email,
-                                            value: item.username,
-                                            email: item.email,
-                                          }
-                                        }
+                                      value={currentStudent?.listStudent.map(
+                                        (item) => ({
+                                          label:
+                                            item.username + " - " + item.email,
+                                          value: item.username,
+                                          email: item.email,
+                                          username: item.username,
+                                        })
                                       )}
                                       onChange={(data) => {
                                         // Update the selectedOption state
-                                        setSelectedOption(data)
+                                        setSelectedOption(data);
                                         setCurrentStudent({
                                           ...currentStudent,
                                           listStudent: data,
-                                        })
+                                        });
                                       }}
                                     />
                                   </div>
@@ -454,7 +450,7 @@ const Student = () => {
                         {openModalAdd ? (
                           <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
                             <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                              <div className="relative rounded-lg shadow bg-gray-700">
+                              <div className="relativerounded-lg shadow bg-gray-700">
                                 <button
                                   type="button"
                                   className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -503,11 +499,11 @@ const Student = () => {
                                       isMulti={true}
                                       onChange={(data) => {
                                         // Update the selectedOption state
-                                        setSelectedOption(data)
+                                        setSelectedOption(data);
                                         setAddData({
                                           ...addData,
                                           listStudent: data,
-                                        })
+                                        });
                                       }}
                                     />
                                   </div>
@@ -669,8 +665,8 @@ const Student = () => {
                                 onClick={() =>
                                   // onDeleteClassroom(classroom)
                                   {
-                                    setCurrentStudent(student)
-                                    setOpenModalConfirm(true)
+                                    setCurrentStudent(student);
+                                    setOpenModalConfirm(true);
                                   }
                                 }
                               >
@@ -681,8 +677,8 @@ const Student = () => {
                                 id="Edit"
                                 className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                                 onClick={() => {
-                                  setOpenModal(!openModal)
-                                  setCurrentStudent(student)
+                                  setOpenModal(!openModal);
+                                  setCurrentStudent(student);
                                 }}
                               >
                                 Edit
@@ -717,7 +713,7 @@ const Student = () => {
                   <Pagination
                     currentPage={pagination.currentPage - 1}
                     setCurrentPage={(page) => {
-                      setParam({ ...param, page: page + 1 })
+                      setParam({ ...param, page: page + 1 });
                     }}
                     totalPages={pagination.totalPage}
                     edgePageCount={3}
@@ -788,7 +784,7 @@ const Student = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Student
+export default Student;

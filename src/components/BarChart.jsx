@@ -38,7 +38,7 @@ function BarChart() {
   //
   const labels = Object.keys(teacherCounts)
   const counts = Object.values(teacherCounts)
-  const compensations = counts.map((count) => count * 4.25)
+  const compensations = counts?.map((count) => count * 4.25)
   //
   const data = {
     labels,

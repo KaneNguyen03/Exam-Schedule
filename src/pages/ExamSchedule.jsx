@@ -54,15 +54,6 @@ const ExamscheduleDashboard = () => {
   const [openModal, setOpenModal] = useState(false)
   const [currentExamSchedule, setCurrentExamSchedule] = useState()
 
-
-  // const options = teachers?.map((teacher) => ({
-  //   value: teacher.proctoringId,
-  //   label: teacher.proctoringId + " : " + teacher.proctoringName,
-  // }))
-  // const optionsClassroom = classrooms?.map((classroom) => ({
-  //   value: classroom.classroomId,
-  //   label: classroom.classroomId + " : " + classroom.name,
-  // }))
   const optionsCourses = courses?.map((course) => ({
     value: course.courseId,
     label: course.courseId,
@@ -129,7 +120,7 @@ const ExamscheduleDashboard = () => {
   })
 
   const handleSubmitExamSchedule = async () => {
-    const newListProctorings = currentExamSchedule.listProctoring.map(
+    const newListProctorings = currentExamSchedule.listProctoring?.map(
       (item) => ({
         ...item,
         listExamSlot: [],
@@ -154,6 +145,8 @@ const ExamscheduleDashboard = () => {
     } catch (err) {
       toast.error("Error generate Exam Schedule")
     }
+
+    setOpenModalChoosingCourse(false)
   }
 
   const localizer = momentLocalizer(moment)

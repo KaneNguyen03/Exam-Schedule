@@ -48,7 +48,7 @@ function PieChart() {
 
   const values = Object.values(slotsCount)
   const labels = Object.keys(slotsCount)
-  const backgroundColors = labels.map(() => randomColor())
+  const backgroundColors = labels?.map(() => randomColor())
 
   const data = {
     labels,
@@ -57,7 +57,7 @@ function PieChart() {
         label: "Exam current cases",
         data: values,
         backgroundColor: backgroundColors, // Assign the generated colors here
-        borderColor: backgroundColors.map((color) => color.replace("0.8", "1")),
+        borderColor: backgroundColors?.map((color) => color.replace("0.8", "1")),
         borderWidth: 1,
       },
     ],

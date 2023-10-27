@@ -1,58 +1,68 @@
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
 
-import { useEffect, useRef, useState } from "react"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import { sizeOptions, timeOptions } from "../constants/commons/commons"
-import { Pagination } from "react-headless-pagination"
-import ReactSelect from "react-select"
-import teacherTypes from "../constants/teacherTypes"
-import examslotTypes from "../constants/examslotTypes"
+import { useEffect, useRef, useState } from "react";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import { sizeOptions, timeOptions } from "../constants/commons/commons";
+import { Pagination } from "react-headless-pagination";
+import ReactSelect from "react-select";
+import teacherTypes from "../constants/teacherTypes";
+import examslotTypes from "../constants/examslotTypes";
 import {
   createExamslot,
   deleteExamslot,
   getAllExamslots,
   updateExamslot,
-} from "../store/thunks/examslot"
+} from "../store/thunks/examslot";
 
-import Sidebar from "../components/Layout/Sidebar"
-import { useDispatch, useSelector } from "react-redux"
-import { createTeacher, getAllTeachers } from "../store/thunks/teacher"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
-import moment from "moment"
-import ReactDatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-import { createExamschedule } from "../store/thunks/examschedule"
-import { v4 as uuidv4 } from "uuid"
-import classroomTypes from "../constants/classroomTypes"
-import { getAllClassrooms } from "../store/thunks/classroom"
-import { toast } from "react-toastify"
-import { differenceInDays, parseISO } from "date-fns"
+import Sidebar from "../components/Layout/Sidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { createTeacher, getAllTeachers } from "../store/thunks/teacher";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
+import moment from "moment";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { createExamschedule } from "../store/thunks/examschedule";
+import { v4 as uuidv4 } from "uuid";
+import classroomTypes from "../constants/classroomTypes";
+import { getAllClassrooms } from "../store/thunks/classroom";
+import { toast } from "react-toastify";
+import { differenceInDays, parseISO } from "date-fns";
+import courseTypes from "../constants/courseTypes";
+import { makeRoles } from "../utils/common";
+import { CSVLink } from "react-csv";
+import { getAllCourses } from "../store/thunks/course";
+import examslotApi from "../apis/examslot";
 
 const ExamSlot = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
-  const [currentExamslot, setCurrentExamslot] = useState({})
-
-  const dataexsl = useSelector((state) => state.examslot)
-  const datate = useSelector((state) => state.teacher)
-  const datacl = useSelector((state) => state.classroom)
-
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
-  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data
-  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
-  const popupSelect = useRef(null)
-  const [openModalAdd, setOpenModalAdd] = useState(false)
+  });
+  const [currentExamslot, setCurrentExamslot] = useState({});
+  const handleExportCSV = (e) => {
+    e.preventDefault();
+    const element = document.getElementById("exportCSV");
+    element.click();
+  };
+  const dataexsl = useSelector((state) => state.examslot);
+  const datate = useSelector((state) => state.teacher);
+  const datacl = useSelector((state) => state.classroom);
+  const dataco = useSelector((state) => state.course);
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data;
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
+  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
+  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
+  const popupSelect = useRef(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
     examSlotId: "",
     examSlotName: "",
@@ -61,57 +71,83 @@ const ExamSlot = () => {
     endTime: "",
     listProctoring: [],
     status: "active",
-  })
+    courseId: "",
+  });
 
-  const [loadings, setLoading] = useState(true)
-  const currentDate = new Date()
-  const [selectedOption, setSelectedOption] = useState(null)
-  const today = new Date()
-  const maxDate = new Date(today)
-  maxDate.setDate(today.getDate() + 7)
+  const [loadings, setLoading] = useState(true);
+  const currentDate = new Date();
+  const [selectedOption, setSelectedOption] = useState(null);
+  const today = new Date();
+  const maxDate = new Date(today);
+  maxDate.setDate(today.getDate() + 7);
+  const optionCourses = courses?.map((course) => ({
+    value: course.courseId,
+    label: course.courseId,
+  }));
+  console.log(optionCourses);
   const options = teachers?.map((teacher) => ({
     value: teacher,
     label: teacher.proctoringName,
-  }))
+  }));
 
+  const headers = [
+    { label: "examSlotId", key: "examSlotId" },
+    { label: "examSlotName", key: "examSlotName" },
+    { label: "courseId", key: "courseId" },
+    { label: "listProctoring", key: "listProctoring" },
+    { label: "date", key: "date" },
+    { label: "startTime", key: "startTime" },
+    { label: "endTime", key: "endTime" },
+  ];
+  const [exportData, setExportData] = useState([
+    {
+      examSlotId: "",
+      examSlotName: "",
+      courseId: "",
+      listProctoring: [],
+      date: "",
+      startTime: "",
+      endTime: "",
+    },
+  ]);
   //setup DATE selection
-  const [selectedDate, setSelectedDate] = useState(null)
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const handleDateChange = (date) => {
-    const nextDay = new Date(date)
-    nextDay.setDate(nextDay.getDate() + 1)
+    const nextDay = new Date(date);
+    nextDay.setDate(nextDay.getDate() + 1);
     setCurrentExamslot({
       ...currentExamslot,
       date: nextDay,
-    })
-    setAddData({ ...addData, date: nextDay })
-    setSelectedDate(date)
-  }
+    });
+    setAddData({ ...addData, date: nextDay });
+    setSelectedDate(date);
+  };
   const UpdateExamslot = () => {
     try {
       const newListProctorings = currentExamslot.listProctoring.map((item) => ({
         ...item,
         listExamSlot: [],
-      }))
+      }));
       const submitData = {
         ...currentExamslot,
         listProctoring: newListProctorings,
-      }
-      dispatch(updateExamslot(submitData))
-      toast.success("Examslot updated successfully")
+      };
+      dispatch(updateExamslot(submitData));
+      toast.success("Examslot updated successfully");
     } catch (error) {
-      toast.error("Error updating examslot")
+      toast.error("Error updating examslot");
     }
 
-    setOpenModal(false)
-  }
+    setOpenModal(false);
+  };
 
   const AddExamslot = () => {
     try {
-      dispatch(createExamslot(addData))
-      toast.success("Examslot added successfully")
+      dispatch(createExamslot(addData));
+      toast.success("Examslot added successfully");
     } catch (error) {
-      toast.error("Error adding examslot")
+      toast.error("Error adding examslot");
     }
     // try {
     //   setTimeout(
@@ -133,45 +169,57 @@ const ExamSlot = () => {
     //   toast.error("Error creating examschedule")
     // }
 
-    setOpenModalAdd(false)
-  }
+    setOpenModalAdd(false);
+  };
+  const [selectedFile, setSelectedFile] = useState(null);
+  console.log(selectedFile);
+  const handleUpload = () => {
+    if (selectedFile) {
+      try {
+        examslotApi.importExamSlot(selectedFile);
+        toast.success("Import successfully");
+      } catch (error) {
+        toast.error("Error importing");
+      }
+    }
+  };
 
   const onDeleteExamslot = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    }
+    };
     try {
-      dispatch(deleteExamslot(req))
-      toast.success("Examslot deleted successfully")
+      dispatch(deleteExamslot(req));
+      toast.success("Examslot deleted successfully");
     } catch (error) {
-      toast.error("Error deleting examslot")
+      toast.error("Error deleting examslot");
     }
 
-    setOpenModalConfirm(false)
+    setOpenModalConfirm(false);
     try {
-      setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+      setTimeout(() => dispatch(getAllExamslots(param)), 1000);
     } catch (error) {
-      toast.error("Error getting examslot")
+      toast.error("Error getting examslot");
     }
-  }
+  };
   const restoreExamslot = (data) => {
     const req = {
       ...data,
       status: "Active",
+    };
+    try {
+      dispatch(deleteExamslot(req));
+      toast.success("Exam slot restored successfully");
+    } catch (error) {
+      toast.error("Error restoring examslot");
     }
     try {
-      dispatch(deleteExamslot(req))
-      toast.success("Exam slot restored successfully")
+      setTimeout(() => dispatch(getAllExamslots(param)), 1000);
     } catch (error) {
-      toast.error("Error restoring examslot")
+      toast.error("Error getting examslot ");
     }
-    try {
-      setTimeout(() => dispatch(getAllExamslots(param)), 1000)
-    } catch (error) {
-      toast.error("Error getting examslot ")
-    }
-  }
+  };
   useEffect(() => {
     if (
       dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
@@ -179,38 +227,43 @@ const ExamSlot = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [dataexsl, param])
+      setLoading(true);
+    else setLoading(false);
+    if (examslots?.data !== undefined) {
+      const preprocessedData = examslots?.data?.map((item) => ({
+        ...item,
+        listProctoring: item.listProctoring
+          ?.map((proctoring) => proctoring.proctoringName)
+          .join(", "),
+      }));
+      setExportData(preprocessedData);
+    }
+  }, [dataexsl, param, examslots]);
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllExamslots(param))
-      }, 500)
-      return () => clearTimeout(delayDebounceFn)
+        dispatch(getAllExamslots(param));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting examslot")
+      toast.error("Error getting examslot");
     }
-    try {
-      dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
-    } catch (error) {
-      toast.error("Error getting teacher")
-    }
-  }, [dispatch, param])
+  }, [dispatch, param]);
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
-        dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
-      }, 500)
+        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }));
+        dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
+        dispatch(getAllCourses({ page: 1, pageSize: 999 }));
+      }, 500);
 
-      return () => clearTimeout(delayDebounceFn)
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting exam rooms")
+      toast.error("Error getting exam rooms");
     }
-  }, [dispatch])
+  }, [dispatch]);
 
   return (
     <div className="relative">
@@ -243,7 +296,7 @@ const ExamSlot = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -295,14 +348,40 @@ const ExamSlot = () => {
           </header>
           <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
             <div className="justify-center w-full">Examslot Management</div>
-            <button
-              type="button"
-              id="Add"
-              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
-              onClick={() => setOpenModalAdd(true)}
-            >
-              Add
-            </button>
+            {[...makeRoles([1, 2])].includes(user.roleId) && (
+              <button
+                type="button"
+                id="Add"
+                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
+                onClick={() => setOpenModalAdd(true)}
+              >
+                Add
+              </button>
+            )}
+            {[...makeRoles([1, 2])].includes(user.roleId) && (
+              <button
+                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-green-600 hover:bg-green-700 focus:ring-green-900"
+                onClick={() => handleUpload()}
+              >
+                {" "}
+                <input
+                  type="file"
+                  accept=".xlsx"
+                  onChange={(e) => setSelectedFile(e.target.files[0])}
+                />
+                <span className="ml-2">Import Exam Slot</span>
+              </button>
+            )}
+            {[...makeRoles([1, 2, 3])].includes(user.roleId) && (
+              <button
+                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-900"
+                onClick={(e) => {
+                  handleExportCSV(e);
+                }}
+              >
+                <span className="ml-2">Export Exam Slot</span>
+              </button>
+            )}
             {openModalAdd ? (
               <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
                 <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
@@ -369,17 +448,17 @@ const ExamSlot = () => {
                           options={options}
                           isMulti={true}
                           onChange={(data) => {
-                            const newListProctoring = data.map(
+                            const newListProctoring = data?.map(
                               (item) => item.value
-                            )
+                            );
                             // Update the selectedOption state
                             setSelectedOption(
                               selectedOption ? selectedOption.value : null
-                            )
+                            );
                             setAddData({
                               ...addData,
                               listProctoring: newListProctoring,
-                            })
+                            });
                           }}
                         />
                       </div>
@@ -397,6 +476,22 @@ const ExamSlot = () => {
                           className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                         />             
                       </div> */}
+
+                      <label className="mb-2 text-sm font-medium  text-white flex">
+                        Course
+                      </label>
+                      <ReactSelect
+                        className="text-sm text-start"
+                        options={optionCourses}
+                        isMulti={false}
+                        onChange={(selectedOption) => {
+                          setAddData({
+                            ...addData,
+                            courseId: selectedOption.value,
+                          });
+                        }}
+                      />
+
                       <label className="text-sm font-medium text-white flex">
                         Date
                       </label>
@@ -417,7 +512,7 @@ const ExamSlot = () => {
                           className="text-sm text-start"
                           options={timeOptions}
                           isMulti={false}
-                          defaultValue={
+                          value={
                             selectedOption
                               ? timeOptions.find(
                                   (option) => option.value === selectedOption
@@ -431,18 +526,18 @@ const ExamSlot = () => {
                               startTime: selectedOption
                                 ? selectedOption.value
                                 : null,
-                            }))
+                            }));
 
                             // Update the selectedOption state
                             setSelectedOption(
                               selectedOption ? selectedOption.value : null
-                            )
+                            );
 
                             setAddData({
                               ...addData,
                               startTime: selectedOption.value[0],
                               endTime: selectedOption.value[1],
-                            })
+                            });
                           }}
                         />
                       </div>
@@ -504,19 +599,19 @@ const ExamSlot = () => {
                   ref={popupSelect}
                   className="text-left cursor-pointer absolute"
                 >
-                  {sizeOptions.map((item) => {
+                  {sizeOptions?.map((item) => {
                     return (
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) })
-                          setIsShowSelect(false)
+                          setParam({ ...param, pageSize: Number(item.value) });
+                          setIsShowSelect(false);
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -535,6 +630,9 @@ const ExamSlot = () => {
                   <th scope="col" className="px-6 py-3">
                     proctoringId
                   </th>
+                  <th scope="col" className="px-6 py-3">
+                    course
+                  </th>
 
                   <th scope="col" className="px-6 py-3">
                     date
@@ -545,13 +643,16 @@ const ExamSlot = () => {
                   <th scope="col" className="px-6 py-3">
                     End Time
                   </th>
-
-                  <th scope="col" className="px-6 py-3">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Action
-                  </th>
+                  {[...makeRoles([1, 2])].includes(user.roleId) && (
+                    <>
+                      <th scope="col" className="px-6 py-3">
+                        Status
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Action
+                      </th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -563,9 +664,10 @@ const ExamSlot = () => {
                     <td className="px-6 py-4">{examslot.examSlotId}</td>
                     <td className="px-6 py-4">
                       {examslot.examSlotName}
+
                       {openModal ? (
-                        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-10 z-[1000]">
-                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
@@ -619,34 +721,55 @@ const ExamSlot = () => {
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium text-white flex">
-                                    proctoring id
+                                    proctoring name
                                   </label>
                                   <ReactSelect
                                     options={options}
                                     isMulti={true}
-                                    defaultValue={currentExamslot.listProctoring.map(
+                                    value={currentExamslot?.listProctoring?.map(
                                       (proctoring) => ({
-                                        value: proctoring.proctoringName,
+                                        value: proctoring,
                                         label: proctoring.proctoringName,
                                       })
                                     )}
                                     onChange={(selectedOption) => {
                                       // Update the proctoringLocation in the currentTeacher state
                                       const newListProctoring =
-                                        selectedOption.map((item) => item.value)
+                                        selectedOption.map(
+                                          (item) => item.value
+                                        );
                                       setCurrentExamslot((prevExamslot) => ({
                                         ...prevExamslot,
                                         listProctoring: newListProctoring
                                           ? newListProctoring
                                           : null,
-                                      }))
+                                      }));
 
                                       // Update the selectedOption state
                                       setSelectedOption(
                                         newListProctoring
                                           ? newListProctoring
                                           : null
-                                      )
+                                      );
+                                    }}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="mb-2 text-sm font-medium text-white flex">
+                                    Course
+                                  </label>
+                                  <ReactSelect
+                                    options={optionCourses}
+                                    isMulti={false}
+                                    value={optionCourses?.find(
+                                      (x) =>
+                                        x.value == currentExamslot?.courseId
+                                    )}
+                                    onChange={(selectedOption) => {
+                                      setCurrentExamslot({
+                                        ...currentExamslot,
+                                        courseId: selectedOption.value,
+                                      });
                                     }}
                                   />
                                 </div>
@@ -670,7 +793,7 @@ const ExamSlot = () => {
                                   <ReactSelect
                                     options={timeOptions}
                                     isMulti={false}
-                                    defaultValue={
+                                    value={
                                       timeOptions
                                         ? timeOptions.find(
                                             (option) =>
@@ -689,38 +812,17 @@ const ExamSlot = () => {
                                         endTime: selectedOption
                                           ? selectedOption.value[1]
                                           : null,
-                                      }))
+                                      }));
 
                                       // Update the selectedOption state
                                       setSelectedOption(
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      )
-
-                                      // setAddData({
-                                      //   ...addData,
-                                      //   startTime: selectedOption.value[0],
-                                      //   endTime: selectedOption.value[1],
-                                      // })
+                                      );
                                     }}
                                   />
                                 </div>
-                                {/* <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    End Time
-                                  </label>
-                                  <input
-                                    value={currentExamslot?.endTime}
-                                    onChange={(e) =>
-                                      setCurrentExamslot({
-                                        ...currentExamslot,
-                                        endTime: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div> */}
 
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
@@ -811,9 +913,10 @@ const ExamSlot = () => {
                     </td>
                     <td className="px-6 py-4">
                       {examslot.listProctoring
-                        .map((item) => item.proctoringName)
+                        ?.map((item) => item.proctoringName)
                         .join(", ")}
                     </td>
+                    <td className="px-6 py-4">{examslot.courseId}</td>
                     <td className="px-6 py-4">
                       {moment(examslot.date).format("DD/MM/YYYY")}
                     </td>
@@ -825,124 +928,131 @@ const ExamSlot = () => {
                         // Split the startTime into hours and minutes
                         const [hours, minutes] = examslot.startTime
                           .split(":")
-                          .map(Number)
+                          .map(Number);
 
                         // Add 90 minutes
-                        const newMinutes = minutes + 90
-                        const newHours = hours + Math.floor(newMinutes / 60)
-                        const formattedHours = newHours % 24 // Handle overflow if necessary
-                        const formattedMinutes = newMinutes % 60
+                        const newMinutes = minutes + 90;
+                        const newHours = hours + Math.floor(newMinutes / 60);
+                        const formattedHours = newHours % 24; // Handle overflow if necessary
+                        const formattedMinutes = newMinutes % 60;
 
                         // Format the result as "HH:mm"
                         const formattedTime = `${formattedHours
                           .toString()
                           .padStart(2, "0")}:${formattedMinutes
                           .toString()
-                          .padStart(2, "0")}`
+                          .padStart(2, "0")}`;
 
-                        return formattedTime
+                        return formattedTime;
                       })()}
                     </td>
-                    <td>
+                    {[...makeRoles([1, 2])].includes(user.roleId) && (
                       <>
-                        {examslot?.status?.toLowerCase() === "active" &&
-                        differenceInDays(
-                          parseISO(examslot?.date?.toString().substring(0, 10)),
-                          currentDate
-                        ) > 0 ? (
-                          <StatusButton
-                            color={color.green}
-                            bgColor={color.greenLight}
-                            title="Active"
-                          />
-                        ) : examslot?.status === "Inactive" ? (
-                          <StatusButton
-                            color={color.red}
-                            bgColor={color.redLight}
-                            title="Inactive"
-                          />
-                        ) : (examslot?.status.toLowerCase() === "active" ||  examslot?.status.toLowerCase() === "pending")&&
-                          differenceInDays(
-                            parseISO(
-                              examslot?.date?.toString().substring(0, 10)
-                            ),
-                            currentDate
-                          ) < 0 ? (
-                          <StatusButton
-                            color={color.yellow}
-                            bgColor={color.yellowLight}
-                            title="Completed"
-                          />
-                        ) : examslot?.status?.toLowerCase() === "pending" &&
-                          differenceInDays(
-                            parseISO(
-                              examslot?.date?.toString().substring(0, 10)
-                            ),
-                            currentDate
-                          ) > 0 ? (
-                          <StatusButton
-                            color={color.blue}
-                            bgColor={color.blueLight}
-                            title="Pending"
-                          />
-                        ) : (
-                          <>-</>
-                        )}
-                      </>
-                    </td>
-                    <td>
-                      <div className="">
-                        {examslot?.status?.toLowerCase() === "active" ||
-                        examslot?.status?.toLowerCase() === "pending" ? (
+                        <td>
                           <>
-                            {" "}
-                            <button
-                              type="button"
-                              id="Delete"
-                              className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
-                              onClick={() =>
-                                // onDeleteClassroom(classroom)
-                                {
-                                  setCurrentExamslot(examslot)
-                                  setOpenModalConfirm(true)
-                                }
-                              }
-                            >
-                              Delete
-                            </button>
-                            <button
-                              type="button"
-                              id="Edit"
-                              className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
-                              onClick={() => {
-                                setOpenModal(!openModal)
-                                setSelectedOption(examslot.proctoringId)
-                                setCurrentExamslot(examslot)
-                              }}
-                            >
-                              Edit
-                            </button>
+                            {examslot?.status?.toLowerCase() === "active" &&
+                            differenceInDays(
+                              parseISO(
+                                examslot?.date?.toString().substring(0, 10)
+                              ),
+                              currentDate
+                            ) > 0 ? (
+                              <StatusButton
+                                color={color.green}
+                                bgColor={color.greenLight}
+                                title="Active"
+                              />
+                            ) : examslot?.status === "Inactive" ? (
+                              <StatusButton
+                                color={color.red}
+                                bgColor={color.redLight}
+                                title="Inactive"
+                              />
+                            ) : (examslot?.status.toLowerCase() === "active" ||
+                                examslot?.status.toLowerCase() === "pending") &&
+                              differenceInDays(
+                                parseISO(
+                                  examslot?.date?.toString().substring(0, 10)
+                                ),
+                                currentDate
+                              ) < 0 ? (
+                              <StatusButton
+                                color={color.yellow}
+                                bgColor={color.yellowLight}
+                                title="Completed"
+                              />
+                            ) : examslot?.status?.toLowerCase() === "pending" &&
+                              differenceInDays(
+                                parseISO(
+                                  examslot?.date?.toString().substring(0, 10)
+                                ),
+                                currentDate
+                              ) > 0 ? (
+                              <StatusButton
+                                color={color.blue}
+                                bgColor={color.blueLight}
+                                title="Pending"
+                              />
+                            ) : (
+                              <>-</>
+                            )}
                           </>
-                        ) : (
-                          <button
-                            onClick={() => restoreExamslot(examslot)}
-                            className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-400 hover:bg-gray-500 focus:ring-gray-600"
-                          >
-                            <svg
-                              viewBox="64 64 896 896"
-                              focusable="false"
-                              data-icon="redo"
-                              width="1em"
-                              height="1em"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path d="M758.2 839.1C851.8 765.9 912 651.9 912 523.9 912 303 733.5 124.3 512.6 124 291.4 123.7 112 302.8 112 523.9c0 125.2 57.5 236.9 147.6 310.2 3.5 2.8 8.6 2.2 11.4-1.3l39.4-50.5c2.7-3.4 2.1-8.3-1.2-11.1-8.1-6.6-15.9-13.7-23.4-21.2a318.64 318.64 0 01-68.6-101.7C200.4 609 192 567.1 192 523.9s8.4-85.1 25.1-124.5c16.1-38.1 39.2-72.3 68.6-101.7 29.4-29.4 63.6-52.5 101.7-68.6C426.9 212.4 468.8 204 512 204s85.1 8.4 124.5 25.1c38.1 16.1 72.3 39.2 101.7 68.6 29.4 29.4 52.5 63.6 68.6 101.7 16.7 39.4 25.1 81.3 25.1 124.5s-8.4 85.1-25.1 124.5a318.64 318.64 0 01-68.6 101.7c-9.3 9.3-19.1 18-29.3 26L668.2 724a8 8 0 00-14.1 3l-39.6 162.2c-1.2 5 2.6 9.9 7.7 9.9l167 .8c6.7 0 10.5-7.7 6.3-12.9l-37.3-47.9z"></path>
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    </td>
+                        </td>
+                        <td>
+                          <div className="">
+                            {examslot?.status?.toLowerCase() === "active" ||
+                            examslot?.status?.toLowerCase() === "pending" ? (
+                              <>
+                                {" "}
+                                <button
+                                  type="button"
+                                  id="Delete"
+                                  className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
+                                  onClick={() =>
+                                    // onDeleteClassroom(classroom)
+                                    {
+                                      setCurrentExamslot(examslot);
+                                      setOpenModalConfirm(true);
+                                    }
+                                  }
+                                >
+                                  Delete
+                                </button>
+                                <button
+                                  type="button"
+                                  id="Edit"
+                                  className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
+                                  onClick={() => {
+                                    setOpenModal(!openModal);
+                                    setSelectedOption(examslot.proctoringId);
+                                    setCurrentExamslot(examslot);
+                                  }}
+                                >
+                                  Edit
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => restoreExamslot(examslot)}
+                                className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-gray-400 hover:bg-gray-500 focus:ring-gray-600"
+                              >
+                                <svg
+                                  viewBox="64 64 896 896"
+                                  focusable="false"
+                                  data-icon="redo"
+                                  width="1em"
+                                  height="1em"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                >
+                                  <path d="M758.2 839.1C851.8 765.9 912 651.9 912 523.9 912 303 733.5 124.3 512.6 124 291.4 123.7 112 302.8 112 523.9c0 125.2 57.5 236.9 147.6 310.2 3.5 2.8 8.6 2.2 11.4-1.3l39.4-50.5c2.7-3.4 2.1-8.3-1.2-11.1-8.1-6.6-15.9-13.7-23.4-21.2a318.64 318.64 0 01-68.6-101.7C200.4 609 192 567.1 192 523.9s8.4-85.1 25.1-124.5c16.1-38.1 39.2-72.3 68.6-101.7 29.4-29.4 63.6-52.5 101.7-68.6C426.9 212.4 468.8 204 512 204s85.1 8.4 124.5 25.1c38.1 16.1 72.3 39.2 101.7 68.6 29.4 29.4 52.5 63.6 68.6 101.7 16.7 39.4 25.1 81.3 25.1 124.5s-8.4 85.1-25.1 124.5a318.64 318.64 0 01-68.6 101.7c-9.3 9.3-19.1 18-29.3 26L668.2 724a8 8 0 00-14.1 3l-39.6 162.2c-1.2 5 2.6 9.9 7.7 9.9l167 .8c6.7 0 10.5-7.7 6.3-12.9l-37.3-47.9z"></path>
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -952,7 +1062,7 @@ const ExamSlot = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -1021,8 +1131,14 @@ const ExamSlot = () => {
           </div>
         </main>
       </div>
+      <CSVLink
+        data={exportData} // data truyen vao
+        filename={`${"ExamSlotExport"}.csv`}
+        headers={headers}
+        id="exportCSV"
+      />
     </div>
-  )
-}
+  );
+};
 
-export default ExamSlot
+export default ExamSlot;

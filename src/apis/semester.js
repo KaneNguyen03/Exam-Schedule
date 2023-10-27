@@ -15,8 +15,10 @@ const updateSemester = async (data) => {
      const response = await apiInstance.put(
        `api/Semester/${data.semesterId}`,
        {
+
          semesterId: data.semesterId,
          semesterName: data.semesterName,
+         listMajor: data.listMajor,
          majorId: data.majorId,   
          course: data.course,
          status: "Active"
@@ -46,12 +48,17 @@ const updateSemester = async (data) => {
  
  const createSemester = async (data) => {
    try {
+    const newListMajor = data.listMajor?.map((major)=>({
+      ...major,
+      ListSemester:[]
+    }))
      const response = await apiInstance.post(`api/Semester`, {
        semesterId: data.semesterId,
        semesterName: data.semesterName,
-       majorId: data.majorId,
        course: data.course,
-       status:"Active"
+       status:"active",
+       listMajor: data.listMajor ? newListMajor :[],
+       majorId: data.majorId ? data.major:"",
      })
      return response
    } catch (error) {

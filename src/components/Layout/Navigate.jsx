@@ -11,7 +11,7 @@ function Navigate(props) {
     <div className="bg-navigate">
       <div className="text-sm font-bold h-16 flex items-center justify-between  max-w-full md:max-w-screen-2xl mx-auto px-4 md:px-6 py-1 md:py-3">
         <div className="flex items-center">
-          {options.map((item, i) => {
+          {options?.map((item, i) => {
             const { id, title, canNavigate, path } = item
             return (
               <div className="flex items-center" key={i}>

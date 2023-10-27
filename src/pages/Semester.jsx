@@ -31,13 +31,16 @@ const SemesterDashboard = () => {
   const [openModalAdd, setOpenModalAdd] = useState(false);
   //const [selectedOptionAdd, setSelectedOptionAdd] = useState(null);
   const [openModalConfirm, setOpenModalConfirm] = useState(false);
+ 
 
   const [currentSemester, setCurrentSemester] = useState({
     semesterId: "",
     semesterName: "",
     course: "",
     majorId: "",
+    listMajor: [],
   });
+
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
@@ -47,7 +50,7 @@ const SemesterDashboard = () => {
   const popupSelect = useRef(null);
   const [loadings, setLoading] = useState(true);
   const options = majors?.map((major) => ({
-    value: major.majorId,
+    value: major,
     label: major.majorId + " : " + major.majorName,
   }));
 
@@ -56,6 +59,9 @@ const SemesterDashboard = () => {
 
   const UpdateSemester = () => {
     try {
+      const newListMajor = currentSemester.listMajor.map((item) => ({
+        ...item,
+      }));
       dispatch(updateSemester(currentSemester));
       toast.success("Semester updated successfully");
     } catch (error) {
@@ -132,15 +138,11 @@ const SemesterDashboard = () => {
     try {
       const delayDebounceFn = setTimeout(() => {
         dispatch(getAllSemesters(param));
+        dispatch(getAllMajors({ page: 1, pageSize: 999 }));
       }, 500);
       return () => clearTimeout(delayDebounceFn);
     } catch (error) {
       toast.error("Error getting semester");
-    }
-    try {
-      dispatch(getAllMajors({ page: 1, pageSize: 999 }));
-    } catch (error) {
-      toast.error("Error getting major");
     }
   }, [param.keyword, dispatch, param]);
   return (
@@ -308,9 +310,9 @@ const SemesterDashboard = () => {
                       {semester.semesterName}
                       {/**select module */}
                       {openModal ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
-                            <div className="relative rounded-lg shadow bg-gray-700">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                  <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -366,49 +368,32 @@ const SemesterDashboard = () => {
                                     Major
                                   </label>
 
-                                  {/**
-                                   * Select the semester
-                                   *
-                                   */}
-                                  {/* <select
-                                  value={currentSeptember?.semesterId}
-                                  onChange={(e) =>
-                                    setCurrentMajor({
-                                      ...currentSeptember,
-                                      semester : e.target.value,
-                                    })
-                                  }
-                                  className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                >
-                                  
-                                  {semester?.data?.map((semester) => (
-                                    <option
-                                      key={semester.semesterId}
-                                      value={semester.semesterId}
-                                    >
-                                      {semester.semesterName}
-                                    </option>
-                                  ))}
-                                </select> */}
                                   <ReactSelect
                                     options={options}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options?.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
+                                    isMulti={true}
+                                    value={currentSemester?.listMajor?.map(
+                                      (major) => {
+                                        return {
+                                          id: major.majorId,
+                                          value: major,
+                                          label:
+                                            major.majorId +
+                                            " - " +
+                                            major.majorName,
+                                        };
+                                      }
+                                    )}
                                     onChange={(selectedOption) => {
                                       // Update the selectedOption state
-                                      setSelectedOption(selectedOption);
-
-                                      setCurrentSemester({
-                                        ...currentSemester,
-                                        majorId: selectedOption.value,
-                                      });
+                                      const newListMajor = selectedOption.map(
+                                        (item) => item.value
+                                      );
+                                      setCurrentSemester((prevSemester) => ({
+                                        ...prevSemester,
+                                        listMajor: newListMajor
+                                          ? newListMajor
+                                          : null,
+                                      }));
                                     }}
                                   />
                                 </div>
@@ -440,9 +425,9 @@ const SemesterDashboard = () => {
                         <></>
                       )}
                       {openModalAdd ? (
-                        <div className="modal absolute top-5 w-[30%] z-20">
-                          <div className="modal-content ">
-                            <div className="relativerounded-lg shadow bg-gray-700">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                  <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -502,25 +487,19 @@ const SemesterDashboard = () => {
                                   </label>
                                   <ReactSelect
                                     options={options}
-                                    isMulti={false}
-                                    defaultValue={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the selectedOption state
-                                      setSelectedOption(selectedOption);
-
-                                      setCurrentSemester({
-                                        ...currentSemester,
-                                        majorId: selectedOption.value,
-                                      });
-                                    }}
-                                  />
+                                    isMulti={true  }
+                                   onChange={(data)=>{
+                                    const newListMajor = data.map((item) =>item.value);
+                                   
+                                   setSelectedOption(
+                                      selectedOption ? selectedOption.value: null
+                                   );
+                                   setCurrentSemester({
+                                    ...currentSemester,
+                                    listMajor: newListMajor,
+                                   });
+                                   }}
+                                   />
                                 </div>
 
                                 <div className="flex justify-between">
@@ -609,7 +588,7 @@ const SemesterDashboard = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-6 py-4">{semester.majorId}</td>
+                    <td className="px-6 py-4">{semester.listMajor.map((item)=>item.majorId ) .join(", ")}</td>
 
                     <td>
                       <>

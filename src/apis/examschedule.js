@@ -30,9 +30,10 @@ const generateExamSchedule = async (res) => {
 
 const getExamScheduleByCourseIdAndExamSlotId = async (res) => {
   try {
-    const url = "&" + new URLSearchParams(res.param).toString()
+    console.log(res)
+    const url = "&" + new URLSearchParams(res).toString()
     const data = await apiInstance.get(
-      `api/ExamSchedule/GetExamSchedulesByCourseIDAndExamSlotID?CourseId=${res.courseId}&ExamSlotId=${res.examSlotId}${url}`
+      `api/ExamSchedule/GetExamSchedulesByCourseIDAndExamSlotID?${url}`
     )
     return data;
   } catch (error) {
@@ -40,11 +41,26 @@ const getExamScheduleByCourseIdAndExamSlotId = async (res) => {
   }
 }
 
+const sendMail = async (res) => {
+
+  try {
+
+    const data = await apiInstance.post(
+      `api/ExamSchedule/SendEmailNotification?courseId=${res.courseId}&examSlotId=${res.examSlotId}`
+    )
+    return data;
+  } catch (error) {
+    throw new Error("Error sent mail")
+  }
+}
+
+
 const examscheduleApi = {
   getAllExamschedules,
   createExamschedule,
   generateExamSchedule,
-  getExamScheduleByCourseIdAndExamSlotId
+  getExamScheduleByCourseIdAndExamSlotId,
+  sendMail
 }
 
 export default examscheduleApi

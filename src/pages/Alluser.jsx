@@ -234,7 +234,7 @@ const AlluserDashboard = () => {
                   ref={popupSelect}
                   className="text-left cursor-pointer absolute"
                 >
-                  {sizeOptions.map((item) => {
+                  {sizeOptions?.map((item) => {
                     return (
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
@@ -285,9 +285,9 @@ const AlluserDashboard = () => {
                     <td className="px-6 py-4">
                       {alluser.roleId}
                       {openModal ? (
-                        <div className="modal absolute top-5 w-[30%]">
-                          <div className="modal-content ">
-                            <div className="relativerounded-lg shadow bg-gray-700">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                  <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -330,7 +330,7 @@ const AlluserDashboard = () => {
                                   <ReactSelect
                                     options={selectRole}
                                     isMulti={false}
-                                    defaultValue={
+                                    value={
                                       selectedOption
                                         ? selectRole.find(
                                             (option) =>
@@ -399,9 +399,9 @@ const AlluserDashboard = () => {
                         <></>
                       )}
                       {openModalAdd ? (
-                        <div className="modal absolute top-5 w-[30%]">
-                          <div className="modal-content ">
-                            <div className="relativerounded-lg shadow bg-gray-700">
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                  <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"

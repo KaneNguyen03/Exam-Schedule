@@ -1,68 +1,73 @@
-import moment from "moment"
-import React, { useEffect, useState } from "react"
-import { Pagination } from "react-headless-pagination"
-import { useDispatch, useSelector } from "react-redux"
-import { useLocation, useNavigate } from "react-router-dom"
-import ReactSelect from "react-select"
-import { toast } from "react-toastify"
-import Sidebar from "../components/Layout/Sidebar"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import courseTypes from "../constants/courseTypes"
-import examscheduleTypes from "../constants/examscheduleTypes"
-import examslotTypes from "../constants/examslotTypes"
-import useAuth from "../hooks/useAuth"
-import { getAllCourses } from "../store/thunks/course"
+import moment from "moment";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+
+import React, { useEffect, useRef, useState } from "react";
+import { Pagination } from "react-headless-pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import ReactSelect from "react-select";
+import { toast } from "react-toastify";
+import Sidebar from "../components/Layout/Sidebar";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import courseTypes from "../constants/courseTypes";
+import examscheduleTypes from "../constants/examscheduleTypes";
+import examslotTypes from "../constants/examslotTypes";
+import useAuth from "../hooks/useAuth";
+import { getAllCourses } from "../store/thunks/course";
 import {
   generateExamschedule,
   getAllExamschedules,
   getExamscheduleDetails,
-} from "../store/thunks/examschedule"
-import { getAllExamslots, updateExamslot } from "../store/thunks/examslot"
+} from "../store/thunks/examschedule";
+import { getAllExamslots, updateExamslot } from "../store/thunks/examslot";
+import examscheduleApi from "../apis/examschedule";
+import { sizeOptions } from "../constants/commons/commons";
 
 const ExamscheduleDetails = () => {
-  const dispatch = useDispatch()
-
+  const popupSelect = useRef(null);
+  const dispatch = useDispatch();
+  const [isShowSelect, setIsShowSelect] = useState(false);
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
+  });
 
-  const { user } = useAuth()
-  const [loadings, setLoading] = useState(true)
-  const dataexsl = useSelector((state) => state.examslot)
-  const dataes = useSelector((state) => state.examschedule)
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data
+  const { user } = useAuth();
+  const [loadings, setLoading] = useState(true);
+  const dataexsl = useSelector((state) => state.examslot);
+  const dataes = useSelector((state) => state.examschedule);
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data;
   const examSchedule =
-    dataes.contents[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]?.data.data
+    dataes.contents[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]?.data.data;
 
   const pagination =
-    dataes?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]
+    dataes?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS];
 
-  const location = useLocation()
-  const examSlotId = location.pathname?.split("/")[2]
-  const currentExamSlot = examslots?.find((x) => x.examSlotId === examSlotId)
+  const location = useLocation();
+  const examSlotId = location.pathname?.split("/")[2];
+  const currentExamSlot = examslots?.find((x) => x.examSlotId === examSlotId);
 
   // Tạo một bản sao của examSchedule với các trường dữ liệu được cập nhật
   const updatedExamSchedule = examSchedule?.map((scheduleItem) => {
-    const examSlotId = scheduleItem.examSlotId
+    const examSlotId = scheduleItem.examSlotId;
     const matchingExamSlot =
-      currentExamSlot.examSlotId === examSlotId ? currentExamSlot : null
+      currentExamSlot?.examSlotId === examSlotId ? currentExamSlot : null;
 
     if (matchingExamSlot) {
       // Sử dụng Object.assign hoặc toán tử spread để thêm thông tin từ examSlot vào scheduleItem
-      const updatedScheduleItem = { ...scheduleItem, ...matchingExamSlot }
-      return updatedScheduleItem
+      const updatedScheduleItem = { ...scheduleItem, ...matchingExamSlot };
+      return updatedScheduleItem;
     } else {
       // Nếu không có sự khớp, trả về scheduleItem ban đầu
-      return scheduleItem
+      return scheduleItem;
     }
-  })
+  });
 
   const [submitDataGenerator, setSubmitDataGenerator] = useState({
     courseId: "",
     examSlotId: "",
-  })
+  });
 
   useEffect(() => {
     if (
@@ -71,20 +76,20 @@ const ExamscheduleDetails = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [dataexsl, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [dataexsl, param]);
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllExamslots(param))
-      }, 500)
-      return () => clearTimeout(delayDebounceFn)
+        dispatch(getAllExamslots({page:1, pageSize: 999}));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting examslot")
+      toast.error("Error getting examslot");
     }
-  }, [dispatch, param])
+  }, [dispatch, param]);
 
   useEffect(() => {
     if (examslots && currentExamSlot?.courseId && currentExamSlot?.examSlotId) {
@@ -95,20 +100,21 @@ const ExamscheduleDetails = () => {
               courseId: currentExamSlot?.courseId,
               examSlotId: currentExamSlot?.examSlotId,
             })
-          )
+          );
           dispatch(
             getExamscheduleDetails({
-              courseId: currentExamSlot?.courseId,
-              examSlotId: currentExamSlot?.examSlotId,
+               ...param,
+              CourseId: currentExamSlot?.courseId,
+              ExamSlotId: currentExamSlot?.examSlotId,
             })
-          )
-        }, 500)
-        return () => clearTimeout(delayDebounceFn)
+          );
+        }, 500);
+        return () => clearTimeout(delayDebounceFn);
       } catch (error) {
-        toast.error("Error getting exam Schedule")
+        toast.error("Error getting exam Schedule");
       }
     }
-  }, [examslots, currentExamSlot, dispatch])
+  }, [examslots, currentExamSlot, dispatch,param]);
 
   return (
     <div className="">
@@ -141,7 +147,7 @@ const ExamscheduleDetails = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -191,9 +197,57 @@ const ExamscheduleDetails = () => {
               <div></div>
             </div>
           </header>
-          <div className=" text-slate-800 font-semibold text-3xl p-1">
-            Exam Schedule
+          <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
+            <div className="justify-center w-full">ExamSchedule Management</div>
+            <button
+              type="button"
+              id="Add"
+              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
+              onClick={() =>
+                examscheduleApi.sendMail({
+                  courseId: currentExamSlot?.courseId,
+                  examSlotId: currentExamSlot?.examSlotId,
+                })
+              }
+            >
+              Sent Mail
+            </button>{" "}
+            <div>
+              <div
+                className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
+                onClick={() => setIsShowSelect(!isShowSelect)}
+              >
+                <span className="pl-4">Show {pagination?.pageSize} item</span>
+                <img
+                  src={DropdownSelectIcon}
+                  className="pointer-events-none leading-[16px] md:leading-[20px] md:mr-4"
+                  alt="drop icon"
+                />
+              </div>
+              {isShowSelect && (
+                <ul
+                  ref={popupSelect}
+                  className="text-left cursor-pointer absolute"
+                >
+                  {sizeOptions?.map((item) => {
+                    return (
+                      <li
+                        className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
+                        onClick={() => {
+                          setParam({ ...param, pageSize: Number(item.value) });
+                          setIsShowSelect(false);
+                        }}
+                        key={item.value}
+                      >
+                        Show {item.value} items
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           </div>
+
           <div className="grid gap-4 pt-7 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
             <table className=" text-sm text-left text-gray-400 ">
               <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
@@ -249,7 +303,7 @@ const ExamscheduleDetails = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -319,7 +373,7 @@ const ExamscheduleDetails = () => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ExamscheduleDetails
+export default ExamscheduleDetails;

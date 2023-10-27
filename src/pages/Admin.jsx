@@ -125,48 +125,48 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     try {
-      dispatch(getAllClassrooms());
+      dispatch(getAllClassrooms({page:1, pageSize: 999}));
     } catch (error) {
       toast.error("Error getting classroom");
     }
     try {
-      dispatch(getAllCourses());
+      dispatch(getAllCourses({page:1, pageSize: 999}));
     } catch (error) {
       toast.error("Error getting course");
     }
     try {
-      dispatch(getAllTeachers());
+      dispatch(getAllTeachers({page:1, pageSize: 999}));
     } catch (error) {
       toast.error("Error getting proctoring");
     }
     try {
-      dispatch(getAllusers());
+      dispatch(getAllusers({page:1, pageSize: 999}));
     } catch (error) {
       toast.error("Error getting users");
     }
     try {
-      dispatch(getAllStudents());
+      dispatch(getAllStudents({page:1, pageSize: 99999}));
     } catch (error) {
       toast.error("Error getting students");
     }
     try {
-      dispatch(getAllExamschedules());
+      dispatch(getAllExamschedules({page:1, pageSize: 999}));
     } catch (error) {
       toast.error("Error getting examschedule");
     }
     try {
-      dispatch(getAllExamslots());
+      dispatch(getAllExamslots({page:1, pageSize: 999}));
     } catch (error) {
       toast.error("Error getting examslot");
     }
     try {
-      dispatch(getAllMajors());
+      dispatch(getAllMajors({page:1, pageSize: 999}));
     } catch (error) {
       toast.error("Error getting majors");
     }
 
     try {
-      dispatch(getAllSemesters());
+      dispatch(getAllSemesters({page:1, pageSize: 999}));
     } catch (error) {
       toast.error("Error getting semesters");
     }

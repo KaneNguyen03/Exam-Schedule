@@ -42,12 +42,12 @@ export const generateExamschedule = createAsyncThunk(
 
 export const getExamscheduleDetails = createAsyncThunk(
   examscheduleTypes.GET_EXAMSCHEDULE_DETAILS,
-  async (courseId, examSlotId) => {
+  async (res) => {
     try {
       const result = await examschedule.getExamScheduleByCourseIdAndExamSlotId(
-        courseId,
-        examSlotId
+       res
       )
+      console.log(res)
       return result
     } catch (error) {
       return isRejectedWithValue(error)
