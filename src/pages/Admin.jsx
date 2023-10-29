@@ -24,10 +24,16 @@ import Dashboard from "../components/Admin/Dashboard";
 import alluserTypes from "../constants/alluserTypes";
 import { getAllusers } from "../store/thunks/alluser";
 import { toast } from "react-toastify";
+import useAuth from "../hooks/useAuth";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
-
+  const [param, setParam] = useState({
+    page: 1,
+    pageSize: 10,
+    keyword: "",
+  });
+  const { user } = useAuth();
   const datacl = useSelector((state) => state.classroom);
   const dataco = useSelector((state) => state.course);
   const datate = useSelector((state) => state.teacher);
@@ -45,8 +51,7 @@ const AdminDashboard = () => {
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data;
   const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data;
   const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data;
-  const examschedules =
-    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
+  const examschedules = dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
   const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data;
   const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
   const [loadings, setLoading] = useState(true);
@@ -177,7 +182,7 @@ const AdminDashboard = () => {
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
         <div className="main min-h-screen flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in max-h-screen">
-          <header className="header bg-white shadow py-4 px-4">
+        <header className="header bg-white shadow py-4 px-4">
             <div className="header-content flex items-center flex-row">
               <form action="#">
                 <div className="hidden md:flex relative">
@@ -198,11 +203,18 @@ const AdminDashboard = () => {
                     name="search"
                     className="text-sm sm:text-base placeholder-gray-500 pl-10 pr-4 rounded-lg border border-gray-300 w-full h-10 focus:outline-none focus:border-indigo-400"
                     placeholder="Search..."
+                    onChange={(e) => {
+                      setParam({
+                        ...param,
+                        keyword: e.target.value,
+                      });
+                    }}
+                    value={param.keyword}
                   />
                 </div>
                 <div className="flex md:hidden">
                   <a
-                    href="#"
+                    href=""
                     className="flex items-center justify-center h-10 w-10 border-transparent"
                   >
                     <svg
@@ -224,14 +236,25 @@ const AdminDashboard = () => {
                   />
                   <span className="flex flex-col ml-2">
                     <span className="truncate w-20 font-semibold tracking-wide leading-none">
-                      BAO
+                      {user.username}
                     </span>
                     <span className="truncate w-20 text-gray-500 text-xs leading-none mt-1">
-                      Admin
+                      {user.roleId === "AD"
+                        ? "Admin"
+                        : user.roleId === "TA"
+                        ? "Testing Admin"
+                        : user.roleId === "TS"
+                        ? "Testing Staff"
+                        : user.roleId === "ST"
+                        ? "Student"
+                        : user.roleId === "LT"
+                        ? "Lecturer"
+                        : ""}
                     </span>
                   </span>
                 </a>
               </div>
+              <div></div>
             </div>
           </header>
           <Dashboard

@@ -92,7 +92,12 @@ const Dashboard = ({
             </div>
           </>
         )}
-        {[...makeRoles([3, 4])].includes(user.roleId) && (
+        {[...makeRoles([4])].includes(user.roleId) && (
+          <>
+            <BarChart></BarChart>
+          </>
+        )}
+        {[...makeRoles([3])].includes(user.roleId) && (
           <>
             <div className="flex flex-row justify-between mt-3 grid grid-cols-4">
               <div className=" bg-white rounded-lg shadow-md ">

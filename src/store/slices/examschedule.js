@@ -24,6 +24,7 @@ const examscheduleSlice = createSlice({
     [getAllExamschedules.fulfilled]: (state, payload) => {
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULES] = false
       state.contents[examscheduleTypes.GET_EXAMSCHEDULES] = payload
+      state.paginations[examscheduleTypes.GET_EXAMSCHEDULES] = payload?.payload.data?.pagination
     },
     [getAllExamschedules.rejected]: (state, { payload }) => {
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULES] = false
@@ -33,16 +34,16 @@ const examscheduleSlice = createSlice({
     // Create Exam Schedule
 
     [createExamschedule.pending]: (state) => {
-      state.loadings[examscheduleTypes.CREATE_EXAMSCHEDULES] = true
-      state.errors[examscheduleTypes.CREATE_EXAMSCHEDULES] = ""
+      state.loadings[examscheduleTypes.CREATE_EXAMSCHEDULE] = true
+      state.errors[examscheduleTypes.CREATE_EXAMSCHEDULE] = ""
     },
     [createExamschedule.fulfilled]: (state, payload) => {
-      state.loadings[examscheduleTypes.CREATE_EXAMSCHEDULES] = false
-      state.contents[examscheduleTypes.CREATE_EXAMSCHEDULES] = payload
+      state.loadings[examscheduleTypes.CREATE_EXAMSCHEDULE] = false
+      state.contents[examscheduleTypes.CREATE_EXAMSCHEDULE] = payload
     },
     [createExamschedule.rejected]: (state, { payload }) => {
-      state.loadings[examscheduleTypes.CREATE_EXAMSCHEDULES] = false
-      state.errors[examscheduleTypes.CREATE_EXAMSCHEDULES] = payload
+      state.loadings[examscheduleTypes.CREATE_EXAMSCHEDULE] = false
+      state.errors[examscheduleTypes.CREATE_EXAMSCHEDULE] = payload
     },
     // Generate Exam Schedule
 

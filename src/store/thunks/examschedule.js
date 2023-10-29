@@ -4,9 +4,9 @@ import examschedule from "../../apis/examschedule"
 
 export const getAllExamschedules = createAsyncThunk(
   examscheduleTypes.GET_EXAMSCHEDULES,
-  async () => {
+  async (data) => {
     try {
-      const result = await examschedule.getAllExamschedules()
+      const result = await examschedule.getAllExamschedules(data)
       return result
     } catch (error) {
       return isRejectedWithValue(error)
@@ -15,7 +15,7 @@ export const getAllExamschedules = createAsyncThunk(
 )
 
 export const createExamschedule = createAsyncThunk(
-  examscheduleTypes.CREATE_EXAMSCHEDULES,
+  examscheduleTypes.CREATE_EXAMSCHEDULE,
   async (data) => {
     try {
       const result = await examschedule.createExamschedule(data)

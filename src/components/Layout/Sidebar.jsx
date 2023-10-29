@@ -43,7 +43,7 @@ const Sidebar = () => {
         <div className="sidebar-content px-4 py-6">
           <ul className="flex flex-col w-full">
           
-            {[...makeRoles([1,2])].includes(user.roleId) && (
+            {[...makeRoles([1,2,4])].includes(user.roleId) && (
               <li className="my-px">
                 <Link
                   to="/"

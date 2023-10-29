@@ -61,15 +61,25 @@ const createExamslot = async (data) => {
     throw new Error("Error create exam slot");
   }
 };
-
 const importExamSlot = async (file, customHeaders = {}) => {
-  const headers = {
-    "Content-Type": "multipart/form-data",
-    ...customHeaders, // Include any custom headers you pass
-  };
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
 
-  await apiInstance.post(`api/Examslot/import`, file, { headers });
+    const response = await apiInstance.post('api/ExamSlot/import', formData, {
+      headers: {
+        ...customHeaders,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    // Handle a successful response here
+  } catch (error) {
+    console.error('Error:', error.response);
+    // Handle the error here
+  }
 };
+
 const examslotApi = {
   getAllExamslots,
   updateExamslot,

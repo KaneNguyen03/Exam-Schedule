@@ -1,8 +1,10 @@
 import apiInstance from "./config"
 
-const getAllExamschedules = async () => {
+const getAllExamschedules = async (data) => {
+  const url = "?" + new URLSearchParams(data).toString()
   try {
-    const data = await apiInstance.get("api/ExamSchedule")
+     
+    const data = await apiInstance.get(`api/ExamSchedule${url}`)
     return data
   } catch (error) {
     throw new Error("Error geting exam schedule")

@@ -172,7 +172,7 @@ const ExamSlot = () => {
     setOpenModalAdd(false);
   };
   const [selectedFile, setSelectedFile] = useState(null);
-  console.log(selectedFile);
+ 
   const handleUpload = () => {
     if (selectedFile) {
       try {
@@ -348,6 +348,9 @@ const ExamSlot = () => {
           </header>
           <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
             <div className="justify-center w-full">Examslot Management</div>
+            <div>
+              
+            </div>
             {[...makeRoles([1, 2])].includes(user.roleId) && (
               <button
                 type="button"
@@ -1057,6 +1060,7 @@ const ExamSlot = () => {
                 ))}
               </tbody>
             </table>
+            
             <div className="sticky bottom-0 bg-white p-2 z-10">
               {examslots?.data?.length ? (
                 <Pagination

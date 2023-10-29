@@ -63,6 +63,7 @@ const ExamscheduleDetails = () => {
       return scheduleItem;
     }
   });
+  console.log(updatedExamSchedule)
 
   const [submitDataGenerator, setSubmitDataGenerator] = useState({
     courseId: "",
