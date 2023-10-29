@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import BarChart from "../BarChart";
-import LineChart from "../Status/LineChart";
-import PieChart from "../Status/PieChart";
-import { makeRoles } from "../../utils/common";
-import useAuth from "../../hooks/useAuth";
+import { Link } from "react-router-dom"
+import PropTypes from "prop-types"
+import BarChart from "../BarChart"
+import LineChart from "../Status/LineChart"
+import PieChart from "../Status/PieChart"
+import { makeRoles } from "../../utils/common"
+import useAuth from "../../hooks/useAuth"
+import { Bar, Line, Pie } from "react-chartjs-2"
 
 const Dashboard = ({
   classrooms,
@@ -14,142 +15,150 @@ const Dashboard = ({
   examschedules,
   examslots,
   majors,
-  //semesters,
   allusers,
-  //loadings,
 }) => {
-  const { user } = useAuth();
+  const { user } = useAuth()
+
+  const examSlotData = {
+    labels: [],
+    datasets: [
+      {
+        label: "Compensation",
+        data: [],
+        backgroundColor: [],
+      },
+    ],
+  }
+
+  // Đảm bảo rằng dữ liệu thời gian được tính toán đúng đơn vị
+  const startTimes = examslots?.map(
+    (slot) => new Date(`1970-01-01T${slot.startTime}`)
+  )
+  const endTimes = examslots?.map(
+    (slot) => new Date(`1970-01-01T${slot.endTime}`)
+  )
+
+  // Tạo dữ liệu cho biểu đồ đường
+  const timeData = {
+    labels: examslots?.map((slot) => slot.examSlotName),
+    datasets: [
+      {
+        label: "Start Time",
+        data: startTimes?.map((time) => time.getHours()), // Hiển thị theo giờ
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+        fill: false,
+      },
+      {
+        label: "End Time",
+        data: endTimes?.map((time) => time.getHours()), // Hiển thị theo giờ
+        borderColor: "rgba(192, 75, 192, 1)",
+        borderWidth: 1,
+        fill: false,
+      },
+    ],
+  }
+
+  // Xử lý dữ liệu từ examslots
+  examslots?.forEach((examSlot) => {
+    examSlotData.labels.push(examSlot.examSlotName)
+    const compensation = examSlot.listProctoring.reduce(
+      (totalCompensation, proctor) =>
+        totalCompensation + parseFloat(proctor.compensation),
+      0
+    )
+    examSlotData.datasets[0].data.push(compensation)
+
+    // Tạo màu sắc ngẫu nhiên cho cột biểu đồ
+    const randomColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
+      Math.random() * 256
+    )}, ${Math.floor(Math.random() * 256)}, 0.6)`
+    examSlotData.datasets[0].backgroundColor.push(randomColor)
+  })
+
   return (
-    <div className="W-full items-center mt-4">
-      <main>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+    <div className="w-full p-6">
+      <h1 className="text-3xl font-bold">Dashboard</h1>
+      <div className="grid grid-cols-2 gap-6 mt-8">
         {[...makeRoles([1, 2])].includes(user.roleId) && (
           <>
-            <div className=" justify-between mt-8 grid grid-cols-4 ">
-              <Link to="/proctoring">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">Proctoring</h2>
-                  <p className="p-4">{teachers?.length}</p>
-                </div>
-              </Link>
-              <Link to="/student">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">StudentList</h2>
-                  <p className="p-4">{students?.length}</p>
-                </div>
-              </Link>
-              <Link to="/room">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">Classrooms</h2>
-                  <p className="p-4">{classrooms?.length}</p>
-                </div>
-              </Link>
-              <Link to="/alluser">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">User</h2>
-                  <p className="p-4">{allusers?.length}</p>
-                </div>
-              </Link>
-            </div>
-            <div className=" justify-between mt-3 grid grid-cols-4">
-              <Link to="/course">
-                <div className=" bg-white rounded-lg shadow-md ">
-                  <h2 className="text-inherit font-bold p-4">Course</h2>
-                  <p className="p-4">{courses?.length}</p>
-                </div>
-              </Link>
-              <Link to="/examschedule">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
-                  <p className="p-4">{examschedules?.length}</p>
-                </div>
-              </Link>
-              <Link to="/examslot">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">Exam Slot</h2>
-                  <p className="p-4">{examslots?.length}</p>
-                </div>
-              </Link>
-              <Link to="/major">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">Major</h2>
-                  <p className="p-4">{majors?.length}</p>
-                </div>
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 ">
-              {/* First Column */}
-              <div className="lg:w-full">
-                <BarChart />
-                <p>Protoring</p>
+            <Link to="/proctoring" className="dashboard-card">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-inherit font-bold">Proctoring</h2>
+                <p className="mt-4">{teachers?.length}</p>
               </div>
-
-              {/* Second Column */}
-              <div className="place-content-center w-2/3 ">
-                <PieChart />
-                <p>Exam slot on semester</p>
+            </Link>
+            <Link to="/student" className="dashboard-card">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-inherit font-bold">Student List</h2>
+                <p className="mt-4">{students?.length}</p>
               </div>
-            </div>
+            </Link>
+            <Link to="/room" className="dashboard-card">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-inherit font-bold">Classrooms</h2>
+                <p className="mt-4">{classrooms?.length}</p>
+              </div>
+            </Link>
+            <Link to="/alluser" className="dashboard-card">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-inherit font-bold">User</h2>
+                <p className="mt-4">{allusers?.length}</p>
+              </div>
+            </Link>
           </>
         )}
         {[...makeRoles([3, 4])].includes(user.roleId) && (
           <>
-            <div className="flex flex-row justify-between mt-3 grid grid-cols-4">
-              <div className=" bg-white rounded-lg shadow-md ">
-                <h2 className="text-inherit font-bold p-4">Course</h2>
-                <p className="p-4">{courses?.length}</p>
-              </div>
-              <Link to="/examschedule">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
-                  <p className="p-4">{examschedules?.length}</p>
-                </div>
-              </Link>
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">Exam Slot</h2>
-                <p className="p-4">{examslots?.length}</p>
-              </div>
-              <div className=" bg-white rounded-lg shadow-md">
-                <h2 className="text-inherit font-bold p-4">Major</h2>
-                <p className="p-4">{majors?.length}</p>
-              </div>
+            <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
+              <h2 className="text-inherit font-bold">Course</h2>
+              <p className="mt-4">{courses?.length}</p>
             </div>
-            <div className="grid grid-cols-2 overflow-auto">
-              <div className="">
-                <p>Protoring</p>
-                <BarChart />
+            <Link to="/examschedule" className="dashboard-card">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-inherit font-bold">Exam Schedule</h2>
+                <p className="mt-4">{examschedules?.length}</p>
               </div>
-              <div>
-                <LineChart />
-              </div>
+            </Link>
+            <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
+              <h2 className="text-inherit font-bold">Exam Slot</h2>
+              <p className="mt-4">{examslots?.length}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
+              <h2 className="text-inherit font-bold">Major</h2>
+              <p className="mt-4">{majors?.length}</p>
             </div>
           </>
         )}
         {[...makeRoles([5])].includes(user.roleId) && (
           <>
-            <div className="flex flex-row justify-between mt-3 grid grid-cols-2">
-              <div className=" bg-white rounded-lg shadow-md ">
-                <h2 className="text-inherit font-bold p-4">Course</h2>
-                <p className="p-4">{courses?.length}</p>
-              </div>
-              <Link to="/examschedule">
-                <div className=" bg-white rounded-lg shadow-md">
-                  <h2 className="text-inherit font-bold p-4">Exam Schedule</h2>
-                  <p className="p-4">{examschedules?.length}</p>
-                </div>
-              </Link>
+            <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
+              <h2 className="text-inherit font-bold">Course</h2>
+              <p className="mt-4">{courses?.length}</p>
             </div>
+            <Link to="/examschedule" className="dashboard-card">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-inherit font-bold">Exam Schedule</h2>
+                <p className="mt-4">{examschedules?.length}</p>
+              </div>
+            </Link>
           </>
         )}
-      </main>
+      </div>
+      <div className="mt-6 grid grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
+          <h2 className="text-inherit font-bold">Exam Slot Chart</h2>
+          <Bar data={examSlotData} />
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
+          <h2 className="text-inherit font-bold">Time Chart</h2>
+          <Line data={timeData} />
+        </div>
+      </div>
     </div>
-  );
-};
-{
-  /* <div className=" grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-  <BarChart />
-</div>; */
+  )
 }
+
 Dashboard.propTypes = {
   classrooms: PropTypes.array,
   courses: PropTypes.array,
@@ -159,7 +168,6 @@ Dashboard.propTypes = {
   examslots: PropTypes.array,
   majors: PropTypes.array,
   allusers: PropTypes.array,
-  //semesters: PropTypes.array,
-};
+}
 
-export default Dashboard;
+export default Dashboard
