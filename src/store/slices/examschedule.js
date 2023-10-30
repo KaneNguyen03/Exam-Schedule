@@ -5,6 +5,7 @@ import {
   createExamschedule,
   generateExamschedule,
   getAllExamschedules,
+  getExamScheduleByUsername,
   getExamscheduleDetails,
 } from "../thunks/examschedule"
 
@@ -75,6 +76,22 @@ const examscheduleSlice = createSlice({
       state.loadings[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS] = false
       state.errors[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS] = payload
     },
+    //
+    [getExamScheduleByUsername.pending]: (state) => {
+      state.loadings[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME] = true
+      state.errors[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME] = ""
+    },
+    [getExamScheduleByUsername.fulfilled]: (state, {payload}) => {
+      state.loadings[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME] = false
+      state.contents[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME] = payload
+      state.paginations[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME] = payload.data?.pagination
+    },
+    [getExamScheduleByUsername.rejected]: (state, { payload }) => {
+      state.loadings[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME] = false
+      state.errors[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME] = payload
+    },
+    //
+
   },
 })
 export default examscheduleSlice.reducer

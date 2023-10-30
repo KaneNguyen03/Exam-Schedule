@@ -9,6 +9,7 @@ import {
   createExamschedule,
   generateExamschedule,
   getAllExamschedules,
+  getExamScheduleByUsername,
 } from "../store/thunks/examschedule";
 import { useEffect, useRef } from "react";
 
@@ -54,12 +55,19 @@ const ExamscheduleDashboard = () => {
   const datate = useSelector((state) => state.teacher);
   const dataco = useSelector((state) => state.course);
   const dataexs = useSelector((state) => state.examschedule);
+  const examschedulebyuser = dataexs?.contents[
+    examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME
+  ]?.data.data?.filter((item) => item !== null);
+
   const classrooms =
     datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data?.data;
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data?.data;
   const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data;
   const pagination = dataexs?.paginations[examscheduleTypes.GET_EXAMSCHEDULES];
-  console.log(pagination);
+
+  const paginationByUser =
+    dataexs?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME];
+    console.log(paginationByUser)
   const allExamSlots =
     dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data;
 
@@ -255,6 +263,17 @@ const ExamscheduleDashboard = () => {
     } catch (error) {
       toast.error("Error getting examslots");
     }
+    try {
+      dispatch(
+        getExamScheduleByUsername({
+          Username: user.username,
+          page: param.page,
+          pageSize: param.pageSize,
+        })
+      );
+    } catch (error) {
+      toast.error("Error getting examscheduleby username");
+    }
   }, [dispatch, param]);
 
   return (
@@ -339,11 +358,12 @@ const ExamscheduleDashboard = () => {
               <div></div>
             </div>
           </header>
-          {[...makeRoles([1, 2, 3, 4])].includes(user.roleId) && (
+          {[...makeRoles([1, 2, 3, 4, 5])].includes(user.roleId) && (
             <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
               Exam Schedule Management
             </div>
           )}
+          {/* {{[...makeRoles([1, 2])].includes(user.roleId) && (} */}
           {selectedTab ? (
             <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
               <div>
@@ -395,327 +415,791 @@ const ExamscheduleDashboard = () => {
           ) : (
             <></>
           )}
+          {[...makeRoles([1, 2, 4])].includes(user.roleId) && (
+            <Tabs className={selectedTab ? "" : "pt-10"}>
+              <TabList className="flex w-full justify-around py-2 px-2 bg-slate-800 text-white p-4">
+                <Tab onClick={() => setSelectedTab(false)}>
+                  <button className="text-base bg-inherit cursor-pointer">
+                    Calendar
+                  </button>
+                </Tab>
+                <Tab onClick={() => setSelectedTab(true)}>
+                  <button className="text-base bg-inherit cursor-pointer">
+                    Table
+                  </button>
+                </Tab>
+              </TabList>
+              <TabPanel>
+                {[...makeRoles([1, 2, 3])].includes(user.roleId) && (
+                  <div className="p-16 pt-4">
+                    <Calendar
+                      localizer={localizer}
+                      events={convertDataExamSlots}
+                      startAccessor="start"
+                      endAccessor="end"
+                      style={{ height: 500 }}
+                      eventPropGetter={eventStyleGetter}
+                      onSelectEvent={(event) => {
+                        setCurrentExamSchedule(event);
+                        handleEventClick();
+                      }} // Handle event click
+                    />
+                  </div>
+                )}
 
-          <Tabs className={selectedTab ? "" : "pt-10"}>
-            <TabList className="flex w-full justify-around py-2 px-2 bg-slate-800 text-white p-4">
-              <Tab onClick={() => setSelectedTab(false)}>
-                <button className="text-base bg-inherit cursor-pointer">
-                  Calendar
-                </button>
-              </Tab>
-              <Tab onClick={() => setSelectedTab(true)}>
-                <button className="text-base bg-inherit cursor-pointer"
-                >Table</button>
-              </Tab>
-            </TabList>
-            <TabPanel>
-              {[...makeRoles([1, 2])].includes(user.roleId) && (
-                <div className="p-16 pt-4">
-                  <Calendar
-                    localizer={localizer}
-                    events={convertDataExamSlots}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: 500 }}
-                    eventPropGetter={eventStyleGetter}
-                    onSelectEvent={(event) => {
-                      setCurrentExamSchedule(event);
-                      handleEventClick();
-                    }} // Handle event click
-                  />
-                </div>
-              )}
-
-              {openModalChoosingCourse ? (
-                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-10 z-[1000]">
-                  <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
-                    <div className="relativerounded-lg shadow bg-gray-700">
-                      <div className="px-6 py-6 lg:px-8">
-                        <h3 className="mb-4 text-xl font-medium  text-white">
-                          Please choose course for this Slot
-                        </h3>
-                        <div>
-                          <label className="mb-2 text-sm font-medium  text-white flex">
-                            Examslot Id
-                          </label>
-                          <input
-                            defaultValue={currentExamSchedule?.examSlotId}
-                            className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                            placeholder=""
-                            readOnly
-                          />
-                        </div>
-                        <div className="my-4">
-                          <label className="mb-2 text-sm font-medium  text-white flex">
-                            Course
-                          </label>
-                          <ReactSelect
-                            className="text-sm text-start"
-                            options={optionsCourses}
-                            isMulti={false}
-                            onChange={(data) => {
-                              setSubmitDataGenerator({
-                                examSlotId: currentExamSchedule.examSlotId,
-                                courseId: data.value,
-                              });
-                              setCurrentExamSchedule({
-                                ...currentExamSchedule,
-                                courseId: data.value,
-                              });
-                            }}
-                          />
-                        </div>
-                        <div className="flex justify-between">
-                          <div className="flex items-start text-red-500">
-                            *This action can do only one
+                {openModalChoosingCourse ? (
+                  <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-10 z-[1000]">
+                    <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
+                      <div className="relativerounded-lg shadow bg-gray-700">
+                        <div className="px-6 py-6 lg:px-8">
+                          <h3 className="mb-4 text-xl font-medium  text-white">
+                            Please choose course for this Slot
+                          </h3>
+                          <div>
+                            <label className="mb-2 text-sm font-medium  text-white flex">
+                              Examslot Id
+                            </label>
+                            <input
+                              defaultValue={currentExamSchedule?.examSlotId}
+                              className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                              placeholder=""
+                              readOnly
+                            />
                           </div>
-                        </div>
-                        <div className="flex flex-row p-4 gap-5 items-end justify-center">
-                          <button
-                            type="submit"
-                            className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                            onClick={() => {
-                              handleSubmitExamSchedule();
-                            }}
-                          >
-                            Save
-                          </button>
-                          <button
-                            type="submit"
-                            className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
-                            onClick={() => setOpenModalChoosingCourse(false)}
-                          >
-                            Cancel
-                          </button>
+                          <div className="my-4">
+                            <label className="mb-2 text-sm font-medium  text-white flex">
+                              Course
+                            </label>
+                            <ReactSelect
+                              className="text-sm text-start"
+                              options={optionsCourses}
+                              isMulti={false}
+                              onChange={(data) => {
+                                setSubmitDataGenerator({
+                                  examSlotId: currentExamSchedule.examSlotId,
+                                  courseId: data.value,
+                                });
+                                setCurrentExamSchedule({
+                                  ...currentExamSchedule,
+                                  courseId: data.value,
+                                });
+                              }}
+                            />
+                          </div>
+                          <div className="flex justify-between">
+                            <div className="flex items-start text-red-500">
+                              *This action can do only one
+                            </div>
+                          </div>
+                          <div className="flex flex-row p-4 gap-5 items-end justify-center">
+                            <button
+                              type="submit"
+                              className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
+                              onClick={() => {
+                                handleSubmitExamSchedule();
+                              }}
+                            >
+                              Save
+                            </button>
+                            <button
+                              type="submit"
+                              className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
+                              onClick={() => setOpenModalChoosingCourse(false)}
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <></>
-              )}
-              {[...makeRoles([1, 2])].includes(user.roleId) && (
-                <div className="p-4 grid grid-cols-4 justify-items-center">
-                  {/* <!-- Gray Box --> */}
-                  <div className="flex flex-row justify-around items-center gap-4 p-4 bg-gray-300 rounded-md w-80">
-                    <div className="w-12 h-12 bg-gray-400 flex items-center justify-center rounded-md">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-white "
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div className="text-gray-800">The Exam has finished</div>
-                  </div>
-
-                  {/* <!-- Red Box --> */}
-                  <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-red-300 rounded-md">
-                    <div className="w-12 h-12 bg-red-400 flex items-center justify-center rounded-md">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div className="text-red-800">Missing Course.</div>
-                  </div>
-
-                  {/* <!-- Blue Box --> */}
-                  <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-blue-300 rounded-md">
-                    <div className="w-12 h-12 bg-blue-400 flex items-center justify-center rounded-md">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M20 12H4"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div className="text-blue-800">
-                      Scheduled for the future.
-                    </div>
-                  </div>
-
-                  {/* <!-- Yellow Box --> */}
-                  <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-yellow-300 rounded-md">
-                    <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center rounded-md">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div className="text-yellow-800">Exam in progress. </div>
-                  </div>
-                </div>
-              )}
-            </TabPanel>
-
-            <TabPanel>
-              {[...makeRoles([1, 3, 4])].includes(user.roleId) && (
-                <>
-                  <div className="grid gap-4 p-8 pt-2 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
-                    <table className=" text-sm text-left text-gray-400 ">
-                      <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
-                        <tr>
-                          <th scope="col" className="px-6 py-3">
-                            ExamScheduleId
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            ExamslotId
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            ClassroomId
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            courseId
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            proctoringId
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            studentListId
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {examschedules?.data?.map((examschedule) => (
-                          <tr
-                            className="bg-white border-b  border-gray-700"
-                            key={examschedules?.examScheduleId}
-                          >
-                            <td className="px-6 py-4">
-                              {examschedule.examScheduleId}
-                            </td>
-                            <td className="px-6 py-4">
-                              {examschedule.examSlotId}
-                            </td>
-                            <td className="px-6 py-4">
-                              {examschedule.classroomId}
-                            </td>
-                            <td className="px-6 py-4">
-                              {examschedule.courseId}
-                            </td>
-                            <td className="px-6 py-4">
-                              {examschedule.proctoringId}
-                            </td>
-                            <td className="px-6 py-4">
-                              {examschedule.studentListId}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    <div className="sticky bottom-0 bg-white p-2 z-10">
-                      {examschedules?.data?.length ? (
-                        <Pagination
-                          currentPage={pagination.currentPage - 1}
-                          setCurrentPage={(page) => {
-                            setParam({ ...param, page: page + 1 });
-                          }}
-                          totalPages={pagination.totalPage}
-                          edgePageCount={3}
-                          middlePagesSiblingCount={1}
-                          className="flex items-center justify-center mt-4"
-                          truncableText="..."
-                          truncableClassName=""
+                ) : (
+                  <></>
+                )}
+                {[...makeRoles([1, 2])].includes(user.roleId) && (
+                  <div className="p-4 grid grid-cols-4 justify-items-center">
+                    {/* <!-- Gray Box --> */}
+                    <div className="flex flex-row justify-around items-center gap-4 p-4 bg-gray-300 rounded-md w-80">
+                      <div className="w-12 h-12 bg-gray-400 flex items-center justify-center rounded-md">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6 text-white "
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
-                          <Pagination.PrevButton
-                            className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
-                              pagination.currentPage > 0
-                                ? "cursor-pointer "
-                                : "cursor-default hidden"
-                            }`}
-                          >
-                            {" "}
-                            <div className="w-full h-full flex justify-center items-center">
-                              <svg
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                className="w-6 h-6"
-                              >
-                                <path d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
-                              </svg>
-                            </div>
-                          </Pagination.PrevButton>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M5 13l4 4L19 7"
+                          ></path>
+                        </svg>
+                      </div>
+                      <div className="text-gray-800">The Exam has finished</div>
+                    </div>
 
-                          <div className="flex items-center justify-center mx-6 list-none ">
-                            {examschedules?.data?.length > 0 ? (
-                              <Pagination.PageButton
-                                activeClassName="bg-blue-button border-0 text-white "
-                                inactiveClassName="border"
-                                className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
-                              />
-                            ) : (
-                              <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
-                                1
-                              </div>
-                            )}
-                          </div>
+                    {/* <!-- Red Box --> */}
+                    <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-red-300 rounded-md">
+                      <div className="w-12 h-12 bg-red-400 flex items-center justify-center rounded-md">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          ></path>
+                        </svg>
+                      </div>
+                      <div className="text-red-800">Missing Course.</div>
+                    </div>
 
-                          <Pagination.NextButton
-                            className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
-                              page
-                            ) =>
-                              page > examschedules?.data?.length
-                                ? "cursor-pointer"
-                                : "cursor-not-allowed"}`}
-                          >
-                            <div className="w-full h-full flex justify-center items-center">
-                              <svg
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                className="w-6 h-6 "
-                              >
-                                <path d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
-                              </svg>
-                            </div>
-                          </Pagination.NextButton>
-                        </Pagination>
-                      ) : null}
+                    {/* <!-- Blue Box --> */}
+                    <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-blue-300 rounded-md">
+                      <div className="w-12 h-12 bg-blue-400 flex items-center justify-center rounded-md">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M20 12H4"
+                          ></path>
+                        </svg>
+                      </div>
+                      <div className="text-blue-800">
+                        Scheduled for the future.
+                      </div>
+                    </div>
+
+                    {/* <!-- Yellow Box --> */}
+                    <div className="flex flex-row justify-around items-center gap-4 w-80 p-4 bg-yellow-300 rounded-md">
+                      <div className="w-12 h-12 bg-yellow-400 flex items-center justify-center rounded-md">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          ></path>
+                        </svg>
+                      </div>
+                      <div className="text-yellow-800">Exam in progress. </div>
                     </div>
                   </div>
-                </>
-              )}
-            </TabPanel>
-          </Tabs>
+                )}
+              </TabPanel>
+
+              <TabPanel>
+                {[...makeRoles([1, 4])].includes(user.roleId) && (
+                  <>
+                    <div className="grid gap-4 p-8 pt-2 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
+                      <table className=" text-sm text-left text-gray-400 ">
+                        <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
+                          <tr>
+                            <th scope="col" className="px-6 py-3">
+                              ExamScheduleId
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              ExamslotId
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              ClassroomId
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              courseId
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              proctoringId
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                              studentListId
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {examschedules?.data?.map((examschedule) => (
+                            <tr
+                              className="bg-white border-b  border-gray-700"
+                              key={examschedules?.examScheduleId}
+                            >
+                              <td className="px-6 py-4">
+                                {examschedule.examScheduleId}
+                              </td>
+                              <td className="px-6 py-4">
+                                {examschedule.examSlotId}
+                              </td>
+                              <td className="px-6 py-4">
+                                {examschedule.classroomId}
+                              </td>
+                              <td className="px-6 py-4">
+                                {examschedule.courseId}
+                              </td>
+                              <td className="px-6 py-4">
+                                {examschedule.proctoringId}
+                              </td>
+                              <td className="px-6 py-4">
+                                {examschedule.studentListId}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <div className="sticky bottom-0 bg-white p-2 z-10">
+                        {examschedules?.data?.length ? (
+                          <Pagination
+                            currentPage={pagination.currentPage - 1}
+                            setCurrentPage={(page) => {
+                              setParam({ ...param, page: page + 1 });
+                            }}
+                            totalPages={pagination.totalPage}
+                            edgePageCount={3}
+                            middlePagesSiblingCount={1}
+                            className="flex items-center justify-center mt-4"
+                            truncableText="..."
+                            truncableClassName=""
+                          >
+                            <Pagination.PrevButton
+                              className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
+                                pagination.currentPage > 0
+                                  ? "cursor-pointer "
+                                  : "cursor-default hidden"
+                              }`}
+                            >
+                              {" "}
+                              <div className="w-full h-full flex justify-center items-center">
+                                <svg
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  className="w-6 h-6"
+                                >
+                                  <path d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                                </svg>
+                              </div>
+                            </Pagination.PrevButton>
+
+                            <div className="flex items-center justify-center mx-6 list-none ">
+                              {examschedules?.data?.length > 0 ? (
+                                <Pagination.PageButton
+                                  activeClassName="bg-blue-button border-0 text-white "
+                                  inactiveClassName="border"
+                                  className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
+                                />
+                              ) : (
+                                <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
+                                  1
+                                </div>
+                              )}
+                            </div>
+
+                            <Pagination.NextButton
+                              className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
+                                page
+                              ) =>
+                                page > examschedules?.data?.length
+                                  ? "cursor-pointer"
+                                  : "cursor-not-allowed"}`}
+                            >
+                              <div className="w-full h-full flex justify-center items-center">
+                                <svg
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  className="w-6 h-6 "
+                                >
+                                  <path d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                                </svg>
+                              </div>
+                            </Pagination.NextButton>
+                          </Pagination>
+                        ) : null}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </TabPanel>
+            </Tabs>
+          )}
+          {[...makeRoles([1, 4])].includes(user.roleId) && (
+            <>
+              <div className="grid gap-4 p-8 pt-2 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
+                <table className=" text-sm text-left text-gray-400 ">
+                  <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">
+                        ExamScheduleId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        ExamslotId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        ClassroomId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        courseId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        proctoringId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        studentListId
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {examschedules?.data?.map((examschedule) => (
+                      <tr
+                        className="bg-white border-b  border-gray-700"
+                        key={examschedules?.examScheduleId}
+                      >
+                        <td className="px-6 py-4">
+                          {examschedule.examScheduleId}
+                        </td>
+                        <td className="px-6 py-4">{examschedule.examSlotId}</td>
+                        <td className="px-6 py-4">
+                          {examschedule.classroomId}
+                        </td>
+                        <td className="px-6 py-4">{examschedule.courseId}</td>
+                        <td className="px-6 py-4">
+                          {examschedule.proctoringId}
+                        </td>
+                        <td className="px-6 py-4">
+                          {examschedule.studentListId}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="sticky bottom-0 bg-white p-2 z-10">
+                  {examschedules?.data?.length ? (
+                    <Pagination
+                      currentPage={pagination.currentPage - 1}
+                      setCurrentPage={(page) => {
+                        setParam({ ...param, page: page + 1 });
+                      }}
+                      totalPages={pagination.totalPage}
+                      edgePageCount={3}
+                      middlePagesSiblingCount={1}
+                      className="flex items-center justify-center mt-4"
+                      truncableText="..."
+                      truncableClassName=""
+                    >
+                      <Pagination.PrevButton
+                        className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
+                          pagination.currentPage > 0
+                            ? "cursor-pointer "
+                            : "cursor-default hidden"
+                        }`}
+                      >
+                        {" "}
+                        <div className="w-full h-full flex justify-center items-center">
+                          <svg
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            className="w-6 h-6"
+                          >
+                            <path d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                          </svg>
+                        </div>
+                      </Pagination.PrevButton>
+
+                      <div className="flex items-center justify-center mx-6 list-none ">
+                        {examschedules?.data?.length > 0 ? (
+                          <Pagination.PageButton
+                            activeClassName="bg-blue-button border-0 text-white "
+                            inactiveClassName="border"
+                            className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
+                          />
+                        ) : (
+                          <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
+                            1
+                          </div>
+                        )}
+                      </div>
+
+                      <Pagination.NextButton
+                        className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
+                          page
+                        ) =>
+                          page > examschedules?.data?.length
+                            ? "cursor-pointer"
+                            : "cursor-not-allowed"}`}
+                      >
+                        <div className="w-full h-full flex justify-center items-center">
+                          <svg
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            className="w-6 h-6 "
+                          >
+                            <path d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                          </svg>
+                        </div>
+                      </Pagination.NextButton>
+                    </Pagination>
+                  ) : null}
+                </div>
+              </div>
+            </>
+          )}
+          {[...makeRoles([3])].includes(user.roleId) && (
+            <>
+              <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+                <div>
+                  <div
+                    className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
+                    onClick={() => setIsShowSelect(!isShowSelect)}
+                  >
+                    <span className="pl-4">
+                      Show {pagination?.pageSize} item
+                    </span>
+                    <img
+                      src={DropdownSelectIcon}
+                      className="pointer-events-none leading-[16px] md:leading-[20px] md:mr-4"
+                      alt="drop icon"
+                    />
+                  </div>
+                  {isShowSelect && (
+                    <ul
+                      ref={popupSelect}
+                      className="text-left cursor-pointer absolute"
+                    >
+                      {sizeOptions?.map((item) => {
+                        return (
+                          <li
+                            className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
+                            onClick={() => {
+                              setParam({
+                                ...param,
+                                pageSize: Number(item.value),
+                              });
+                              setIsShowSelect(false);
+                            }}
+                            key={item.value}
+                          >
+                            Show {item.value} items
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+                <button
+                  className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-900 mx-4"
+                  onClick={(e) => {
+                    handleExportCSV(e);
+                  }}
+                >
+                  <span className="ml-2">Export Exam Slot</span>
+                </button>
+              </div>
+              <div className="grid gap-4 p-8 pt-2 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
+                <table className=" text-sm text-left text-gray-400 ">
+                  <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">
+                        ExamScheduleId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        ExamslotId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        ClassroomId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        courseId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        proctoringId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        studentListId
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {examschedules?.data?.map((examschedule) => (
+                      <tr
+                        className="bg-white border-b  border-gray-700"
+                        key={examschedules?.examScheduleId}
+                      >
+                        <td className="px-6 py-4">
+                          {examschedule.examScheduleId}
+                        </td>
+                        <td className="px-6 py-4">{examschedule.examSlotId}</td>
+                        <td className="px-6 py-4">
+                          {examschedule.classroomId}
+                        </td>
+                        <td className="px-6 py-4">{examschedule.courseId}</td>
+                        <td className="px-6 py-4">
+                          {examschedule.proctoringId}
+                        </td>
+                        <td className="px-6 py-4">
+                          {examschedule.studentListId}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="sticky bottom-0 bg-white p-2 z-10">
+                  {examschedules?.data?.length ? (
+                    <Pagination
+                      currentPage={pagination.currentPage - 1}
+                      setCurrentPage={(page) => {
+                        setParam({ ...param, page: page + 1 });
+                      }}
+                      totalPages={pagination.totalPage}
+                      edgePageCount={3}
+                      middlePagesSiblingCount={1}
+                      className="flex items-center justify-center mt-4"
+                      truncableText="..."
+                      truncableClassName=""
+                    >
+                      <Pagination.PrevButton
+                        className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
+                          pagination.currentPage > 0
+                            ? "cursor-pointer "
+                            : "cursor-default hidden"
+                        }`}
+                      >
+                        {" "}
+                        <div className="w-full h-full flex justify-center items-center">
+                          <svg
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            className="w-6 h-6"
+                          >
+                            <path d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                          </svg>
+                        </div>
+                      </Pagination.PrevButton>
+
+                      <div className="flex items-center justify-center mx-6 list-none ">
+                        {examschedules?.data?.length > 0 ? (
+                          <Pagination.PageButton
+                            activeClassName="bg-blue-button border-0 text-white "
+                            inactiveClassName="border"
+                            className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
+                          />
+                        ) : (
+                          <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
+                            1
+                          </div>
+                        )}
+                      </div>
+
+                      <Pagination.NextButton
+                        className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
+                          page
+                        ) =>
+                          page > examschedules?.data?.length
+                            ? "cursor-pointer"
+                            : "cursor-not-allowed"}`}
+                      >
+                        <div className="w-full h-full flex justify-center items-center">
+                          <svg
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            className="w-6 h-6 "
+                          >
+                            <path d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                          </svg>
+                        </div>
+                      </Pagination.NextButton>
+                    </Pagination>
+                  ) : null}
+                </div>
+              </div>
+            </>
+          )}
+
+          {[...makeRoles([4, 5])].includes(user.roleId) && (
+            <>
+              <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+                <div>
+                  <div
+                    className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
+                    onClick={() => setIsShowSelect(!isShowSelect)}
+                  >
+                    <span className="pl-4">
+                      Show {pagination?.pageSize} item
+                    </span>
+                    <img
+                      src={DropdownSelectIcon}
+                      className="pointer-events-none leading-[16px] md:leading-[20px] md:mr-4"
+                      alt="drop icon"
+                    />
+                  </div>
+                  {isShowSelect && (
+                    <ul
+                      ref={popupSelect}
+                      className="text-left cursor-pointer absolute"
+                    >
+                      {sizeOptions?.map((item) => {
+                        return (
+                          <li
+                            className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
+                            onClick={() => {
+                              setParam({
+                                ...param,
+                                pageSize: Number(item.value),
+                              });
+                              setIsShowSelect(false);
+                            }}
+                            key={item.value}
+                          >
+                            Show {item.value} items
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              </div>
+              <div className="grid gap-4 p-8 pt-2 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
+                <table className=" text-sm text-left text-gray-400 ">
+                  <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">
+                        ExamScheduleId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        ExamslotId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        ClassroomId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        courseId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        proctoringId
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        studentListId
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {examschedulebyuser?.map((examschedule) => (
+                      <tr
+                        className="bg-white border-b  border-gray-700"
+                        key={examschedule?.examScheduleId}
+                      >
+                        <td className="px-6 py-4">
+                          {examschedule?.examScheduleId}
+                        </td>
+                        <td className="px-6 py-4">
+                          {examschedule?.examSlotId}
+                        </td>
+                        <td className="px-6 py-4">
+                          {examschedule?.classroomId}
+                        </td>
+                        <td className="px-6 py-4">{examschedule?.courseId}</td>
+                        <td className="px-6 py-4">
+                          {examschedule?.proctoringId}
+                        </td>
+                        <td className="px-6 py-4">
+                          {examschedule?.studentListId}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="sticky bottom-0 bg-white p-2 z-10">
+                  {examschedulebyuser?.length ? (
+                    <Pagination
+                      currentPage={paginationByUser.currentPage - 1}
+                      setCurrentPage={(page) => {
+                        setParam({ ...param, page: page + 1 });
+                      }}
+                      totalPages={paginationByUser.totalPage}
+                      edgePageCount={3}
+                      middlePagesSiblingCount={1}
+                      className="flex items-center justify-center mt-4"
+                      truncableText="..."
+                      truncableClassName=""
+                    >
+                      <Pagination.PrevButton
+                        className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
+                          paginationByUser.currentPage > 0
+                            ? "cursor-pointer "
+                            : "cursor-default hidden"
+                        }`}
+                      >
+                        {" "}
+                        <div className="w-full h-full flex justify-center items-center">
+                          <svg
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            className="w-6 h-6"
+                          >
+                            <path d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                          </svg>
+                        </div>
+                      </Pagination.PrevButton>
+
+                      <div className="flex items-center justify-center mx-6 list-none ">
+                        {examschedulebyuser?.length > 0 ? (
+                          <Pagination.PageButton
+                            activeClassName="bg-blue-button border-0 text-white "
+                            inactiveClassName="border"
+                            className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
+                          />
+                        ) : (
+                          <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
+                            1
+                          </div>
+                        )}
+                      </div>
+
+                      <Pagination.NextButton
+                        className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
+                          page
+                        ) =>
+                          page > examschedulebyuser?.length
+                            ? "cursor-pointer"
+                            : "cursor-not-allowed"}`}
+                      >
+                        <div className="w-full h-full flex justify-center items-center">
+                          <svg
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            className="w-6 h-6 "
+                          >
+                            <path d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                          </svg>
+                        </div>
+                      </Pagination.NextButton>
+                    </Pagination>
+                  ) : null}
+                </div>
+              </div>
+            </>
+          )}
         </main>
         <div></div>
       </div>

@@ -18,7 +18,7 @@ const updateCourse = async(data) => {
          courseId: data.courseId,
          courseName: data.courseName,
          semesterId: data.semesterId,
-         studentListId: data.studentListId,
+         listStudentList: data.listStudentList,
          status: "Active",
       })
       return response

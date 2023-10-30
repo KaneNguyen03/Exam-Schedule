@@ -20,6 +20,8 @@ import { color } from "../constants/commons/styled";
 import StatusButton from "../components/Status";
 import { getAllSemesters } from "../store/thunks/semester";
 import { toast } from "react-toastify";
+import { getAllStudents } from "../store/thunks/student";
+import studentTypes from "../constants/studentTypes";
 const Course = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
@@ -33,11 +35,14 @@ const Course = () => {
     keyword: "",
   });
   const [currentCourse, setCurrentCourse] = useState({});
+  console.log(currentCourse)
   const dataco = useSelector((state) => state.course);
-
+console.log(dataco)
   const datase = useSelector((state) => state.semester);
+  const datast = useSelector((state) => state.student);
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data;
   const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data;
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data;
   const pagination = dataco?.paginations[courseTypes.GET_COURSES];
 
   const popupSelect = useRef(null);
@@ -46,7 +51,7 @@ const Course = () => {
     courseId: "",
     courseName: "",
     semesterId: "",
-    studentListId: "",
+    listStudentList: [],
   });
   const [loadings, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -54,6 +59,11 @@ const Course = () => {
   const options = semesters?.map((semester) => ({
     value: semester.semesterId,
     label: semester.semesterId + " : " + semester.semesterName,
+  }));
+
+  const optionsListStudent = students?.map((item) => ({
+    value: item,
+    label: item.studentListId,
   }));
 
   const UpdateCourse = () => {
@@ -138,6 +148,17 @@ const Course = () => {
       dispatch(getAllSemesters({ page: 1, pageSize: 999 }));
     } catch (error) {
       toast.error("Error getting semesters");
+    }
+  }, [param.keyword, dispatch, param]);
+  useEffect(() => {
+    try {
+      const delayDebounceFn = setTimeout(() => {
+        dispatch(getAllStudents({ pagesize: 9999, page: 1 }));
+      }, 500);
+
+      return () => clearTimeout(delayDebounceFn);
+    } catch (error) {
+      toast.error("Error getting students");
     }
   }, [param.keyword, dispatch, param]);
   return (
@@ -291,7 +312,7 @@ const Course = () => {
                 </tr>
               </thead>
               <tbody>
-                {courses?.data?.map((course) => (
+                {courses?.map((course) => (
                   <tr
                     className="bg-white border-b  border-gray-700"
                     key={course.courseId}
@@ -357,7 +378,7 @@ const Course = () => {
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     semester id
                                   </label>
-                                  <ReactSelect
+                                  {/* <ReactSelect
                                     options={options}
                                     isMulti={false}
                                     value={
@@ -384,21 +405,27 @@ const Course = () => {
                                           : null
                                       );
                                     }}
-                                  />
+                                  /> */}
                                 </div>
                                 <div>
-                                  <label className="mb-2 text-sm font-medium text-white flex">
-                                    studentListId
+                                  <label className="mb-2 text-sm font-medium  text-white flex">
+                                    listStudentList
                                   </label>
-                                  <input
-                                    value={currentCourse?.studentListId}
-                                    onChange={(e) =>
+                                  <ReactSelect
+                                    isMulti={true}
+                                    options={optionsListStudent}
+                                    // value={optionsListStudent.find(
+                                    //   (x) =>
+                                    //     x.studentListId ===
+                                    //     currentCourse.studentListId
+                                    // )}
+                                    onChange={(data) => {
+                                      console.log(data);
                                       setCurrentCourse({
                                         ...currentCourse,
-                                        studentListId: e.target.value,
-                                      })
-                                    }
-                                    className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                        listStudentList: data,
+                                      });
+                                    }}
                                   />
                                 </div>
                                 <div className="flex justify-between">
@@ -684,7 +711,7 @@ const Course = () => {
               </tbody>
             </table>
             <div className="sticky bottom-0 bg-white p-2">
-              {courses?.data?.length ? (
+              {courses?.length ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
@@ -719,7 +746,7 @@ const Course = () => {
                   </Pagination.PrevButton>
 
                   <div className="flex items-center justify-center mx-6 list-none ">
-                    {courses?.data?.length > 0 ? (
+                    {courses?.length > 0 ? (
                       <Pagination.PageButton
                         activeClassName="bg-blue-button border-0 text-white "
                         inactiveClassName="border"
@@ -736,7 +763,7 @@ const Course = () => {
                     className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
                       page
                     ) =>
-                      page > courses?.data?.length
+                      page > courses?.length
                         ? "cursor-pointer"
                         : "cursor-not-allowed"}`}
                   >
