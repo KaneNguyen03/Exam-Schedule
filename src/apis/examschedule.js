@@ -32,7 +32,6 @@ const generateExamSchedule = async (res) => {
 
 const getExamScheduleByCourseIdAndExamSlotId = async (res) => {
   try {
-    console.log(res)
     const url = "&" + new URLSearchParams(res).toString()
     const data = await apiInstance.get(
       `api/ExamSchedule/GetExamSchedulesByCourseIDAndExamSlotID?${url}`
@@ -58,7 +57,6 @@ const sendMail = async (res) => {
 
 const getExamScheduleByUsername = async (res) => {
   try {
-    console.log(res)
     const url = "?" + new URLSearchParams(res).toString()+"&"
     const data = await apiInstance.get(
       `api/ExamSchedule/GetExamSchedulesByStudentUsername${url}`

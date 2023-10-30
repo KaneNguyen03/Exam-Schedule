@@ -18,6 +18,9 @@ const Dashboard = ({
   allusers,
 }) => {
   const { user } = useAuth()
+  const teacher = teachers?.find(
+    (teacher) => teacher.proctoringName === user.username.toLowerCase()
+  )
 
   const examSlotData = {
     labels: [],
@@ -76,6 +79,31 @@ const Dashboard = ({
     examSlotData.datasets[0].backgroundColor.push(randomColor)
   })
 
+  // Thực hiện thống kê số lượng khung thời gian coi thi mà mỗi giám thị tham gia
+  const proctorData = examslots?.reduce((proctorStats, slot) => {
+    slot.listProctoring.forEach((proctor) => {
+      const proctorName = proctor.proctoringName
+      proctorStats[proctorName] = (proctorStats[proctorName] || 0) + 1
+    })
+    return proctorStats
+  }, {})
+
+  // Tạo dữ liệu cho biểu đồ Pie Chart
+  const pieChartData = {
+    labels: Object?.keys(proctorData ? proctorData : ""),
+    datasets: [
+      {
+        data: Object?.values(proctorData ? proctorData : ""),
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.6)",
+          "rgba(54, 162, 235, 0.6)",
+          "rgba(255, 206, 86, 0.6)",
+          // Thêm màu nền cho các giám thị khác (nếu cần)
+        ],
+      },
+    ],
+  }
+
   return (
     <div className="w-full p-6">
       <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -110,7 +138,29 @@ const Dashboard = ({
         )}
         {[...makeRoles([4])].includes(user.roleId) && (
           <>
-            <BarChart></BarChart>
+            <>
+              <Link to="/proctoring" className="dashboard-card">
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-inherit font-bold">Proctoring</h2>
+                  <p className="mt-4">{teachers?.length}</p>
+                </div>
+              </Link>
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-inherit font-bold">Compensation</h2>
+                <p className="mt-4">
+                  {teacher?.compensation ? teacher?.compensation * 4 : 0}$
+                </p>
+              </div>
+            </>
+            <div className="bg-white rounded-lg shadow-md p-6 ">
+              <h2 className="text-inherit font-bold">Exam Slot Chart</h2>
+              <Bar data={examSlotData} />
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-inherit font-bold">Time Chart</h2>
+
+              <Pie data={pieChartData} className="max-h-80 my-8" />
+            </div>
           </>
         )}
         {[...makeRoles([3])].includes(user.roleId) && (
@@ -135,31 +185,19 @@ const Dashboard = ({
             </div>
           </>
         )}
-        {[...makeRoles([5])].includes(user.roleId) && (
-          <>
-            <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
-              <h2 className="text-inherit font-bold">Course</h2>
-              <p className="mt-4">{courses?.length}</p>
-            </div>
-            <Link to="/examschedule" className="dashboard-card">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-inherit font-bold">Exam Schedule</h2>
-                <p className="mt-4">{examschedules?.length}</p>
-              </div>
-            </Link>
-          </>
-        )}
       </div>
-      <div className="mt-6 grid grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
-          <h2 className="text-inherit font-bold">Exam Slot Chart</h2>
-          <Bar data={examSlotData} />
+      {[...makeRoles([1, 2])].includes(user.roleId) && (
+        <div className="mt-6 grid grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
+            <h2 className="text-inherit font-bold">Exam Slot Chart</h2>
+            <Bar data={examSlotData} />
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
+            <h2 className="text-inherit font-bold">Time Chart</h2>
+            <Line data={timeData} />
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow-md p-6 dashboard-card">
-          <h2 className="text-inherit font-bold">Time Chart</h2>
-          <Line data={timeData} />
-        </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -1,129 +1,128 @@
-import { useDispatch, useSelector } from "react-redux";
-import Sidebar from "../components/Layout/Sidebar";
-import { useEffect, useRef, useState } from "react";
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
-import ReactSelect from "react-select";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { sizeOptions } from "../constants/commons/commons";
-import { Pagination } from "react-headless-pagination";
+import { useDispatch, useSelector } from "react-redux"
+import Sidebar from "../components/Layout/Sidebar"
+import { useEffect, useRef, useState } from "react"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import ReactSelect from "react-select"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import useAuth from "../hooks/useAuth"
+import { sizeOptions } from "../constants/commons/commons"
+import { Pagination } from "react-headless-pagination"
 
-import courseTypes from "../constants/courseTypes";
+import courseTypes from "../constants/courseTypes"
 import {
   createCourse,
   deleteCourse,
   getAllCourses,
   updateCourse,
-} from "../store/thunks/course";
-import semesterTypes from "../constants/semesterTypes";
-import { color } from "../constants/commons/styled";
-import StatusButton from "../components/Status";
-import { getAllSemesters } from "../store/thunks/semester";
-import { toast } from "react-toastify";
-import { getAllStudents } from "../store/thunks/student";
-import studentTypes from "../constants/studentTypes";
+} from "../store/thunks/course"
+import semesterTypes from "../constants/semesterTypes"
+import { color } from "../constants/commons/styled"
+import StatusButton from "../components/Status"
+import { getAllSemesters } from "../store/thunks/semester"
+import { toast } from "react-toastify"
+import { getAllStudents } from "../store/thunks/student"
+import studentTypes from "../constants/studentTypes"
 const Course = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  const dispatch = useDispatch()
+  const { user } = useAuth()
+  const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
 
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
-  const [currentCourse, setCurrentCourse] = useState({});
-  console.log(currentCourse)
-  const dataco = useSelector((state) => state.course);
-console.log(dataco)
-  const datase = useSelector((state) => state.semester);
-  const datast = useSelector((state) => state.student);
-  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data;
-  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data;
-  const pagination = dataco?.paginations[courseTypes.GET_COURSES];
+  })
+  const [currentCourse, setCurrentCourse] = useState({})
+  const dataco = useSelector((state) => state.course)
+  const datase = useSelector((state) => state.semester)
+  const datast = useSelector((state) => state.student)
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data
+  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data
+  const pagination = dataco?.paginations[courseTypes.GET_COURSES]
 
-  const popupSelect = useRef(null);
-  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const popupSelect = useRef(null)
+  const [openModalAdd, setOpenModalAdd] = useState(false)
   const [addData, setAddData] = useState({
     courseId: "",
     courseName: "",
     semesterId: "",
     listStudentList: [],
-  });
-  const [loadings, setLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(null);
+  })
+  const [loadings, setLoading] = useState(true)
+  const [selectedOption, setSelectedOption] = useState(null)
 
   const options = semesters?.map((semester) => ({
     value: semester.semesterId,
     label: semester.semesterId + " : " + semester.semesterName,
-  }));
+  }))
 
   const optionsListStudent = students?.map((item) => ({
+    id: item.studentListId,
     value: item,
     label: item.studentListId,
-  }));
+  }))
 
   const UpdateCourse = () => {
     try {
-      dispatch(updateCourse(currentCourse));
-      toast.success("Course updated successfully");
+      dispatch(updateCourse(currentCourse))
+      toast.success("Course updated successfully")
     } catch (error) {
-      toast.error("Error update course");
+      toast.error("Error update course")
     }
 
-    setOpenModal(false);
-  };
+    setOpenModal(false)
+  }
 
   const AddCourse = () => {
     try {
-      dispatch(createCourse(addData));
-      toast.success("Course added successfully");
+      dispatch(createCourse(addData))
+      toast.success("Course added successfully")
     } catch (error) {
-      toast.error("Error adding course");
+      toast.error("Error adding course")
     }
 
-    setOpenModalAdd(false);
-  };
+    setOpenModalAdd(false)
+  }
 
   const onDeleteCourse = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    };
+    }
     try {
-      dispatch(deleteCourse(req));
-      toast.success("Course deleted successfully");
+      dispatch(deleteCourse(req))
+      toast.success("Course deleted successfully")
     } catch (error) {
-      toast.error("Error deleting course");
+      toast.error("Error deleting course")
     }
 
-    setOpenModalConfirm(false);
+    setOpenModalConfirm(false)
     try {
-      setTimeout(() => dispatch(getAllCourses(param)), 1000);
+      setTimeout(() => dispatch(getAllCourses(param)), 1000)
     } catch (error) {
-      toast.error("Error getting course");
+      toast.error("Error getting course")
     }
-  };
+  }
   const restoreCourse = (data) => {
     const req = {
       ...data,
       status: "Active",
-    };
-    try {
-      dispatch(deleteCourse(req));
-      toast.success("Course restored successfully");
-    } catch (error) {
-      toast.error("Error restore course");
     }
     try {
-      setTimeout(() => dispatch(getAllCourses(param)), 1000);
+      dispatch(deleteCourse(req))
+      toast.success("Course restored successfully")
     } catch (error) {
-      toast.error("Error getting course");
+      toast.error("Error restore course")
     }
-  };
+    try {
+      setTimeout(() => dispatch(getAllCourses(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting course")
+    }
+  }
   useEffect(() => {
     if (
       dataco?.loadings[courseTypes.GET_COURSES] ||
@@ -131,36 +130,36 @@ console.log(dataco)
       dataco?.loadings[courseTypes.UPDATE_COURSE] ||
       dataco?.loadings[courseTypes.DELETE_COURSE]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [dataco, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [dataco, param])
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllCourses(param));
-      }, 500);
-      return () => clearTimeout(delayDebounceFn);
+        dispatch(getAllCourses(param))
+      }, 500)
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
-      toast.error("Error getting course");
+      toast.error("Error getting course")
     }
     try {
-      dispatch(getAllSemesters({ page: 1, pageSize: 999 }));
+      dispatch(getAllSemesters({ page: 1, pageSize: 999 }))
     } catch (error) {
-      toast.error("Error getting semesters");
+      toast.error("Error getting semesters")
     }
-  }, [param.keyword, dispatch, param]);
+  }, [param.keyword, dispatch, param])
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents({ pagesize: 9999, page: 1 }));
-      }, 500);
+        dispatch(getAllStudents({ pagesize: 9999, page: 1 }))
+      }, 500)
 
-      return () => clearTimeout(delayDebounceFn);
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
-      toast.error("Error getting students");
+      toast.error("Error getting students")
     }
-  }, [param.keyword, dispatch, param]);
+  }, [param.keyword, dispatch, param])
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -192,7 +191,7 @@ console.log(dataco)
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      });
+                      })
                     }}
                     value={param.keyword}
                   />
@@ -274,14 +273,14 @@ console.log(dataco)
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) });
-                          setIsShowSelect(false);
+                          setParam({ ...param, pageSize: Number(item.value) })
+                          setIsShowSelect(false)
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               )}
@@ -414,17 +413,23 @@ console.log(dataco)
                                   <ReactSelect
                                     isMulti={true}
                                     options={optionsListStudent}
-                                    // value={optionsListStudent.find(
-                                    //   (x) =>
-                                    //     x.studentListId ===
-                                    //     currentCourse.studentListId
-                                    // )}
+                                    value={currentCourse?.listStudentList?.map(
+                                      (x) => {
+                                        return {
+                                          id: x.studentListId,
+                                          value: x,
+                                          label: x.studentListId,
+                                        }
+                                      }
+                                    )}
                                     onChange={(data) => {
-                                      console.log(data);
+                                      const newList = data.map(
+                                        (item) => item.value
+                                      )
                                       setCurrentCourse({
                                         ...currentCourse,
-                                        listStudentList: data,
-                                      });
+                                        listStudentList: newList,
+                                      })
                                     }}
                                   />
                                 </div>
@@ -524,11 +529,11 @@ console.log(dataco)
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      );
+                                      )
                                       setAddData({
                                         ...addData,
                                         semesterId: data.value,
-                                      });
+                                      })
                                     }}
 
                                     ////////////////////////////////
@@ -666,8 +671,8 @@ console.log(dataco)
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentCourse(course);
-                                  setOpenModalConfirm(true);
+                                  setCurrentCourse(course)
+                                  setOpenModalConfirm(true)
                                 }
                               }
                             >
@@ -678,9 +683,9 @@ console.log(dataco)
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal);
-                                setSelectedOption(course.semesterId);
-                                setCurrentCourse(course);
+                                setOpenModal(!openModal)
+                                setSelectedOption(course.semesterId)
+                                setCurrentCourse(course)
                               }}
                             >
                               Edit
@@ -715,7 +720,7 @@ console.log(dataco)
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 });
+                    setParam({ ...param, page: page + 1 })
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -785,7 +790,7 @@ console.log(dataco)
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Course;
+export default Course
