@@ -30,6 +30,7 @@ import { differenceInDays, parseISO } from "date-fns";
 import { toast } from "react-toastify";
 import { getAllStudents } from "../store/thunks/student";
 import studentTypes from "../constants/studentTypes";
+import moment from "moment"
 
 const Reproctoring = () => {
   const dispatch = useDispatch();
@@ -490,7 +491,7 @@ const Reproctoring = () => {
                       </td>
                       <td className="px-6 py-4">{examslot.courseId}</td>
                       <td className="px-6 py-4">
-                        {examslot?.date?.substring(0, 10)}
+                      {moment(examslot.date).format("DD/MM/YYYY")}
                       </td>
                       <td className="px-6 py-4">
                         {examslot.startTime.substring(0, 5)}

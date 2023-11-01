@@ -24,7 +24,6 @@ import moment from "moment"
 import ReactDatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { createExamschedule } from "../store/thunks/examschedule"
-import { v4 as uuidv4 } from "uuid"
 import classroomTypes from "../constants/classroomTypes"
 import { getAllClassrooms } from "../store/thunks/classroom"
 import { toast } from "react-toastify"
@@ -47,6 +46,7 @@ const ExamSlot = () => {
     keyword: "",
   })
   const [currentExamslot, setCurrentExamslot] = useState({})
+
   const handleExportCSV = (e) => {
     e.preventDefault()
     const element = document.getElementById("exportCSV")
@@ -87,6 +87,7 @@ const ExamSlot = () => {
   const options = teachers?.map((teacher) => ({
     value: teacher,
     label: teacher.proctoringName,
+    key: teacher.proctoringName,
   }))
 
   const headers = [
@@ -148,38 +149,16 @@ const ExamSlot = () => {
     } catch (error) {
       toast.error("Error adding examslot")
     }
-    // try {
-    //   setTimeout(
-    //     () =>
-    //       dispatch(
-    //         createExamschedule({
-    //           status: "Active",
-    //           examScheduleId: uuidv4(),
-    //           classroomId:
-    //             classrooms[Math.floor(Math.random() * classrooms.length)]
-    //               .classroomId,
-    //           examSlotId: addData.examSlotId,
-    //           courseId: addData?.courseId
-    //         })
-    //       ),
-    //     1000
-    //   )
-    // } catch (error) {
-    //   toast.error("Error creating examschedule")
-    // }
 
     setOpenModalAdd(false)
   }
-  const [selectedFile, setSelectedFile] = useState(null)
 
-  const handleUpload = () => {
-    if (selectedFile) {
-      try {
-        examslotApi.importExamSlot(selectedFile)
-        toast.success("Import successfully")
-      } catch (error) {
-        toast.error("Error importing")
-      }
+  const handleUpload = (file) => {
+    try {
+      examslotApi.importExamSlot(file)
+      toast.success("Import successfully")
+    } catch (error) {
+      toast.error("Error importing")
     }
   }
 
@@ -363,7 +342,9 @@ const ExamSlot = () => {
                 <input
                   type="file"
                   accept=".xlsx"
-                  onChange={(e) => setSelectedFile(e.target.files[0])}
+                  onChange={(e) => {
+                    handleUpload(e.target.files[0])
+                  }}
                   className="hidden"
                 />
                 <button
@@ -729,31 +710,35 @@ const ExamSlot = () => {
                                     proctoring name
                                   </label>
                                   <ReactSelect
-                                    options={options}
+                                    options={options.filter((option) => {
+                                      const listExamSlot =
+                                        option.value.listExamSlot
+                                      for (const examSlot of listExamSlot) {
+                                        if (
+                                          examSlot.examSlotId ===
+                                          currentExamslot.examSlotId
+                                        ) {
+                                          return false // Giữ lại phần tử này nếu tìm thấy examSlotId tương tự
+                                        }
+                                      }
+                                      return true // Lọc ra các phần tử không có examSlotId tương tự
+                                    })}
                                     isMulti={true}
                                     value={currentExamslot?.listProctoring?.map(
                                       (proctoring) => ({
+                                        ...proctoring,
                                         value: proctoring,
                                         label: proctoring.proctoringName,
+                                        key: proctoring.proctoringName,
                                       })
                                     )}
                                     onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
                                       const newListProctoring =
                                         selectedOption.map((item) => item.value)
-                                      setCurrentExamslot((prevExamslot) => ({
-                                        ...prevExamslot,
-                                        listProctoring: newListProctoring
-                                          ? newListProctoring
-                                          : null,
-                                      }))
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        newListProctoring
-                                          ? newListProctoring
-                                          : null
-                                      )
+                                      setCurrentExamslot({
+                                        ...currentExamslot,
+                                        listProctoring: newListProctoring,
+                                      })
                                     }}
                                   />
                                 </div>

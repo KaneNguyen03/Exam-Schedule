@@ -55,7 +55,7 @@ const ExamscheduleDashboard = () => {
   const datate = useSelector((state) => state.teacher)
   const dataco = useSelector((state) => state.course)
   const dataexs = useSelector((state) => state.examschedule)
-  const examschedulebyuser = dataexs?.contents[
+  const examScheduleByUser = dataexs?.contents[
     examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME
   ]?.data.data?.filter((item) => item !== null)
 
@@ -68,6 +68,18 @@ const ExamscheduleDashboard = () => {
     dataexs?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME]
   const allExamSlots =
     dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data
+
+  // Tạo một bản sao của examScheduleByUser với thông tin ngày giờ từ allExamSlots
+  const updatedExamScheduleByUser = examScheduleByUser?.map((schedule) => {
+    const matchingSlot = allExamSlots?.find(
+      (slot) => slot.examSlotId === schedule.examSlotId
+    )
+    if (matchingSlot) {
+      const { date, startTime, endTime } = matchingSlot
+      return { ...schedule, date, startTime, endTime }
+    }
+    return schedule
+  })
 
   const [openModal, setOpenModal] = useState(false)
   const [currentExamSchedule, setCurrentExamSchedule] = useState()
@@ -735,7 +747,7 @@ const ExamscheduleDashboard = () => {
               </TabPanel>
             </Tabs>
           )}
-          {[...makeRoles([4])].includes(user.roleId) && (
+          {/* {[...makeRoles([4])].includes(user.roleId) && (
             <>
               <div className="grid gap-4 p-8 pt-2 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
                 <table className=" text-sm text-left text-gray-400 ">
@@ -751,13 +763,7 @@ const ExamscheduleDashboard = () => {
                         ClassroomId
                       </th>
                       <th scope="col" className="px-6 py-3">
-                        courseId
-                      </th>
-                      <th scope="col" className="px-6 py-3">
                         proctoringId
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        studentListId
                       </th>
                     </tr>
                   </thead>
@@ -765,7 +771,7 @@ const ExamscheduleDashboard = () => {
                     {examschedules?.data?.map((examschedule) => (
                       <tr
                         className="bg-white border-b  border-gray-700"
-                        key={examschedules?.examScheduleId}
+                        key={examschedule?.examScheduleId}
                       >
                         <td className="px-6 py-4">
                           {examschedule.examScheduleId}
@@ -774,12 +780,8 @@ const ExamscheduleDashboard = () => {
                         <td className="px-6 py-4">
                           {examschedule.classroomId}
                         </td>
-                        <td className="px-6 py-4">{examschedule.courseId}</td>
                         <td className="px-6 py-4">
                           {examschedule.proctoringId}
-                        </td>
-                        <td className="px-6 py-4">
-                          {examschedule.studentListId}
                         </td>
                       </tr>
                     ))}
@@ -857,7 +859,7 @@ const ExamscheduleDashboard = () => {
                 </div>
               </div>
             </>
-          )}
+          )} */}
           {[...makeRoles([3])].includes(user.roleId) && (
             <>
               <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
@@ -937,7 +939,7 @@ const ExamscheduleDashboard = () => {
                     {examschedules?.data?.map((examschedule) => (
                       <tr
                         className="bg-white border-b  border-gray-700"
-                        key={examschedules?.examScheduleId}
+                        key={examschedule?.examScheduleId}
                       >
                         <td className="px-6 py-4">
                           {examschedule.examScheduleId}
@@ -1031,7 +1033,7 @@ const ExamscheduleDashboard = () => {
             </>
           )}
 
-          {[...makeRoles([5])].includes(user.roleId) && (
+          {[...makeRoles([4, 5])].includes(user.roleId) && (
             <>
               <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
                 <div>
@@ -1087,19 +1089,29 @@ const ExamscheduleDashboard = () => {
                       <th scope="col" className="px-6 py-3">
                         ClassroomId
                       </th>
+                      {makeRoles([5]).includes(user.roleId) && (
+                        <th scope="col" className="px-6 py-3">
+                          courseId
+                        </th>
+                      )}
+                      {makeRoles([4]).includes(user.roleId) && (
+                        <th scope="col" className="px-6 py-3">
+                          Proctoring
+                        </th>
+                      )}
                       <th scope="col" className="px-6 py-3">
-                        courseId
+                        Start Time
                       </th>
                       <th scope="col" className="px-6 py-3">
-                        proctoringId
+                        End Time
                       </th>
                       <th scope="col" className="px-6 py-3">
-                        studentListId
+                        Date
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {examschedulebyuser?.map((examschedule) => (
+                    {updatedExamScheduleByUser?.map((examschedule) => (
                       <tr
                         className="bg-white border-b  border-gray-700"
                         key={examschedule?.examScheduleId}
@@ -1113,19 +1125,31 @@ const ExamscheduleDashboard = () => {
                         <td className="px-6 py-4">
                           {examschedule?.classroomId}
                         </td>
-                        <td className="px-6 py-4">{examschedule?.courseId}</td>
-                        <td className="px-6 py-4">
-                          {examschedule?.proctoringId}
-                        </td>
-                        <td className="px-6 py-4">
-                          {examschedule?.studentListId}
-                        </td>
+                        {makeRoles([5]).includes(user.roleId) && (
+                          <td className="px-6 py-4">
+                            {examschedule?.courseId}
+                          </td>
+                        )}
+                        {makeRoles([4]).includes(user.roleId) && (
+                          <td className="px-6 py-4">
+                            {examschedule?.proctoringId}
+                          </td>
+                        )}
+                         <td className="px-6 py-4">
+                         {examschedule.startTime.substring(0, 5)}
+                         </td>
+                         <td className="px-6 py-4">
+                         {examschedule.endTime.substring(0, 5)}
+                         </td>
+                         <td className="px-6 py-4">
+                         {moment(examschedule.date).format("DD/MM/YYYY")}
+                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
                 <div className="sticky bottom-0 bg-white p-2 z-10">
-                  {examschedulebyuser?.length ? (
+                  {updatedExamScheduleByUser?.length ? (
                     <Pagination
                       currentPage={paginationByUser.currentPage - 1}
                       setCurrentPage={(page) => {
@@ -1159,7 +1183,7 @@ const ExamscheduleDashboard = () => {
                       </Pagination.PrevButton>
 
                       <div className="flex items-center justify-center mx-6 list-none ">
-                        {examschedulebyuser?.length > 0 ? (
+                        {updatedExamScheduleByUser?.length > 0 ? (
                           <Pagination.PageButton
                             activeClassName="bg-blue-button border-0 text-white "
                             inactiveClassName="border"
@@ -1176,7 +1200,7 @@ const ExamscheduleDashboard = () => {
                         className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
                           page
                         ) =>
-                          page > examschedulebyuser?.length
+                          page > updatedExamScheduleByUser?.length
                             ? "cursor-pointer"
                             : "cursor-not-allowed"}`}
                       >
