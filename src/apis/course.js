@@ -43,12 +43,12 @@ const deleteCourse = async (data) => {
  }
 const createCourse = async (data) => {
    try {
-     const response = await apiInstance.delete(
+     const response = await apiInstance.post(
        `api/Course`,{
          courseId: data.courseId,
          courseName: data.courseName,
          semesterId: data.semesterId,
-         studentListId: data.studentListId,
+         listStudentList: [],
          status: "Active"
        }
      )

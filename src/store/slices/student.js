@@ -81,7 +81,7 @@ const studentSlice = createSlice({
     [createStudent.fulfilled]: (state, payload ) => {
       state.loadings[studentTypes.CREATE_STUDENT] = false;
       state.contents[studentTypes.CREATE_STUDENT] = payload.meta.arg;
-      const temp = { ...payload.meta.arg, status: "Active" };
+      const temp = { ...payload.meta.arg, status: "active" };
       state.contents[studentTypes.GET_STUDENTS].data.data.push(temp);
     },
     [createStudent.rejected]: (state, { payload }) => {

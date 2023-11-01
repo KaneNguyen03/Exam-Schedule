@@ -59,7 +59,7 @@ const createStudent = async (data) => {
       studentListId: data.studentListId,
       listStudent: data.listStudent,
       courseId: data.courseId ? data.courseId : "",
-      numberOfProctoring: data.numberOfProctoring,
+      numberOfProctoring: data.numberOfProctoring ? data.numberOfProctoring : 1,
       status: "Active",
     })
     return response

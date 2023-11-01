@@ -938,7 +938,8 @@ const ExamSlot = () => {
                       <>
                         <td>
                           <>
-                            {examslot?.status?.toLowerCase() === "active" &&
+                            {(examslot?.status?.toLowerCase() === "active" ||
+                              examslot?.status?.toLowerCase() === "pending") &&
                             differenceInDays(
                               parseISO(
                                 examslot?.date?.toString().substring(0, 10)
@@ -968,18 +969,6 @@ const ExamSlot = () => {
                                 color={color.yellow}
                                 bgColor={color.yellowLight}
                                 title="Completed"
-                              />
-                            ) : examslot?.status?.toLowerCase() === "pending" &&
-                              differenceInDays(
-                                parseISO(
-                                  examslot?.date?.toString().substring(0, 10)
-                                ),
-                                currentDate
-                              ) > 0 ? (
-                              <StatusButton
-                                color={color.blue}
-                                bgColor={color.blueLight}
-                                title="Pending"
                               />
                             ) : (
                               <>-</>

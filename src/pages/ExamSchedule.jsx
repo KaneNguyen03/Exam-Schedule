@@ -83,7 +83,6 @@ const ExamscheduleDashboard = () => {
 
   const [openModal, setOpenModal] = useState(false)
   const [currentExamSchedule, setCurrentExamSchedule] = useState()
-
   const optionsCourses = courses?.map((course) => ({
     value: course.courseId,
     label: course.courseId,
@@ -113,6 +112,7 @@ const ExamscheduleDashboard = () => {
       startTime: item.startTime,
       endTime: item.endTime,
       date: item.date,
+      courseId: item.courseId,
     }
   })
 
@@ -185,7 +185,10 @@ const ExamscheduleDashboard = () => {
     const isEventInProgress =
       event.start <= currentTime && event.end >= currentTime
     let backgroundColor = event.start < new Date() ? "#ccc" : "#dc3454"
-    if (event.start >= new Date() && event.status === "pending") {
+    if (
+      (event.start >= new Date() && event.status === "pending") ||
+      (event.courseId && event.start >= new Date())
+    ) {
       backgroundColor = "#3174ad"
     }
     if (isEventInProgress) backgroundColor = "#ffd700"
@@ -200,11 +203,13 @@ const ExamscheduleDashboard = () => {
 
   const handleEventClick = (event) => {
     setOpenModalChoosingCourse(
-      currentExamSchedule?.status.toLowerCase() === "active"
+      currentExamSchedule?.status.toLowerCase() === "active" &&
+        currentExamSchedule?.courseId === null
     )
 
-    if (currentExamSchedule?.status === "pending") {
-      navigate(`/examschedule/${currentExamSchedule.examSlotId}`)
+    if (!openModalChoosingCourse) {
+      if (currentExamSchedule?.examSlotId !== undefined)
+        navigate(`/examschedule/${currentExamSchedule.examSlotId}`)
     }
     // Handle the event click here
     // if (!event.proctoring)
@@ -747,119 +752,6 @@ const ExamscheduleDashboard = () => {
               </TabPanel>
             </Tabs>
           )}
-          {/* {[...makeRoles([4])].includes(user.roleId) && (
-            <>
-              <div className="grid gap-4 p-8 pt-2 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
-                <table className=" text-sm text-left text-gray-400 ">
-                  <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 ">
-                    <tr>
-                      <th scope="col" className="px-6 py-3">
-                        ExamScheduleId
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        ExamslotId
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        ClassroomId
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        proctoringId
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {examschedules?.data?.map((examschedule) => (
-                      <tr
-                        className="bg-white border-b  border-gray-700"
-                        key={examschedule?.examScheduleId}
-                      >
-                        <td className="px-6 py-4">
-                          {examschedule.examScheduleId}
-                        </td>
-                        <td className="px-6 py-4">{examschedule.examSlotId}</td>
-                        <td className="px-6 py-4">
-                          {examschedule.classroomId}
-                        </td>
-                        <td className="px-6 py-4">
-                          {examschedule.proctoringId}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="sticky bottom-0 bg-white p-2 z-10">
-                  {examschedules?.data?.length ? (
-                    <Pagination
-                      currentPage={pagination.currentPage - 1}
-                      setCurrentPage={(page) => {
-                        setParam({ ...param, page: page + 1 })
-                      }}
-                      totalPages={pagination.totalPage}
-                      edgePageCount={3}
-                      middlePagesSiblingCount={1}
-                      className="flex items-center justify-center mt-4"
-                      truncableText="..."
-                      truncableClassName=""
-                    >
-                      <Pagination.PrevButton
-                        className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary ${
-                          pagination.currentPage > 0
-                            ? "cursor-pointer "
-                            : "cursor-default hidden"
-                        }`}
-                      >
-                        {" "}
-                        <div className="w-full h-full flex justify-center items-center">
-                          <svg
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                          >
-                            <path d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
-                          </svg>
-                        </div>
-                      </Pagination.PrevButton>
-
-                      <div className="flex items-center justify-center mx-6 list-none ">
-                        {examschedules?.data?.length > 0 ? (
-                          <Pagination.PageButton
-                            activeClassName="bg-blue-button border-0 text-white "
-                            inactiveClassName="border"
-                            className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300"
-                          />
-                        ) : (
-                          <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 text-white">
-                            1
-                          </div>
-                        )}
-                      </div>
-
-                      <Pagination.NextButton
-                        className={`w-8 md:w-10 h-8 md:h-10 rounded-lg border-solid border border-primary  ${(
-                          page
-                        ) =>
-                          page > examschedules?.data?.length
-                            ? "cursor-pointer"
-                            : "cursor-not-allowed"}`}
-                      >
-                        <div className="w-full h-full flex justify-center items-center">
-                          <svg
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            className="w-6 h-6 "
-                          >
-                            <path d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
-                          </svg>
-                        </div>
-                      </Pagination.NextButton>
-                    </Pagination>
-                  ) : null}
-                </div>
-              </div>
-            </>
-          )} */}
           {[...makeRoles([3])].includes(user.roleId) && (
             <>
               <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
@@ -1135,15 +1027,15 @@ const ExamscheduleDashboard = () => {
                             {examschedule?.proctoringId}
                           </td>
                         )}
-                         <td className="px-6 py-4">
-                         {examschedule.startTime.substring(0, 5)}
-                         </td>
-                         <td className="px-6 py-4">
-                         {examschedule.endTime.substring(0, 5)}
-                         </td>
-                         <td className="px-6 py-4">
-                         {moment(examschedule.date).format("DD/MM/YYYY")}
-                         </td>
+                        <td className="px-6 py-4">
+                          {examschedule.startTime.substring(0, 5)}
+                        </td>
+                        <td className="px-6 py-4">
+                          {examschedule.endTime.substring(0, 5)}
+                        </td>
+                        <td className="px-6 py-4">
+                          {moment(examschedule.date).format("DD/MM/YYYY")}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

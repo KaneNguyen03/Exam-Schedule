@@ -1,62 +1,70 @@
-import { useEffect, useRef, useState } from "react";
-import Sidebar from "../components/Layout/Sidebar";
+import { useEffect, useRef, useState } from "react"
+import Sidebar from "../components/Layout/Sidebar"
 import {
   createStudent,
   deleteStudent,
   getAllStudents,
   getStudents,
   updateStudent,
-} from "../store/thunks/student";
-import studentTypes from "../constants/studentTypes";
-import { useDispatch, useSelector } from "react-redux";
-import { Pagination } from "react-headless-pagination";
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
-import { sizeOptions } from "../constants/commons/commons";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import ReactSelect from "react-select";
-import { color } from "../constants/commons/styled";
-import StatusButton from "../components/Status";
-import { toast } from "react-toastify";
+} from "../store/thunks/student"
+import studentTypes from "../constants/studentTypes"
+import { useDispatch, useSelector } from "react-redux"
+import { Pagination } from "react-headless-pagination"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import { sizeOptions } from "../constants/commons/commons"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import useAuth from "../hooks/useAuth"
+import ReactSelect from "react-select"
+import { color } from "../constants/commons/styled"
+import StatusButton from "../components/Status"
+import { toast } from "react-toastify"
+import { getAllCourses } from "../store/thunks/course"
+import courseTypes from "../constants/courseTypes"
 const Student = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
+  const dispatch = useDispatch()
+  const { user } = useAuth()
+  const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  })
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
 
-  const [currentStudent, setCurrentStudent] = useState({});
+  const [currentStudent, setCurrentStudent] = useState({})
 
-
-  const datast = useSelector((state) => state.student);
-  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data;
-  const pagination = datast?.paginations[studentTypes.GET_STUDENTS];
-  const popupSelect = useRef(null);
-  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const datast = useSelector((state) => state.student)
+  const dataco = useSelector((state) => state.course)
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data
+  const pagination = datast?.paginations[studentTypes.GET_STUDENTS]
+  const popupSelect = useRef(null)
+  const [openModalAdd, setOpenModalAdd] = useState(false)
   const [addData, setAddData] = useState({
     studentListId: "",
     listStudent: [],
     courseId: "",
-    numberOfProctorings: "",
-  });
+    numberOfProctorings: 1,
+  })
 
-  const allStudents = datast?.contents[studentTypes.GET_ALL_STUDENTS]?.data;
+  const allStudents = datast?.contents[studentTypes.GET_ALL_STUDENTS]?.data
 
   const options = allStudents?.map((student) => ({
     value: student.username,
     label: student.username + " - " + student.email,
     email: student.email,
     username: student.username,
-  }));
+  }))
 
-  const [selectedOption, setSelectedOption] = useState(null);
+  const optionsCourses = courses?.map((c) => ({
+    value: c.courseId,
+    label: c.courseId,
+  }))
 
-  const [loadings, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null)
+
+  const [loadings, setLoading] = useState(true)
 
   const UpdateStudent = () => {
     try {
@@ -64,63 +72,63 @@ const Student = () => {
         return {
           username: item.username,
           email: item.email,
-        };
-      });
+        }
+      })
 
-      dispatch(updateStudent({ ...currentStudent, listStudent: listStudent }));
-      setOpenModal(false);
-      toast.success("Student updated successfully");
+      dispatch(updateStudent({ ...currentStudent, listStudent: listStudent }))
+      setOpenModal(false)
+      toast.success("Student updated successfully")
     } catch (error) {
-      toast.error("Error updating student");
+      toast.error("Error updating student")
     }
-  };
+  }
 
   const AddStudent = () => {
     try {
-      dispatch(createStudent(addData));
-      toast.success("Student added successfully");
-      setOpenModalAdd(false);
+      dispatch(createStudent(addData))
+      toast.success("Student added successfully")
+      setOpenModalAdd(false)
     } catch (error) {
-      toast.error("Error adding student");
+      toast.error("Error adding student")
     }
-  };
+  }
 
   const onDeleteStudent = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    };
+    }
     try {
-      dispatch(deleteStudent(req));
-      toast.success("Student deleted successfully");
+      dispatch(deleteStudent(req))
+      toast.success("Student deleted successfully")
     } catch (error) {
-      toast.error("Error deleting student");
+      toast.error("Error deleting student")
     }
 
-    setOpenModalConfirm(false);
+    setOpenModalConfirm(false)
     try {
-      setTimeout(() => dispatch(getAllStudents(param)), 1000);
+      setTimeout(() => dispatch(getAllStudents(param)), 1000)
     } catch (error) {
-      toast.error("Error getting student");
+      toast.error("Error getting student")
     }
-  };
+  }
   const restoreStudent = (data) => {
     const req = {
       ...data,
       status: "Active",
-    };
-    try {
-      dispatch(deleteStudent(req));
-      toast.success("Student restored successfully");
-    } catch (error) {
-      toast.error("Error restoring student");
     }
     try {
-      setTimeout(() => dispatch(getAllStudents(param)), 1000);
+      dispatch(deleteStudent(req))
+      toast.success("Student restored successfully")
     } catch (error) {
-      toast.error("Error getting student");
+      toast.error("Error restoring student")
     }
-  };
+    try {
+      setTimeout(() => dispatch(getAllStudents(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting student")
+    }
+  }
   useEffect(() => {
     if (
       datast?.loadings[studentTypes.GET_STUDENTS] ||
@@ -128,28 +136,29 @@ const Student = () => {
       datast?.loadings[studentTypes.UPDATE_STUDENT] ||
       datast?.loadings[studentTypes.DELETE_STUDENT]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [datast, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [datast, param])
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents({ ...param, pagesize: 9999, page: 1 }));
-      }, 500);
+        dispatch(getAllStudents({ ...param, pagesize: 9999, page: 1 }))
+        dispatch(getAllCourses({ ...param, pagesize: 9999, page: 1 }))
+      }, 500)
 
-      return () => clearTimeout(delayDebounceFn);
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
-      toast.error("Error getting students");
+      toast.error("Error getting students")
     }
-  }, [param.keyword, dispatch, param]);
+  }, [param.keyword, dispatch, param])
 
   useEffect(() => {
     try {
-      dispatch(getStudents());
+      dispatch(getStudents(param))
     } catch (error) {
-      toast.error("Error getting Student");
+      toast.error("Error getting Student")
     }
-  }, [dispatch]);
+  }, [dispatch, param])
   return (
     <div>
       <div className="relative">
@@ -182,7 +191,7 @@ const Student = () => {
                         setParam({
                           ...param,
                           keyword: e.target.value,
-                        });
+                        })
                       }}
                       value={param.keyword}
                     />
@@ -273,14 +282,14 @@ const Student = () => {
                             setParam({
                               ...param,
                               pageSize: Number(item.value),
-                            });
-                            setIsShowSelect(false);
+                            })
+                            setIsShowSelect(false)
                           }}
                           key={item.value}
                         >
                           Show {item.value} items
                         </li>
-                      );
+                      )
                     })}
                   </ul>
                 )}
@@ -380,11 +389,11 @@ const Student = () => {
                                       )}
                                       onChange={(data) => {
                                         // Update the selectedOption state
-                                        setSelectedOption(data);
+                                        setSelectedOption(data)
                                         setCurrentStudent({
                                           ...currentStudent,
                                           listStudent: data,
-                                        });
+                                        })
                                       }}
                                     />
                                   </div>
@@ -392,15 +401,21 @@ const Student = () => {
                                     <label className="mb-2 text-sm font-medium text-white flex">
                                       Course Id
                                     </label>
-                                    <input
-                                      value={currentStudent?.courseId}
-                                      onChange={(e) =>
+                                    <ReactSelect
+                                      options={optionsCourses}
+                                      isMulti={false}
+                                      value={{
+                                        value: currentStudent.courseId,
+                                        label: currentStudent.courseId,
+                                      }}
+                                      onChange={(data) => {
+                                        // Update the selectedOption state
+                                        setSelectedOption(data)
                                         setCurrentStudent({
                                           ...currentStudent,
-                                          courseId: e.target.value,
+                                          courseId: data.value,
                                         })
-                                      }
-                                      className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                      }}
                                     />
                                   </div>
                                   <div>
@@ -499,26 +514,29 @@ const Student = () => {
                                       isMulti={true}
                                       onChange={(data) => {
                                         // Update the selectedOption state
-                                        setSelectedOption(data);
+                                        setSelectedOption(data)
                                         setAddData({
                                           ...addData,
                                           listStudent: data,
-                                        });
+                                        })
                                       }}
                                     />
                                   </div>
                                   <div>
-                                    <label className="mb-2 text-sm font-medium  text-white flex">
-                                      course Id
+                                    <label className="mb-2 text-sm font-medium text-white flex">
+                                      Course Id
                                     </label>
-                                    <input
-                                      onChange={(e) =>
+                                    <ReactSelect
+                                      options={optionsCourses}
+                                      isMulti={false}
+                                      onChange={(data) => {
+                                        // Update the selectedOption state
+                                        setSelectedOption(data)
                                         setAddData({
                                           ...addData,
-                                          courseId: e.target.value,
+                                          courseId: data.value,
                                         })
-                                      }
-                                      className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                                      }}
                                     />
                                   </div>
                                   <div>
@@ -665,8 +683,8 @@ const Student = () => {
                                 onClick={() =>
                                   // onDeleteClassroom(classroom)
                                   {
-                                    setCurrentStudent(student);
-                                    setOpenModalConfirm(true);
+                                    setCurrentStudent(student)
+                                    setOpenModalConfirm(true)
                                   }
                                 }
                               >
@@ -677,8 +695,8 @@ const Student = () => {
                                 id="Edit"
                                 className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                                 onClick={() => {
-                                  setOpenModal(!openModal);
-                                  setCurrentStudent(student);
+                                  setOpenModal(!openModal)
+                                  setCurrentStudent(student)
                                 }}
                               >
                                 Edit
@@ -713,7 +731,7 @@ const Student = () => {
                   <Pagination
                     currentPage={pagination.currentPage - 1}
                     setCurrentPage={(page) => {
-                      setParam({ ...param, page: page + 1 });
+                      setParam({ ...param, page: page + 1 })
                     }}
                     totalPages={pagination.totalPage}
                     edgePageCount={3}
@@ -784,7 +802,7 @@ const Student = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Student;
+export default Student

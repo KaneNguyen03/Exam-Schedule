@@ -138,15 +138,12 @@ const Course = () => {
     try {
       const delayDebounceFn = setTimeout(() => {
         dispatch(getAllCourses(param))
+      dispatch(getAllSemesters({ page: 1, pageSize: 999 }))
+
       }, 500)
       return () => clearTimeout(delayDebounceFn)
     } catch (error) {
       toast.error("Error getting course")
-    }
-    try {
-      dispatch(getAllSemesters({ page: 1, pageSize: 999 }))
-    } catch (error) {
-      toast.error("Error getting semesters")
     }
   }, [param.keyword, dispatch, param])
   useEffect(() => {
@@ -377,34 +374,6 @@ const Course = () => {
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     semester id
                                   </label>
-                                  {/* <ReactSelect
-                                    options={options}
-                                    isMulti={false}
-                                    value={
-                                      selectedOption
-                                        ? options.find(
-                                            (option) =>
-                                              option.value === selectedOption
-                                          )
-                                        : null
-                                    }
-                                    onChange={(selectedOption) => {
-                                      // Update the proctoringLocation in the currentTeacher state
-                                      setCurrentCourse((prevCourse) => ({
-                                        ...prevCourse,
-                                        semesterId: selectedOption
-                                          ? selectedOption.value
-                                          : null,
-                                      }));
-
-                                      // Update the selectedOption state
-                                      setSelectedOption(
-                                        selectedOption
-                                          ? selectedOption.value
-                                          : null
-                                      );
-                                    }}
-                                  /> */}
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
@@ -422,15 +391,15 @@ const Course = () => {
                                         }
                                       }
                                     )}
-                                    onChange={(data) => {
-                                      const newList = data.map(
-                                        (item) => item.value
-                                      )
-                                      setCurrentCourse({
-                                        ...currentCourse,
-                                        listStudentList: newList,
-                                      })
-                                    }}
+                                    // onChange={(data) => {
+                                    //   const newList = data.map(
+                                    //     (item) => item.value
+                                    //   )
+                                    //   setCurrentCourse({
+                                    //     ...currentCourse,
+                                    //     listStudentList: newList,
+                                    //   })
+                                    // }}
                                   />
                                 </div>
                                 <div className="flex justify-between">
@@ -493,7 +462,6 @@ const Course = () => {
                                   </label>
                                   <input
                                     className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    placeholder="C-XXX"
                                     onChange={(e) =>
                                       setAddData({
                                         ...addData,
@@ -537,20 +505,6 @@ const Course = () => {
                                     }}
 
                                     ////////////////////////////////
-                                  />
-                                </div>
-                                <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    studentListId
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        studentListId: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
                                 <div className="flex justify-between">
@@ -639,7 +593,11 @@ const Course = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{course.semesterId}</td>
-                    <td className="px-6 py-4">{course.studentListId}</td>
+                    <td className="px-6 py-4">
+                      {course.listStudentList
+                        ?.map((item) => item.studentListId)
+                        .join(". ")}
+                    </td>
                     <td>
                       <>
                         {course.status.toLowerCase() === "active" ? (
