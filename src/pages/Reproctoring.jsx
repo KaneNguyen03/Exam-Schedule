@@ -53,7 +53,10 @@ const Reproctoring = () => {
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
   const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const currentUserExamslot = examslots?.data?.filter((item) =>
-    item.listProctoring.find((item) => item?.proctoringName === user.username)
+    item.listProctoring.find(
+      (item) =>
+        item?.proctoringName.toLowerCase() === user.username.toLowerCase()
+    )
   )
 
   const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
@@ -87,7 +90,7 @@ const Reproctoring = () => {
             listProctoring: newListProctoring,
           })
         )
-        toast.success("exam slot registered successfully")
+        toast.success("Exam Slot registered successfully")
       }
 
       try {
@@ -98,7 +101,7 @@ const Reproctoring = () => {
             listProctoring: newListProctoring,
           })
         )
-        toast.success("exam slot registered successfully")
+        toast.success("Exam Slot registered successfully")
       } catch (err) {
         toast.error("Error registering examslot")
       }
@@ -112,14 +115,15 @@ const Reproctoring = () => {
   const onDeleteRegister = (data) => {
     try {
       const newListProctoring = [...currentExamslot.listProctoring].filter(
-        (item) => item.proctoringName !== user.username
+        (item) =>
+          item.proctoringName.toLowerCase() !== user.username.toLowerCase()
       )
       const req = {
         ...data,
         listProctoring: newListProctoring,
       }
       dispatch(updateExamslot(req))
-      toast.success("exam slot registered successfully")
+      toast.success("Exam Slot registered successfully")
     } catch (err) {
       toast.error("Error registering examslot")
     }
