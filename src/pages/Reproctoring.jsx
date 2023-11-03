@@ -1,72 +1,73 @@
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
 
-import { useEffect, useRef, useState } from "react";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { sizeOptions, timeOptions } from "../constants/commons/commons";
-import { Pagination } from "react-headless-pagination";
-import ReactSelect from "react-select";
-import teacherTypes from "../constants/teacherTypes";
-import examslotTypes from "../constants/examslotTypes";
+import { useEffect, useRef, useState } from "react"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import useAuth from "../hooks/useAuth"
+import { sizeOptions, timeOptions } from "../constants/commons/commons"
+import { Pagination } from "react-headless-pagination"
+import ReactSelect from "react-select"
+import teacherTypes from "../constants/teacherTypes"
+import examslotTypes from "../constants/examslotTypes"
 import {
   createExamslot,
   deleteExamslot,
   getAllExamslots,
   updateExamslot,
-} from "../store/thunks/examslot";
+} from "../store/thunks/examslot"
 
-import Sidebar from "../components/Layout/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
+import Sidebar from "../components/Layout/Sidebar"
+import { useDispatch, useSelector } from "react-redux"
 import {
   createTeacher,
   deleteTeacher,
   getAllTeachers,
-} from "../store/thunks/teacher";
-import { color } from "../constants/commons/styled";
-import StatusButton from "../components/Status";
+} from "../store/thunks/teacher"
+import { color } from "../constants/commons/styled"
+import StatusButton from "../components/Status"
 
-import { v4 as uuidv4 } from "uuid";
-import { differenceInDays, parseISO } from "date-fns";
-import { toast } from "react-toastify";
-import { getAllStudents } from "../store/thunks/student";
-import studentTypes from "../constants/studentTypes";
+import { v4 as uuidv4 } from "uuid"
+import { differenceInDays, parseISO } from "date-fns"
+import { toast } from "react-toastify"
+import { getAllStudents } from "../store/thunks/student"
+import studentTypes from "../constants/studentTypes"
 import moment from "moment"
 
 const Reproctoring = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  const dispatch = useDispatch()
+  const { user } = useAuth()
+  const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
-  const [currentExamslot, setCurrentExamslot] = useState({});
+  })
+  const [currentExamslot, setCurrentExamslot] = useState({})
 
-  const dataexsl = useSelector((state) => state.examslot);
-  const datate = useSelector((state) => state.teacher);
-  const datast = useSelector((state) => state.student);
-  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data;
+  const dataexsl = useSelector((state) => state.examslot)
+  const datate = useSelector((state) => state.teacher)
+  const datast = useSelector((state) => state.student)
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data
 
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
   const currentUserExamslot = examslots?.data?.filter((item) =>
     item.listProctoring.find((item) => item?.proctoringName === user.username)
-  );
+  )
 
-  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
-  const popupSelect = useRef(null);
-  const currentDate = new Date();
-  const [loadings, setLoading] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
+  const popupSelect = useRef(null)
+  const currentDate = new Date()
+  const [loadings, setLoading] = useState(true)
+  const [selectedOption, setSelectedOption] = useState(null)
 
   const UpdateExamslot = async () => {
     try {
       const temp = teachers.find(
-        (item) => item.proctoringName === user.username
-      );
+        (item) =>
+          item.proctoringName.toLowerCase() === user.username.toLowerCase()
+      )
       if (!temp) {
         const result = await dispatch(
           createTeacher({
@@ -75,55 +76,55 @@ const Reproctoring = () => {
             examSlotId: currentExamslot.examSlotId,
             listExamSlot: [currentExamslot],
           })
-        );
+        )
         const newListProctoring = [
           ...currentExamslot.listProctoring,
           result?.payload?.data,
-        ];
+        ]
         dispatch(
           updateExamslot({
             ...currentExamslot,
             listProctoring: newListProctoring,
           })
-        );
-        toast.success("exam slot registered successfully");
+        )
+        toast.success("exam slot registered successfully")
       }
 
       try {
-        const newListProctoring = [...currentExamslot.listProctoring, temp];
+        const newListProctoring = [...currentExamslot.listProctoring, temp]
         dispatch(
           updateExamslot({
             ...currentExamslot,
             listProctoring: newListProctoring,
           })
-        );
-        toast.success("exam slot registered successfully");
+        )
+        toast.success("exam slot registered successfully")
       } catch (err) {
-        toast.error("Error registering examslot");
+        toast.error("Error registering examslot")
       }
     } catch (error) {
-      toast.error("Error registering examslot");
+      toast.error("Error registering examslot")
     }
 
-    setOpenModal(false);
-  };
+    setOpenModal(false)
+  }
 
   const onDeleteRegister = (data) => {
     try {
       const newListProctoring = [...currentExamslot.listProctoring].filter(
         (item) => item.proctoringName !== user.username
-      );
+      )
       const req = {
         ...data,
         listProctoring: newListProctoring,
-      };
-      dispatch(updateExamslot(req));
-      toast.success("exam slot registered successfully");
+      }
+      dispatch(updateExamslot(req))
+      toast.success("exam slot registered successfully")
     } catch (err) {
-      toast.error("Error registering examslot");
+      toast.error("Error registering examslot")
     }
-    setOpenModalConfirm(false);
-  };
+    setOpenModalConfirm(false)
+  }
 
   useEffect(() => {
     if (
@@ -132,9 +133,9 @@ const Reproctoring = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [dataexsl, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [dataexsl, param])
   useEffect(() => {
     if (
       datast?.loadings[studentTypes.GET_STUDENTS] ||
@@ -142,31 +143,31 @@ const Reproctoring = () => {
       datast?.loadings[studentTypes.UPDATE_STUDENT] ||
       datast?.loadings[studentTypes.DELETE_STUDENT]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [datast, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [datast, param])
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents({ pagesize: 9999, page: 1 }));
-      }, 500);
+        dispatch(getAllStudents({ pagesize: 9999, page: 1 }))
+      }, 500)
 
-      return () => clearTimeout(delayDebounceFn);
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
-      toast.error("Error getting students");
+      toast.error("Error getting students")
     }
-  }, [param.keyword, dispatch, param]);
+  }, [param.keyword, dispatch, param])
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllExamslots(param));
-        dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
-      }, 500);
-      return () => clearTimeout(delayDebounceFn);
+        dispatch(getAllExamslots(param))
+        dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
+      }, 500)
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
-      toast.error("Error getting examsot");
+      toast.error("Error getting examsot")
     }
-  }, [dispatch, param]);
+  }, [dispatch, param])
 
   return (
     <div className="relative">
@@ -199,7 +200,7 @@ const Reproctoring = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      });
+                      })
                     }}
                     value={param.keyword}
                   />
@@ -274,14 +275,14 @@ const Reproctoring = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) });
-                          setIsShowSelect(false);
+                          setParam({ ...param, pageSize: Number(item.value) })
+                          setIsShowSelect(false)
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               )}
@@ -323,13 +324,13 @@ const Reproctoring = () => {
                 {examslots?.data?.map((examslot) => {
                   const getStudentList = students?.filter(
                     (student) => student.courseId === examslot.courseId
-                  );
+                  )
 
-                  var total = 0;
+                  var total = 0
                   const totalProctoring = getStudentList?.reduce(
                     (acc, item) => acc + item.numberOfProctoring,
                     total
-                  );
+                  )
 
                   return (
                     <tr
@@ -491,7 +492,7 @@ const Reproctoring = () => {
                       </td>
                       <td className="px-6 py-4">{examslot.courseId}</td>
                       <td className="px-6 py-4">
-                      {moment(examslot.date).format("DD/MM/YYYY")}
+                        {moment(examslot.date).format("DD/MM/YYYY")}
                       </td>
                       <td className="px-6 py-4">
                         {examslot.startTime.substring(0, 5)}
@@ -501,28 +502,28 @@ const Reproctoring = () => {
                           // Split the startTime into hours and minutes
                           const [hours, minutes] = examslot.startTime
                             .split(":")
-                            .map(Number);
+                            .map(Number)
 
                           // Add 90 minutes
-                          const newMinutes = minutes + 90;
-                          const newHours = hours + Math.floor(newMinutes / 60);
-                          const formattedHours = newHours % 24; // Handle overflow if necessary
-                          const formattedMinutes = newMinutes % 60;
+                          const newMinutes = minutes + 90
+                          const newHours = hours + Math.floor(newMinutes / 60)
+                          const formattedHours = newHours % 24 // Handle overflow if necessary
+                          const formattedMinutes = newMinutes % 60
 
                           // Format the result as "HH:mm"
                           const formattedTime = `${formattedHours
                             .toString()
                             .padStart(2, "0")}:${formattedMinutes
                             .toString()
-                            .padStart(2, "0")}`;
+                            .padStart(2, "0")}`
 
-                          return formattedTime;
+                          return formattedTime
                         })()}
                       </td>
                       <td>
                         <>
                           {(examslot.status.toLowerCase() === "active" ||
-                              examslot.status.toLowerCase() === "pending")  &&
+                            examslot.status.toLowerCase() === "pending") &&
                           differenceInDays(
                             parseISO(examslot.date.substring(0, 10)),
                             currentDate
@@ -540,7 +541,7 @@ const Reproctoring = () => {
                             differenceInDays(
                               parseISO(examslot.date.substring(0, 10)),
                               currentDate
-                            ) >= 0 && 
+                            ) >= 0 &&
                             examslot.listProctoring.length < totalProctoring ? (
                             <StatusButton
                               color={color.green}
@@ -573,12 +574,15 @@ const Reproctoring = () => {
                                 examslot?.date?.toString().substring(0, 10)
                               ),
                               currentDate
-                            ) > 0 &&  examslot.listProctoring.length >= totalProctoring ? (
+                            ) > 0 &&
+                            examslot.listProctoring.length >=
+                              totalProctoring ? (
                             <StatusButton
                               color={color.red}
                               bgColor={color.redLight}
                               title="Unavailable"
-                            />):(
+                            />
+                          ) : (
                             <>-</>
                           )}
                         </>
@@ -599,8 +603,8 @@ const Reproctoring = () => {
                               id="Delete"
                               className="focus:outline-none text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900"
                               onClick={() => {
-                                setCurrentExamslot(examslot);
-                                setOpenModalConfirm(true);
+                                setCurrentExamslot(examslot)
+                                setOpenModalConfirm(true)
                               }}
                             >
                               Cancel
@@ -629,9 +633,9 @@ const Reproctoring = () => {
                               id="Register"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal);
-                                setSelectedOption(examslot.proctoringId);
-                                setCurrentExamslot(examslot);
+                                setOpenModal(!openModal)
+                                setSelectedOption(examslot.proctoringId)
+                                setCurrentExamslot(examslot)
                               }}
                             >
                               Register
@@ -659,7 +663,7 @@ const Reproctoring = () => {
                         </>
                       </td>
                     </tr>
-                  );
+                  )
                 })}
               </tbody>
             </table>
@@ -668,7 +672,7 @@ const Reproctoring = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 });
+                    setParam({ ...param, page: page + 1 })
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -738,7 +742,7 @@ const Reproctoring = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Reproctoring;
+export default Reproctoring

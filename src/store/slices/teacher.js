@@ -24,7 +24,7 @@ const teacherSlice = createSlice({
     [getAllTeachers.fulfilled]: (state, { payload }) => {
       state.loadings[teacherTypes.GET_TEACHERS] = false
       state.contents[teacherTypes.GET_TEACHERS] = payload
-      state.paginations[teacherTypes.GET_TEACHERS] = payload.data.pagination
+      state.paginations[teacherTypes.GET_TEACHERS] = payload.data?.pagination
     },
     [getAllTeachers.rejected]: (state, { payload }) => {
       state.loadings[teacherTypes.GET_TEACHERS] = false
