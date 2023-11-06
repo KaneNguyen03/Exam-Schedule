@@ -39,7 +39,7 @@ const ExamscheduleDetails = () => {
   const dataes = useSelector((state) => state.examschedule)
   const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data
   const examSchedule =
-    dataes.contents[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]?.data.data
+    dataes.contents[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]?.data?.data
 
   const pagination =
     dataes?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]

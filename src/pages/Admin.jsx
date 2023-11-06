@@ -231,12 +231,12 @@ const AdminDashboard = () => {
       toast.error("Error getting course")
     }
     try {
-      dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
+      dispatch(getAllTeachers({ page: 1, pageSize: 9999 }))
     } catch (error) {
       toast.error("Error getting proctoring")
     }
     try {
-      dispatch(getAllusers({ page: 1, pageSize: 999 }))
+      dispatch(getAllusers({ page: 1, pageSize: 999999 }))
     } catch (error) {
       toast.error("Error getting users")
     }

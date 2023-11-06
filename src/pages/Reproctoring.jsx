@@ -672,7 +672,7 @@ const Reproctoring = () => {
               </tbody>
             </table>
             <div className="sticky bottom-0 bg-white p-2">
-              {examslots?.data?.length ? (
+              {pagination ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
@@ -707,7 +707,7 @@ const Reproctoring = () => {
                   </Pagination.PrevButton>
 
                   <div className="flex items-center justify-center mx-6 list-none ">
-                    {examslots?.data?.length > 0 ? (
+                    {pagination > 0 ? (
                       <Pagination.PageButton
                         activeClassName="bg-blue-button border-0 text-white "
                         inactiveClassName="border"
