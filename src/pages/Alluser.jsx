@@ -207,12 +207,14 @@ const AlluserDashboard = () => {
             </div>
           </header>
 
-          <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
-            <div className="justify-center w-full">User Management</div>
+          <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
+             User Management
+            </div>
+            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
             <button
               type="button"
               id="Add"
-              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
+              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
               onClick={() => setOpenModalAdd(true)}
             >
               Add

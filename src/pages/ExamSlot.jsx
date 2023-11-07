@@ -247,7 +247,7 @@ const ExamSlot = () => {
     <div className="relative">
       {loadings && <LoadingSpinner />}
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
-        <Sidebar />
+        <Sidebar/>
         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
           <header className="header bg-white shadow py-4 px-4">
             <div className="header-content flex items-center flex-row">
@@ -324,14 +324,15 @@ const ExamSlot = () => {
               <div></div>
             </div>
           </header>
-          <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
-            <div className="justify-center w-full">Examslot Management</div>
-            <div></div>
+          <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
+              Exam Slot Management
+            </div>
+            {/* <div className="w-full flex justify-end">
             {[...makeRoles([1, 2])].includes(user.roleId) && (
               <button
                 type="button"
                 id="Add"
-                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
+                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
                 onClick={() => setOpenModalAdd(true)}
               >
                 Add
@@ -348,7 +349,7 @@ const ExamSlot = () => {
                   className="hidden"
                 />
                 <button
-                  className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-green-600 hover:bg-green-700 focus:ring-green-900"
+                  className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
                   onClick={() =>
                     document.querySelector('input[type="file"]').click()
                   }
@@ -360,14 +361,95 @@ const ExamSlot = () => {
             )}
             {[...makeRoles([1, 2, 3])].includes(user.roleId) && (
               <button
-                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-900"
+              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
                 onClick={(e) => {
                   handleExportCSV(e)
                 }}
               >
                 <span className="ml-2">Export Exam Slot</span>
               </button>
+            )}</div> */}
+            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+              
+              {[...makeRoles([1, 2])].includes(user.roleId) && (
+              <button
+                type="button"
+                id="Add"
+                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
+                onClick={() => setOpenModalAdd(true)}
+              >
+                Add
+              </button>
             )}
+            {[...makeRoles([1, 2])].includes(user.roleId) && (
+              <>
+                <input
+                  type="file"
+                  accept=".xlsx"
+                  onChange={(e) => {
+                    handleUpload(e.target.files[0])
+                  }}
+                  className="hidden"
+                />
+                <button
+                  className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
+                  onClick={() =>
+                    document.querySelector('input[type="file"]').click()
+                  }
+                >
+                  {" "}
+                  <span className="ml-2">Import Exam Slot</span>
+                </button>
+              </>
+            )}
+            {[...makeRoles([1, 2, 3])].includes(user.roleId) && (
+              <button
+              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
+                onClick={(e) => {
+                  handleExportCSV(e)
+                }}
+              >
+                <span className="ml-2">Export Exam Slot</span>
+              </button>
+             
+            )}
+            <div>
+                <div
+                  className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
+                  onClick={() => setIsShowSelect(!isShowSelect)}
+                >
+                  <span className="pl-4">Show {pagination?.pageSize} item</span>
+                  <img
+                    src={DropdownSelectIcon}
+                    className="pointer-events-none leading-[16px] md:leading-[20px] md:mr-4"
+                    alt="drop icon"
+                  />
+                </div>
+                {isShowSelect && (
+                  <ul
+                    ref={popupSelect}
+                    className="text-left cursor-pointer absolute"
+                  >
+                    {sizeOptions?.map((item) => {
+                      return (
+                        <li
+                          className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
+                          onClick={() => {
+                            setParam({
+                              ...param,
+                              pageSize: Number(item.value),
+                            })
+                            setIsShowSelect(false)
+                          }}
+                          key={item.value}
+                        >
+                          Show {item.value} items
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+              </div>
             {openModalAdd ? (
               <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
                 <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
@@ -568,7 +650,7 @@ const ExamSlot = () => {
             ) : (
               <></>
             )}
-            <div>
+            {/* <div>
               <div
                 className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
                 onClick={() => setIsShowSelect(!isShowSelect)}
@@ -601,7 +683,7 @@ const ExamSlot = () => {
                   })}
                 </ul>
               )}
-            </div>
+            </div> */}
           </div>
           <div className="grid gap-4 pt-7 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
             <table className=" text-sm text-left text-gray-400 ">

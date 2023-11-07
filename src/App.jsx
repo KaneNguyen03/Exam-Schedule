@@ -27,6 +27,7 @@ function App() {
   const { user } = useAuth()
   return (
     <div className="App">
+    
       <Routes>
         {/* public routes */}
         <Route element={<ProtectedAuth routeProtected={false} />}>
@@ -38,7 +39,7 @@ function App() {
         {/* we want to protect these routes */}
         <Route
           element={
-            <ProtectedAuth allowedRoles={[...makeRoles([1, 2, 3, 4, 5])]} />
+            <ProtectedAuth allowedRoles={[...makeRoles([1, 2, 3, 4,5])]} />
           }
         >
           <Route path="/" element={<Management />}>

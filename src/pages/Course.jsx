@@ -35,6 +35,7 @@ const Course = () => {
     keyword: "",
   })
   const [currentCourse, setCurrentCourse] = useState({})
+  const [openStudentListId, setOpenStudentListId] = useState(false)
   const dataco = useSelector((state) => state.course)
   const datase = useSelector((state) => state.semester)
   const datast = useSelector((state) => state.student)
@@ -238,12 +239,14 @@ const Course = () => {
               <div></div>
             </div>
           </header>
-          <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
-            <div className="justify-center w-full">Course Management</div>
+          <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
+              Course Management
+            </div>
+            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
             <button
               type="button"
               id="Add"
-              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
+              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-gray-700"
               onClick={() => setOpenModalAdd(true)}
             >
               Add
@@ -593,11 +596,72 @@ const Course = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{course.semesterId}</td>
-                    <td className="px-6 py-4">
+                    {/* <td className="px-6 py-4">
                       {course.listStudentList
                         ?.map((item) => item.studentListId)
                         .join(". ")}
-                    </td>
+                    </td> */}
+                    <td className="px-6 py-4">
+                        <a onClick={() => setOpenStudentListId(true)}>
+                         <div>
+                         View Student List ID</div> 
+                        </a>
+
+                        {openStudentListId ? (
+                          <div className="modal absolute translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                            <div className="relativerounded-lg shadow bg-gray-700">
+                              <button
+                                type="button"
+                                className="absolute top-2 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                data-modal-hide="popup-modal"
+                                onClick={() => setOpenStudentListId(false)}
+                              >
+                                <svg
+                                  className="w-3 h-3"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 14 14"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                                  />
+                                </svg>
+                                <span className="sr-only">Close modal</span>
+                              </button>
+                              <div>
+                                <table className=" text-sm text-left text-gray-400">
+                                  <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 w-96 ">
+                                    <tr>
+                                      <th className="px-6 py-3">StudentListID</th>
+                                    </tr>
+                                  </thead>
+                                  <div className="overflow-x-auto max-h-[76vh] overflow-y-scroll w-96">
+                                    <tbody className="bg-white">
+                                      {course.listStudentList.map((item) => {
+                                        console.log(item); // Log item data to the console
+                                        return (
+                                          <tr key={item.studentListId}>
+                                            <td className="px-6 py-4 w-96">
+                                              {item.studentListId}
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </div>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </td>
                     <td>
                       <>
                         {course.status.toLowerCase() === "active" ? (

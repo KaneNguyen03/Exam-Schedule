@@ -35,7 +35,7 @@ const Sidebar = () => {
               {" "}
               {/* Use Link for the home/dashboard link */}
               <span className="leading-10 text-gray-100 text-2xl font-bold ml-1">
-                Exam Schedule Manage
+                Exam Schedule Management
               </span>
             </Link>
           </div>

@@ -1,70 +1,71 @@
-import { useEffect, useRef, useState } from "react"
-import Sidebar from "../components/Layout/Sidebar"
+import { useEffect, useRef, useState } from "react";
+import Sidebar from "../components/Layout/Sidebar";
 import {
   createStudent,
   deleteStudent,
   getAllStudents,
   getStudents,
   updateStudent,
-} from "../store/thunks/student"
-import studentTypes from "../constants/studentTypes"
-import { useDispatch, useSelector } from "react-redux"
-import { Pagination } from "react-headless-pagination"
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
-import { sizeOptions } from "../constants/commons/commons"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import ReactSelect from "react-select"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
-import { toast } from "react-toastify"
-import { getAllCourses } from "../store/thunks/course"
-import courseTypes from "../constants/courseTypes"
+} from "../store/thunks/student";
+import studentTypes from "../constants/studentTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { Pagination } from "react-headless-pagination";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import { sizeOptions } from "../constants/commons/commons";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import ReactSelect from "react-select";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
+import { toast } from "react-toastify";
+import { getAllCourses } from "../store/thunks/course";
+import courseTypes from "../constants/courseTypes";
 const Student = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  });
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
 
-  const [currentStudent, setCurrentStudent] = useState({})
+  const [currentStudent, setCurrentStudent] = useState({});
 
-  const datast = useSelector((state) => state.student)
-  const dataco = useSelector((state) => state.course)
-  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data
-  const pagination = datast?.paginations[studentTypes.GET_STUDENTS]
-  const popupSelect = useRef(null)
-  const [openModalAdd, setOpenModalAdd] = useState(false)
+  const datast = useSelector((state) => state.student);
+  const dataco = useSelector((state) => state.course);
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data;
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data;
+  const pagination = datast?.paginations[studentTypes.GET_STUDENTS];
+  const popupSelect = useRef(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const [openStudentList, setOpenStudentList] = useState(false);
   const [addData, setAddData] = useState({
     studentListId: "",
     listStudent: [],
     courseId: "",
     numberOfProctorings: 1,
-  })
+  });
 
-  const allStudents = datast?.contents[studentTypes.GET_ALL_STUDENTS]?.data
+  const allStudents = datast?.contents[studentTypes.GET_ALL_STUDENTS]?.data;
 
   const options = allStudents?.map((student) => ({
     value: student.username,
     label: student.username + " - " + student.email,
     email: student.email,
     username: student.username,
-  }))
+  }));
 
   const optionsCourses = courses?.map((c) => ({
     value: c.courseId,
     label: c.courseId,
-  }))
+  }));
 
-  const [selectedOption, setSelectedOption] = useState(null)
+  const [selectedOption, setSelectedOption] = useState(null);
 
-  const [loadings, setLoading] = useState(true)
+  const [loadings, setLoading] = useState(true);
 
   const UpdateStudent = () => {
     try {
@@ -72,63 +73,63 @@ const Student = () => {
         return {
           username: item.username,
           email: item.email,
-        }
-      })
+        };
+      });
 
-      dispatch(updateStudent({ ...currentStudent, listStudent: listStudent }))
-      setOpenModal(false)
-      toast.success("Student updated successfully")
+      dispatch(updateStudent({ ...currentStudent, listStudent: listStudent }));
+      setOpenModal(false);
+      toast.success("Student updated successfully");
     } catch (error) {
-      toast.error("Error updating student")
+      toast.error("Error updating student");
     }
-  }
+  };
 
   const AddStudent = () => {
     try {
-      dispatch(createStudent(addData))
-      toast.success("Student added successfully")
-      setOpenModalAdd(false)
+      dispatch(createStudent(addData));
+      toast.success("Student added successfully");
+      setOpenModalAdd(false);
     } catch (error) {
-      toast.error("Error adding student")
+      toast.error("Error adding student");
     }
-  }
+  };
 
   const onDeleteStudent = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    }
+    };
     try {
-      dispatch(deleteStudent(req))
-      toast.success("Student deleted successfully")
+      dispatch(deleteStudent(req));
+      toast.success("Student deleted successfully");
     } catch (error) {
-      toast.error("Error deleting student")
+      toast.error("Error deleting student");
     }
 
-    setOpenModalConfirm(false)
+    setOpenModalConfirm(false);
     try {
-      setTimeout(() => dispatch(getAllStudents(param)), 1000)
+      setTimeout(() => dispatch(getAllStudents(param)), 1000);
     } catch (error) {
-      toast.error("Error getting student")
+      toast.error("Error getting student");
     }
-  }
+  };
   const restoreStudent = (data) => {
     const req = {
       ...data,
       status: "Active",
+    };
+    try {
+      dispatch(deleteStudent(req));
+      toast.success("Student restored successfully");
+    } catch (error) {
+      toast.error("Error restoring student");
     }
     try {
-      dispatch(deleteStudent(req))
-      toast.success("Student restored successfully")
+      setTimeout(() => dispatch(getAllStudents(param)), 1000);
     } catch (error) {
-      toast.error("Error restoring student")
+      toast.error("Error getting student");
     }
-    try {
-      setTimeout(() => dispatch(getAllStudents(param)), 1000)
-    } catch (error) {
-      toast.error("Error getting student")
-    }
-  }
+  };
   useEffect(() => {
     if (
       datast?.loadings[studentTypes.GET_STUDENTS] ||
@@ -136,29 +137,29 @@ const Student = () => {
       datast?.loadings[studentTypes.UPDATE_STUDENT] ||
       datast?.loadings[studentTypes.DELETE_STUDENT]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [datast, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [datast, param]);
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents({ ...param, pagesize: 9999, page: 1 }))
-        dispatch(getAllCourses({ ...param, pagesize: 9999, page: 1 }))
-      }, 500)
+        dispatch(getAllStudents({ ...param, pagesize: 9999, page: 1 }));
+        dispatch(getAllCourses({ ...param, pagesize: 9999, page: 1 }));
+      }, 500);
 
-      return () => clearTimeout(delayDebounceFn)
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting students")
+      toast.error("Error getting students");
     }
-  }, [param.keyword, dispatch, param])
+  }, [param.keyword, dispatch, param]);
 
   useEffect(() => {
     try {
-      dispatch(getStudents(param))
+      dispatch(getStudents(param));
     } catch (error) {
-      toast.error("Error getting Student")
+      toast.error("Error getting Student");
     }
-  }, [dispatch, param])
+  }, [dispatch, param]);
   return (
     <div>
       <div className="relative">
@@ -191,7 +192,7 @@ const Student = () => {
                         setParam({
                           ...param,
                           keyword: e.target.value,
-                        })
+                        });
                       }}
                       value={param.keyword}
                     />
@@ -241,14 +242,14 @@ const Student = () => {
               </div>
             </header>
 
-            <div className="flex justify-around text-slate-800 font-semibold text-3xl p-10 pb-0">
-              <div className="justify-center w-full">
-                StudentList Management
-              </div>
+            <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
+              StudentList Management
+            </div>
+            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
               <button
                 type="button"
                 id="Add"
-                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-900"
+                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-gray-700"
                 onClick={() => setOpenModalAdd(true)}
               >
                 Add
@@ -282,14 +283,14 @@ const Student = () => {
                             setParam({
                               ...param,
                               pageSize: Number(item.value),
-                            })
-                            setIsShowSelect(false)
+                            });
+                            setIsShowSelect(false);
                           }}
                           key={item.value}
                         >
                           Show {item.value} items
                         </li>
-                      )
+                      );
                     })}
                   </ul>
                 )}
@@ -329,316 +330,58 @@ const Student = () => {
                     >
                       <td className="px-6 py-4">{student.studentListId}</td>
                       <td className="px-6 py-4">
-                        {student.listStudent
-                          .map((item) => item.username)
-                          .join(", ")}
-                        {openModal ? (
-                          <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                            <div className="modal absolute translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
-                              <div className="relative rounded-lg shadow bg-gray-700">
-                                <button
-                                  type="button"
-                                  className="absolute top-3 right-2.5 text-gray-400 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
-                                  data-modal-hide="authentication-modal"
-                                  onClick={() => setOpenModal(false)}
-                                >
-                                  <svg
-                                    className="w-3 h-3"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 14 14"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                    />
-                                  </svg>
-                                  <span className="sr-only">Close modal</span>
-                                </button>
-                                <div className="px-6 py-6 lg:px-8">
-                                  <h3 className="mb-4 text-xl font-medium  text-white">
-                                    Edit StudentList
-                                  </h3>
-                                  <div>
-                                    <label className="mb-2 text-sm font-medium  text-white flex">
-                                      StudentList Id
-                                    </label>
-                                    <input
-                                      value={currentStudent?.studentListId}
-                                      className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                      placeholder=""
-                                      readOnly
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="mb-2 text-sm font-medium text-white flex">
-                                      Student Id
-                                    </label>
-                                    <ReactSelect
-                                      options={options}
-                                      isMulti={true}
-                                      value={currentStudent?.listStudent.map(
-                                        (item) => ({
-                                          label:
-                                            item.username + " - " + item.email,
-                                          value: item.username,
-                                          email: item.email,
-                                          username: item.username,
-                                        })
-                                      )}
-                                      onChange={(data) => {
-                                        // Update the selectedOption state
-                                        setSelectedOption(data)
-                                        setCurrentStudent({
-                                          ...currentStudent,
-                                          listStudent: data,
-                                        })
-                                      }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="mb-2 text-sm font-medium text-white flex">
-                                      Course Id
-                                    </label>
-                                    <ReactSelect
-                                      options={optionsCourses}
-                                      isMulti={false}
-                                      value={{
-                                        value: currentStudent.courseId,
-                                        label: currentStudent.courseId,
-                                      }}
-                                      onChange={(data) => {
-                                        // Update the selectedOption state
-                                        setSelectedOption(data)
-                                        setCurrentStudent({
-                                          ...currentStudent,
-                                          courseId: data.value,
-                                        })
-                                      }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="mb-2 text-sm font-medium text-white flex">
-                                      Number of proctorings
-                                    </label>
-                                    <input
-                                      value={currentStudent?.numberOfProctoring}
-                                      onChange={(e) =>
-                                        setCurrentStudent({
-                                          ...currentStudent,
-                                          numberOfProctoring: e.target.value,
-                                        })
-                                      }
-                                      min="1"
-                                      type="number"
-                                      className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    />
-                                  </div>
+                        <a onClick={() => setOpenStudentList(true)}>
+                          View StudentID
+                        </a>
 
-                                  <div className="flex justify-between">
-                                    <div className="flex items-start"></div>
-                                  </div>
-                                  <div className="flex flex-row p-4 gap-5 items-end">
-                                    <button
-                                      type="submit"
-                                      className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                      onClick={() => UpdateStudent()}
-                                    >
-                                      Save
-                                    </button>
-                                    <button
-                                      type="submit"
-                                      className=" text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
-                                      onClick={() => setOpenModal(false)}
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <></>
-                        )}
-                        {openModalAdd ? (
-                          <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                            <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                              <div className="relativerounded-lg shadow bg-gray-700">
-                                <button
-                                  type="button"
-                                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
-                                  data-modal-hide="authentication-modal"
-                                  onClick={() => setOpenModalAdd(false)}
+                        {openStudentList ? (
+                          <div className="modal absolute translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                            <div className="relativerounded-lg shadow bg-gray-700">
+                              <button
+                                type="button"
+                                className="absolute top-2 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                data-modal-hide="popup-modal"
+                                onClick={() => setOpenStudentList(false)}
+                              >
+                                <svg
+                                  className="w-3 h-3"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 14 14"
                                 >
-                                  <svg
-                                    className="w-3 h-3"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 14 14"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                    />
-                                  </svg>
-                                  <span className="sr-only">Close modal</span>
-                                </button>
-                                <div className="px-6 py-6 lg:px-8 flex flex-col gap-y-4">
-                                  <h3 className="mb-4 text-xl font-medium  text-white">
-                                    Add StudentList
-                                  </h3>
-                                  <div>
-                                    <label className="mb-2 text-sm font-medium  text-white flex">
-                                      StudentList Id
-                                    </label>
-                                    <input
-                                      className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                      placeholder=""
-                                      onChange={(e) =>
-                                        setAddData({
-                                          ...addData,
-                                          studentListId: e.target.value,
-                                        })
-                                      }
-                                    />
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                                  />
+                                </svg>
+                                <span className="sr-only">Close modal</span>
+                              </button>
+                              <div>
+                                <table className=" text-sm text-left text-gray-400">
+                                  <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 w-96 ">
+                                    <tr>
+                                      <th className="px-6 py-3">StudentID</th>
+                                    </tr>
+                                  </thead>
+                                  <div className="overflow-x-auto max-h-[76vh] overflow-y-scroll w-96">
+                                    <tbody className="bg-white">
+                                      {student.listStudent.map((item) => {
+                                        console.log(item); // Log item data to the console
+                                        return (
+                                          <tr key={item.username}>
+                                            <td className="px-6 py-4 w-96">
+                                              {item.username}
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
                                   </div>
-                                  <div>
-                                    <label className="mb-2 text-sm font-medium  text-white flex">
-                                      StudentId
-                                    </label>
-                                    <ReactSelect
-                                      options={options}
-                                      isMulti={true}
-                                      onChange={(data) => {
-                                        // Update the selectedOption state
-                                        setSelectedOption(data)
-                                        setAddData({
-                                          ...addData,
-                                          listStudent: data,
-                                        })
-                                      }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="mb-2 text-sm font-medium text-white flex">
-                                      Course Id
-                                    </label>
-                                    <ReactSelect
-                                      options={optionsCourses}
-                                      isMulti={false}
-                                      onChange={(data) => {
-                                        // Update the selectedOption state
-                                        setSelectedOption(data)
-                                        setAddData({
-                                          ...addData,
-                                          courseId: data.value,
-                                        })
-                                      }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="mb-2 text-sm font-medium  text-white flex">
-                                      Number of proctoring
-                                    </label>
-                                    <input
-                                      onChange={(e) =>
-                                        setAddData({
-                                          ...addData,
-                                          numberOfProctoring:
-                                            e.target.value != null
-                                              ? e.target.value
-                                              : 1,
-                                        })
-                                      }
-                                      min={1}
-                                      defaultValue={1}
-                                      type="number"
-                                      className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                    />
-                                  </div>
-
-                                  <div className="flex justify-between">
-                                    <div className="flex items-start"></div>
-                                  </div>
-                                  <div className="flex flex-row p-4 gap-5 items-end">
-                                    <button
-                                      type="submit"
-                                      className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
-                                      onClick={() => AddStudent()}
-                                    >
-                                      Add
-                                    </button>
-                                    <button
-                                      type="submit"
-                                      className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
-                                      onClick={() => setOpenModalAdd(false)}
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <></>
-                        )}
-                        {openModalConfirm ? (
-                          <div className="fixed top-0 left-0  w-full h-full bg-gray-200 bg-opacity-5 z-[1000]">
-                            <div className="absolute top-0 left-0 w-full h-full">
-                              <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
-                                <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                                  <button
-                                    type="button"
-                                    className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                                    data-modal-hide="popup-modal"
-                                    onClick={() => setOpenModalConfirm(false)}
-                                  >
-                                    <svg
-                                      className="w-3 h-3"
-                                      aria-hidden="true"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 14 14"
-                                    >
-                                      <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                      />
-                                    </svg>
-                                    <span className="sr-only">Close modal</span>
-                                  </button>
-                                  <div className="p-10 text-center">
-                                    <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                      Are you sure you want to delete this
-                                      studentlist?
-                                    </h3>
-                                    <button
-                                      data-modal-hide="popup-modal"
-                                      type="button"
-                                      className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-                                      onClick={() =>
-                                        onDeleteStudent(currentStudent)
-                                      }
-                                    >
-                                      Delete
-                                    </button>
-                                    <button
-                                      data-modal-hide="popup-modal"
-                                      type="button"
-                                      className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5"
-                                      onClick={() => setOpenModalConfirm(false)}
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </div>
+                                </table>
                               </div>
                             </div>
                           </div>
@@ -683,8 +426,8 @@ const Student = () => {
                                 onClick={() =>
                                   // onDeleteClassroom(classroom)
                                   {
-                                    setCurrentStudent(student)
-                                    setOpenModalConfirm(true)
+                                    setCurrentStudent(student);
+                                    setOpenModalConfirm(true);
                                   }
                                 }
                               >
@@ -695,8 +438,8 @@ const Student = () => {
                                 id="Edit"
                                 className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                                 onClick={() => {
-                                  setOpenModal(!openModal)
-                                  setCurrentStudent(student)
+                                  setOpenModal(!openModal);
+                                  setCurrentStudent(student);
                                 }}
                               >
                                 Edit
@@ -731,7 +474,7 @@ const Student = () => {
                   <Pagination
                     currentPage={pagination.currentPage - 1}
                     setCurrentPage={(page) => {
-                      setParam({ ...param, page: page + 1 })
+                      setParam({ ...param, page: page + 1 });
                     }}
                     totalPages={pagination.totalPage}
                     edgePageCount={3}
@@ -797,12 +540,318 @@ const Student = () => {
                   </Pagination>
                 ) : null}
               </div>
+              {openModal ? (
+                <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                  <div className="modal absolute translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
+                    <div className="relative rounded-lg shadow bg-gray-700">
+                      <button
+                        type="button"
+                        className="absolute top-3 right-2.5 text-gray-400 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
+                        data-modal-hide="authentication-modal"
+                        onClick={() => setOpenModal(false)}
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 14 14"
+                        >
+                          <path
+                            stroke="currentColor"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                          />
+                        </svg>
+                        <span className="sr-only">Close modal</span>
+                      </button>
+                      <div className="px-6 py-6 lg:px-8">
+                        <h3 className="mb-4 text-xl font-medium  text-white">
+                          Edit StudentList
+                        </h3>
+                        <div>
+                          <label className="mb-2 text-sm font-medium  text-white flex">
+                            StudentList Id
+                          </label>
+                          <input
+                            value={currentStudent?.studentListId}
+                            className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                            placeholder=""
+                            readOnly
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 text-sm font-medium text-white flex">
+                            Student Id
+                          </label>
+                          <ReactSelect
+                            options={options}
+                            isMulti={true}
+                            value={currentStudent?.listStudent.map((item) => ({
+                              label: item.username + " - " + item.email,
+                              value: item.username,
+                              email: item.email,
+                              username: item.username,
+                            }))}
+                            onChange={(data) => {
+                              // Update the selectedOption state
+                              setSelectedOption(data);
+                              setCurrentStudent({
+                                ...currentStudent,
+                                listStudent: data,
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 text-sm font-medium text-white flex">
+                            Course Id
+                          </label>
+                          <ReactSelect
+                            options={optionsCourses}
+                            isMulti={false}
+                            value={{
+                              value: currentStudent.courseId,
+                              label: currentStudent.courseId,
+                            }}
+                            onChange={(data) => {
+                              // Update the selectedOption state
+                              setSelectedOption(data);
+                              setCurrentStudent({
+                                ...currentStudent,
+                                courseId: data.value,
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 text-sm font-medium text-white flex">
+                            Number of proctorings
+                          </label>
+                          <input
+                            value={currentStudent?.numberOfProctoring}
+                            onChange={(e) =>
+                              setCurrentStudent({
+                                ...currentStudent,
+                                numberOfProctoring: e.target.value,
+                              })
+                            }
+                            min="1"
+                            type="number"
+                            className="border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                          />
+                        </div>
+
+                        <div className="flex justify-between">
+                          <div className="flex items-start"></div>
+                        </div>
+                        <div className="flex flex-row p-4 gap-5 items-end">
+                          <button
+                            type="submit"
+                            className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
+                            onClick={() => UpdateStudent()}
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="submit"
+                            className=" text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
+                            onClick={() => setOpenModal(false)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
+
+              {openModalAdd ? (
+                <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                  <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                    <div className="relativerounded-lg shadow bg-gray-700">
+                      <button
+                        type="button"
+                        className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
+                        data-modal-hide="authentication-modal"
+                        onClick={() => setOpenModalAdd(false)}
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 14 14"
+                        >
+                          <path
+                            stroke="currentColor"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                          />
+                        </svg>
+                        <span className="sr-only">Close modal</span>
+                      </button>
+                      <div className="px-6 py-6 lg:px-8 flex flex-col gap-y-4">
+                        <h3 className="mb-4 text-xl font-medium  text-white">
+                          Add StudentList
+                        </h3>
+                        <div>
+                          <label className="mb-2 text-sm font-medium  text-white flex">
+                            StudentList Id
+                          </label>
+                          <input
+                            className=" border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                            placeholder=""
+                            onChange={(e) =>
+                              setAddData({
+                                ...addData,
+                                studentListId: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 text-sm font-medium  text-white flex">
+                            StudentId
+                          </label>
+                          <ReactSelect
+                            options={options}
+                            isMulti={true}
+                            onChange={(data) => {
+                              // Update the selectedOption state
+                              setSelectedOption(data);
+                              setAddData({
+                                ...addData,
+                                listStudent: data,
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 text-sm font-medium text-white flex">
+                            Course Id
+                          </label>
+                          <ReactSelect
+                            options={optionsCourses}
+                            isMulti={false}
+                            onChange={(data) => {
+                              // Update the selectedOption state
+                              setSelectedOption(data);
+                              setAddData({
+                                ...addData,
+                                courseId: data.value,
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 text-sm font-medium  text-white flex">
+                            Number of proctoring
+                          </label>
+                          <input
+                            onChange={(e) =>
+                              setAddData({
+                                ...addData,
+                                numberOfProctoring:
+                                  e.target.value != null ? e.target.value : 1,
+                              })
+                            }
+                            min={1}
+                            defaultValue={1}
+                            type="number"
+                            className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
+                          />
+                        </div>
+
+                        <div className="flex justify-between">
+                          <div className="flex items-start"></div>
+                        </div>
+                        <div className="flex flex-row p-4 gap-5 items-end">
+                          <button
+                            type="submit"
+                            className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
+                            onClick={() => AddStudent()}
+                          >
+                            Add
+                          </button>
+                          <button
+                            type="submit"
+                            className="w-full text-white  focus:ring-4 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-600 hover:bg-red-700 focus:ring-red-800"
+                            onClick={() => setOpenModalAdd(false)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
+              {openModalConfirm ? (
+                <div className="fixed top-0 left-0  w-full h-full bg-gray-200 bg-opacity-5 z-[1000]">
+                  <div className="absolute top-0 left-0 w-full h-full">
+                    <div className="translate-x-[-50%] translate-y-[-50%] absolute top-[50%] left-[50%]">
+                      <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <button
+                          type="button"
+                          className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                          data-modal-hide="popup-modal"
+                          onClick={() => setOpenModalConfirm(false)}
+                        >
+                          <svg
+                            className="w-3 h-3"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 14 14"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                            />
+                          </svg>
+                          <span className="sr-only">Close modal</span>
+                        </button>
+                        <div className="p-10 text-center">
+                          <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                            Are you sure you want to delete this studentlist?
+                          </h3>
+                          <button
+                            data-modal-hide="popup-modal"
+                            type="button"
+                            className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
+                            onClick={() => onDeleteStudent(currentStudent)}
+                          >
+                            Delete
+                          </button>
+                          <button
+                            data-modal-hide="popup-modal"
+                            type="button"
+                            className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5"
+                            onClick={() => setOpenModalConfirm(false)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
           </main>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Student
+export default Student;
