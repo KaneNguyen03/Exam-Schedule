@@ -1,107 +1,106 @@
-import SubHeader from "../components/Layout/SubHeader";
-import Sidebar from "../components/Layout/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import examscheduleTypes from "../constants/examscheduleTypes";
-import "../pages/CalendarStyles.css";
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import SubHeader from "../components/Layout/SubHeader"
+import Sidebar from "../components/Layout/Sidebar"
+import { useDispatch, useSelector } from "react-redux"
+import examscheduleTypes from "../constants/examscheduleTypes"
+import "../pages/CalendarStyles.css"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
 
 import {
   createExamschedule,
   generateExamschedule,
   getAllExamschedules,
   getExamScheduleByUsername,
-} from "../store/thunks/examschedule";
-import { useEffect, useRef } from "react";
+} from "../store/thunks/examschedule"
+import { useEffect, useRef } from "react"
 
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import moment from "moment";
-import { useState } from "react";
-import { getAllExamslots, updateExamslot } from "../store/thunks/examslot";
-import examslotTypes from "../constants/examslotTypes";
-import classroomTypes from "../constants/classroomTypes";
-import { getAllClassrooms } from "../store/thunks/classroom";
-import ReactSelect from "react-select";
-import teacherTypes from "../constants/teacherTypes";
-import { getAllTeachers } from "../store/thunks/teacher";
-import ReactDatePicker from "react-datepicker";
-import { sizeOptions, timeOptions } from "../constants/commons/commons";
-import { toast } from "react-toastify";
-import useAuth from "../hooks/useAuth";
-import { makeRoles } from "../utils/common";
-import { useNavigate } from "react-router-dom";
-import courseTypes from "../constants/courseTypes";
-import { getAllCourses } from "../store/thunks/course";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import { Pagination } from "react-headless-pagination";
-import StatusButton from "../components/Status";
-import { color } from "../constants/commons/styled";
-import { CSVLink } from "react-csv";
-import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
+import { Calendar, momentLocalizer } from "react-big-calendar"
+import "react-big-calendar/lib/css/react-big-calendar.css"
+import moment from "moment"
+import { useState } from "react"
+import { getAllExamslots, updateExamslot } from "../store/thunks/examslot"
+import examslotTypes from "../constants/examslotTypes"
+import classroomTypes from "../constants/classroomTypes"
+import { getAllClassrooms } from "../store/thunks/classroom"
+import ReactSelect from "react-select"
+import teacherTypes from "../constants/teacherTypes"
+import { getAllTeachers } from "../store/thunks/teacher"
+import ReactDatePicker from "react-datepicker"
+import { sizeOptions, timeOptions } from "../constants/commons/commons"
+import { toast } from "react-toastify"
+import useAuth from "../hooks/useAuth"
+import { makeRoles } from "../utils/common"
+import { useNavigate } from "react-router-dom"
+import courseTypes from "../constants/courseTypes"
+import { getAllCourses } from "../store/thunks/course"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import { Pagination } from "react-headless-pagination"
+import StatusButton from "../components/Status"
+import { color } from "../constants/commons/styled"
+import { CSVLink } from "react-csv"
+import { Tab, TabList, TabPanel, Tabs } from "react-tabs"
 const ExamscheduleDashboard = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
-  const [selectedTab, setSelectedTab] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const popupSelect = useRef(null);
-  const { user } = useAuth();
-  const dispatch = useDispatch();
-  const dataexsl = useSelector((state) => state.examslot);
-  const datacl = useSelector((state) => state.classroom);
-  const datate = useSelector((state) => state.teacher);
-  const dataco = useSelector((state) => state.course);
-  const dataexs = useSelector((state) => state.examschedule);
+  })
+  const [selectedTab, setSelectedTab] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
+  const popupSelect = useRef(null)
+  const { user } = useAuth()
+  const dispatch = useDispatch()
+  const dataexsl = useSelector((state) => state.examslot)
+  const datacl = useSelector((state) => state.classroom)
+  const datate = useSelector((state) => state.teacher)
+  const dataco = useSelector((state) => state.course)
+  const dataexs = useSelector((state) => state.examschedule)
   const examScheduleByUser = dataexs?.contents[
     examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME
-  ]?.data.data?.filter((item) => item !== null);
+  ]?.data.data?.filter((item) => item !== null)
 
-  const classrooms =
-    datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data?.data;
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data?.data;
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data;
-  const pagination = dataexs?.paginations[examscheduleTypes.GET_EXAMSCHEDULES];
+  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data?.data
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data?.data
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data
+  const pagination = dataexs?.paginations[examscheduleTypes.GET_EXAMSCHEDULES]
 
   const paginationByUser =
-    dataexs?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME];
+    dataexs?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_BY_USERNAME]
   const allExamSlots =
-    dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data;
+    dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data
 
   // Tạo một bản sao của examScheduleByUser với thông tin ngày giờ từ allExamSlots
   const updatedExamScheduleByUser = examScheduleByUser?.map((schedule) => {
     const matchingSlot = allExamSlots?.find(
       (slot) => slot.examSlotId === schedule.examSlotId
-    );
+    )
     if (matchingSlot) {
-      const { date, startTime, endTime } = matchingSlot;
-      return { ...schedule, date, startTime, endTime };
+      const { date, startTime, endTime } = matchingSlot
+      return { ...schedule, date, startTime, endTime }
     }
-    return schedule;
-  });
+    return schedule
+  })
 
-  const [openModal, setOpenModal] = useState(false);
-  const [currentExamSchedule, setCurrentExamSchedule] = useState();
+  const [openModal, setOpenModal] = useState(false)
+  const [currentExamSchedule, setCurrentExamSchedule] = useState()
   const optionsCourses = courses?.map((course) => ({
     value: course.courseId,
     label: course.courseId,
-  }));
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [loadings, setLoading] = useState(true);
+  }))
+  const [selectedOption, setSelectedOption] = useState(null)
+  const [loadings, setLoading] = useState(true)
   const examschedules =
-    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data;
+    dataexs?.contents[examscheduleTypes.GET_EXAMSCHEDULES]?.payload?.data
 
   const convertDataExamSlots = allExamSlots?.map((item) => {
-    const startDate = new Date(item.date);
-    const endDate = new Date(item.date);
-    startDate.setHours(item.startTime.substring(0, 2));
-    endDate.setHours(item.endTime.substring(0, 2));
-    startDate.setMinutes(item.startTime.substring(3, 5));
-    endDate.setMinutes(item.endTime.substring(3, 5));
-    startDate.setSeconds(0);
-    endDate.setSeconds(0);
+    const startDate = new Date(item.date)
+    const endDate = new Date(item.date)
+    startDate.setHours(item.startTime.substring(0, 2))
+    endDate.setHours(item.endTime.substring(0, 2))
+    startDate.setMinutes(item.startTime.substring(3, 5))
+    endDate.setMinutes(item.endTime.substring(3, 5))
+    startDate.setSeconds(0)
+    endDate.setSeconds(0)
     return {
       title: item.examSlotId, // You can customize the title as needed
       start: startDate, // Convert the date string to a Date object
@@ -114,18 +113,22 @@ const ExamscheduleDashboard = () => {
       endTime: item.endTime,
       date: item.date,
       courseId: item.courseId,
-    };
-  });
+    }
+  })
+  console.log(
+    "🚀 Kha ne ~ file: ExamSchedule.jsx:119 ~ convertDataExamSlots:",
+    convertDataExamSlots
+  )
 
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [openModalChoosingCourse, setOpenModalChoosingCourse] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null)
+  const [openModalChoosingCourse, setOpenModalChoosingCourse] = useState(false)
   const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
+    setSelectedDate(date)
+  }
   const [submitDataGenerator, setSubmitDataGenerator] = useState({
     courseId: "",
     examSlotId: "",
-  });
+  })
   const headers = [
     { label: "examScheduleId", key: "examScheduleId" },
     { label: "examSlotId", key: "examSlotId" },
@@ -133,7 +136,7 @@ const ExamscheduleDashboard = () => {
     { label: "courseId", key: "courseId" },
     { label: "proctoringId", key: "proctoringId" },
     { label: "studentListId", key: "studentListId" },
-  ];
+  ]
   const [exportData, setExportData] = useState([
     {
       examScheduleId: "",
@@ -143,19 +146,19 @@ const ExamscheduleDashboard = () => {
       proctoringId: "",
       studentListId: "",
     },
-  ]);
+  ])
   const handleExportCSV = (e) => {
-    e.preventDefault();
-    const element = document.getElementById("exportCSV");
-    element.click();
-  };
+    e.preventDefault()
+    const element = document.getElementById("exportCSV")
+    element.click()
+  }
   const handleSubmitExamSchedule = async () => {
     const newListProctorings = currentExamSchedule.listProctoring?.map(
       (item) => ({
         ...item,
         listExamSlot: [],
       })
-    );
+    )
 
     const updateStatusExamslot = {
       examSlotId: currentExamSchedule.examSlotId,
@@ -166,60 +169,57 @@ const ExamscheduleDashboard = () => {
       status: "pending",
       listProctoring: newListProctorings,
       courseId: currentExamSchedule.courseId,
-    };
-
-    await dispatch(updateExamslot(updateStatusExamslot));
-
-    try {
-      setTimeout(
-        () => dispatch(generateExamschedule(submitDataGenerator)),
-        800
-      );
-    } catch (err) {
-      toast.error("Error generate Exam Schedule");
     }
 
-    setOpenModalChoosingCourse(false);
-  };
+    await dispatch(updateExamslot(updateStatusExamslot))
 
-  const localizer = momentLocalizer(moment);
+    try {
+      setTimeout(() => dispatch(generateExamschedule(submitDataGenerator)), 800)
+    } catch (err) {
+      toast.error("Error generate Exam Schedule")
+    }
+
+    setOpenModalChoosingCourse(false)
+  }
+
+  const localizer = momentLocalizer(moment)
 
   const eventStyleGetter = (event, start, end, isSelected) => {
-    const currentTime = new Date();
+    const currentTime = new Date()
     const isEventInProgress =
-      event.start <= currentTime && event.end >= currentTime;
-    let backgroundColor = event.start < new Date() ? "#ccc" : "#dc3454";
+      event.start <= currentTime && event.end >= currentTime
+    let backgroundColor = event.start < new Date() ? "#ccc" : "#dc3454"
     if (
       (event.start >= new Date() && event.status === "pending") ||
       (event.courseId && event.start >= new Date())
     ) {
-      backgroundColor = "#3174ad";
+      backgroundColor = "#3174ad"
     }
-    if (isEventInProgress) backgroundColor = "#ffd700";
+    if (isEventInProgress) backgroundColor = "#ffd700"
     // Add more conditions for custom styling
 
     return {
       style: {
         backgroundColor,
       },
-    };
-  };
+    }
+  }
 
   const handleEventClick = (event) => {
     setOpenModalChoosingCourse(
       currentExamSchedule?.status.toLowerCase() === "active" &&
         currentExamSchedule?.courseId === null
-    );
+    )
 
     if (!openModalChoosingCourse) {
       if (currentExamSchedule?.examSlotId !== undefined)
-        navigate(`/examschedule/${currentExamSchedule.examSlotId}`);
+        navigate(`/examschedule/${currentExamSchedule.examSlotId}`)
     }
     // Handle the event click here
     // if (!event.proctoring)
-    setOpenModal(true);
+    setOpenModal(true)
     // You can show more details or perform actions as needed
-  };
+  }
 
   useEffect(() => {
     if (
@@ -228,56 +228,56 @@ const ExamscheduleDashboard = () => {
       dataco?.loadings[courseTypes.UPDATE_COURSE] ||
       dataco?.loadings[courseTypes.DELETE_COURSE]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [dataco, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [dataco, param])
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }));
-      }, 500);
-      return () => clearTimeout(delayDebounceFn);
+        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
+      }, 500)
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
-      toast.error("Error getting exam rooms");
+      toast.error("Error getting exam rooms")
     }
     try {
-      dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
+      dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
     } catch (error) {
-      toast.error("Error getting proctoring");
+      toast.error("Error getting proctoring")
     }
-  }, [dispatch]);
+  }, [dispatch])
 
   useEffect(() => {
     if (examschedules?.data !== undefined) {
       const preprocessedData = examschedules?.data?.map((item) => ({
         ...item,
-      }));
-      setExportData(preprocessedData);
+      }))
+      setExportData(preprocessedData)
     }
-  }, [dataexs, param, examschedules]);
+  }, [dataexs, param, examschedules])
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllCourses({ page: 1, pageSize: 999 }));
-      }, 500);
-      return () => clearTimeout(delayDebounceFn);
+        dispatch(getAllCourses({ page: 1, pageSize: 999 }))
+      }, 500)
+      return () => clearTimeout(delayDebounceFn)
     } catch (error) {
-      toast.error("Error getting course");
+      toast.error("Error getting course")
     }
-  }, [param.keyword, dispatch, param]);
+  }, [param.keyword, dispatch, param])
 
   useEffect(() => {
     try {
-      dispatch(getAllExamschedules(param));
+      dispatch(getAllExamschedules(param))
     } catch (error) {
-      toast.error("Error getting examschedule");
+      toast.error("Error getting examschedule")
     }
     try {
-      dispatch(getAllExamslots());
+      dispatch(getAllExamslots({ page: 1, pageSize: 999 }))
     } catch (error) {
-      toast.error("Error getting examslots");
+      toast.error("Error getting examslots")
     }
     try {
       dispatch(
@@ -286,11 +286,11 @@ const ExamscheduleDashboard = () => {
           page: param.page,
           pageSize: param.pageSize,
         })
-      );
+      )
     } catch (error) {
-      toast.error("Error getting examscheduleby username");
+      toast.error("Error getting examscheduleby username")
     }
-  }, [dispatch, param]);
+  }, [dispatch, param])
 
   return (
     <div>
@@ -324,7 +324,7 @@ const ExamscheduleDashboard = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      });
+                      })
                     }}
                     value={param.keyword}
                   />
@@ -407,14 +407,14 @@ const ExamscheduleDashboard = () => {
                             setParam({
                               ...param,
                               pageSize: Number(item.value),
-                            });
-                            setIsShowSelect(false);
+                            })
+                            setIsShowSelect(false)
                           }}
                           key={item.value}
                         >
                           Show {item.value} items
                         </li>
-                      );
+                      )
                     })}
                   </ul>
                 )}
@@ -423,7 +423,7 @@ const ExamscheduleDashboard = () => {
                 <button
                   className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-900 mx-4"
                   onClick={(e) => {
-                    handleExportCSV(e);
+                    handleExportCSV(e)
                   }}
                 >
                   <span className="ml-2">Export Exam Slot</span>
@@ -458,8 +458,8 @@ const ExamscheduleDashboard = () => {
                       style={{ height: 500 }}
                       eventPropGetter={eventStyleGetter}
                       onSelectEvent={(event) => {
-                        setCurrentExamSchedule(event);
-                        handleEventClick();
+                        setCurrentExamSchedule(event)
+                        handleEventClick()
                       }} // Handle event click
                     />
                   </div>
@@ -496,11 +496,11 @@ const ExamscheduleDashboard = () => {
                                 setSubmitDataGenerator({
                                   examSlotId: currentExamSchedule.examSlotId,
                                   courseId: data.value,
-                                });
+                                })
                                 setCurrentExamSchedule({
                                   ...currentExamSchedule,
                                   courseId: data.value,
-                                });
+                                })
                               }}
                             />
                           </div>
@@ -514,7 +514,7 @@ const ExamscheduleDashboard = () => {
                               type="submit"
                               className=" text-white  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
                               onClick={() => {
-                                handleSubmitExamSchedule();
+                                handleSubmitExamSchedule()
                               }}
                             >
                               Save
@@ -685,7 +685,7 @@ const ExamscheduleDashboard = () => {
                           <Pagination
                             currentPage={pagination.currentPage - 1}
                             setCurrentPage={(page) => {
-                              setParam({ ...param, page: page + 1 });
+                              setParam({ ...param, page: page + 1 })
                             }}
                             totalPages={pagination.totalPage}
                             edgePageCount={3}
@@ -786,14 +786,14 @@ const ExamscheduleDashboard = () => {
                               setParam({
                                 ...param,
                                 pageSize: Number(item.value),
-                              });
-                              setIsShowSelect(false);
+                              })
+                              setIsShowSelect(false)
                             }}
                             key={item.value}
                           >
                             Show {item.value} items
                           </li>
-                        );
+                        )
                       })}
                     </ul>
                   )}
@@ -801,7 +801,7 @@ const ExamscheduleDashboard = () => {
                 <button
                   className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937] mx-4"
                   onClick={(e) => {
-                    handleExportCSV(e);
+                    handleExportCSV(e)
                   }}
                 >
                   <span className="ml-2">Export Exam Slot</span>
@@ -860,7 +860,7 @@ const ExamscheduleDashboard = () => {
                     <Pagination
                       currentPage={pagination.currentPage - 1}
                       setCurrentPage={(page) => {
-                        setParam({ ...param, page: page + 1 });
+                        setParam({ ...param, page: page + 1 })
                       }}
                       totalPages={pagination.totalPage}
                       edgePageCount={3}
@@ -959,14 +959,14 @@ const ExamscheduleDashboard = () => {
                               setParam({
                                 ...param,
                                 pageSize: Number(item.value),
-                              });
-                              setIsShowSelect(false);
+                              })
+                              setIsShowSelect(false)
                             }}
                             key={item.value}
                           >
                             Show {item.value} items
                           </li>
-                        );
+                        )
                       })}
                     </ul>
                   )}
@@ -1049,7 +1049,7 @@ const ExamscheduleDashboard = () => {
                     <Pagination
                       currentPage={paginationByUser.currentPage - 1}
                       setCurrentPage={(page) => {
-                        setParam({ ...param, page: page + 1 });
+                        setParam({ ...param, page: page + 1 })
                       }}
                       totalPages={paginationByUser.totalPage}
                       edgePageCount={3}
@@ -1127,7 +1127,7 @@ const ExamscheduleDashboard = () => {
         id="exportCSV"
       />
     </div>
-  );
-};
+  )
+}
 
-export default ExamscheduleDashboard;
+export default ExamscheduleDashboard
