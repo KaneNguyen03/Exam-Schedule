@@ -1,85 +1,85 @@
-import moment from "moment"
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import moment from "moment";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
 
-import React, { useEffect, useRef, useState } from "react"
-import { Pagination } from "react-headless-pagination"
-import { useDispatch, useSelector } from "react-redux"
-import { useLocation, useNavigate } from "react-router-dom"
-import ReactSelect from "react-select"
-import { toast } from "react-toastify"
-import Sidebar from "../components/Layout/Sidebar"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import courseTypes from "../constants/courseTypes"
-import examscheduleTypes from "../constants/examscheduleTypes"
-import examslotTypes from "../constants/examslotTypes"
-import useAuth from "../hooks/useAuth"
-import { getAllCourses } from "../store/thunks/course"
+import React, { useEffect, useRef, useState } from "react";
+import { Pagination } from "react-headless-pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import ReactSelect from "react-select";
+import { toast } from "react-toastify";
+import Sidebar from "../components/Layout/Sidebar";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import courseTypes from "../constants/courseTypes";
+import examscheduleTypes from "../constants/examscheduleTypes";
+import examslotTypes from "../constants/examslotTypes";
+import useAuth from "../hooks/useAuth";
+import { getAllCourses } from "../store/thunks/course";
 import {
   generateExamschedule,
   getAllExamschedules,
   getExamscheduleDetails,
-} from "../store/thunks/examschedule"
-import { getAllExamslots, updateExamslot } from "../store/thunks/examslot"
-import examscheduleApi from "../apis/examschedule"
-import { sizeOptions } from "../constants/commons/commons"
+} from "../store/thunks/examschedule";
+import { getAllExamslots, updateExamslot } from "../store/thunks/examslot";
+import examscheduleApi from "../apis/examschedule";
+import { sizeOptions } from "../constants/commons/commons";
 
 const ExamscheduleDetails = () => {
-  const popupSelect = useRef(null)
-  const dispatch = useDispatch()
-  const [isShowSelect, setIsShowSelect] = useState(false)
+  const popupSelect = useRef(null);
+  const dispatch = useDispatch();
+  const [isShowSelect, setIsShowSelect] = useState(false);
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
+  });
 
-  const { user } = useAuth()
-  const [loadings, setLoading] = useState(true)
-  const dataexsl = useSelector((state) => state.examslot)
-  const dataes = useSelector((state) => state.examschedule)
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data
+  const { user } = useAuth();
+  const [loadings, setLoading] = useState(true);
+  const dataexsl = useSelector((state) => state.examslot);
+  const dataes = useSelector((state) => state.examschedule);
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data?.data;
   const examSchedule =
-    dataes.contents[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]?.data?.data
+    dataes.contents[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]?.data?.data;
 
   const pagination =
-    dataes?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS]
+    dataes?.paginations[examscheduleTypes.GET_EXAMSCHEDULE_DETAILS];
 
-  const location = useLocation()
-  const examSlotId = location.pathname?.split("/")[2]
-  const currentExamSlot = examslots?.find((x) => x.examSlotId === examSlotId)
+  const location = useLocation();
+  const examSlotId = location.pathname?.split("/")[2];
+  const currentExamSlot = examslots?.find((x) => x.examSlotId === examSlotId);
 
   // Tạo một bản sao của examSchedule với các trường dữ liệu được cập nhật
   const updatedExamSchedule = examSchedule?.map((scheduleItem) => {
-    const examSlotId = scheduleItem.examSlotId
+    const examSlotId = scheduleItem.examSlotId;
     const matchingExamSlot =
-      currentExamSlot?.examSlotId === examSlotId ? currentExamSlot : null
+      currentExamSlot?.examSlotId === examSlotId ? currentExamSlot : null;
 
     if (matchingExamSlot) {
       // Sử dụng Object.assign hoặc toán tử spread để thêm thông tin từ examSlot vào scheduleItem
-      const updatedScheduleItem = { ...scheduleItem, ...matchingExamSlot }
-      return updatedScheduleItem
+      const updatedScheduleItem = { ...scheduleItem, ...matchingExamSlot };
+      return updatedScheduleItem;
     } else {
       // Nếu không có sự khớp, trả về scheduleItem ban đầu
-      return scheduleItem
+      return scheduleItem;
     }
-  })
+  });
 
   const [submitDataGenerator, setSubmitDataGenerator] = useState({
     courseId: "",
     examSlotId: "",
-  })
+  });
 
   const handleSendMail = () => {
     try {
       examscheduleApi.sendMail({
         courseId: currentExamSlot?.courseId,
         examSlotId: currentExamSlot?.examSlotId,
-      })
-      toast.success("Sent mail successfully")
+      });
+      toast.success("Sent mail successfully");
     } catch (e) {
-      toast.error("Error sending mail")
+      toast.error("Error sending mail");
     }
-  }
+  };
 
   useEffect(() => {
     if (
@@ -88,20 +88,20 @@ const ExamscheduleDetails = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [dataexsl, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [dataexsl, param]);
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllExamslots({ page: 1, pageSize: 999 }))
-      }, 500)
-      return () => clearTimeout(delayDebounceFn)
+        dispatch(getAllExamslots({ page: 1, pageSize: 999 }));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting examslot")
+      toast.error("Error getting examslot");
     }
-  }, [dispatch, param])
+  }, [dispatch, param]);
 
   useEffect(() => {
     if (examslots && currentExamSlot?.courseId && currentExamSlot?.examSlotId) {
@@ -112,21 +112,21 @@ const ExamscheduleDetails = () => {
               courseId: currentExamSlot?.courseId,
               examSlotId: currentExamSlot?.examSlotId,
             })
-          )
+          );
           dispatch(
             getExamscheduleDetails({
               ...param,
               CourseId: currentExamSlot?.courseId,
               ExamSlotId: currentExamSlot?.examSlotId,
             })
-          )
-        }, 500)
-        return () => clearTimeout(delayDebounceFn)
+          );
+        }, 500);
+        return () => clearTimeout(delayDebounceFn);
       } catch (error) {
-        toast.error("Error getting exam Schedule")
+        toast.error("Error getting exam Schedule");
       }
     }
-  }, [examslots, currentExamSlot, dispatch, param])
+  }, [examslots, currentExamSlot, dispatch, param]);
 
   return (
     <div className="">
@@ -159,7 +159,7 @@ const ExamscheduleDetails = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -210,9 +210,9 @@ const ExamscheduleDetails = () => {
             </div>
           </header>
           <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
-              Exam Slot Management
-            </div>
-            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+            Exam Slot Management
+          </div>
+          <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
             <button
               type="button"
               id="Add"
@@ -243,14 +243,14 @@ const ExamscheduleDetails = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) })
-                          setIsShowSelect(false)
+                          setParam({ ...param, pageSize: Number(item.value) });
+                          setIsShowSelect(false);
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -308,11 +308,11 @@ const ExamscheduleDetails = () => {
               </tbody>
             </table>
             <div className="sticky bottom-0 bg-white p-2 z-10">
-              {examSchedule?.length ? (
+              {pagination ? (
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -343,11 +343,11 @@ const ExamscheduleDetails = () => {
                   </Pagination.PrevButton>
 
                   <div className="flex items-center justify-center mx-6 list-none ">
-                    {examslots?.data?.length > 0 ? (
+                    {pagination ? (
                       <Pagination.PageButton
                         activeClassName="bg-blue-button border-0 text-white "
                         inactiveClassName="border"
-                        className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-blue-500"
+                        className="flex justify-center items-center rounded-lg border-solid  border-primary mx-1 w-10 h-10 cursor-pointer font-medium bg-slate-700 text-gray-300 "
                       />
                     ) : (
                       <div className="flex justify-center items-center rounded-lg  mx-1 w-10 h-10 cursor-pointer font-medium bg-blue-button border-0 bg-slate-700 text-white">
@@ -382,7 +382,7 @@ const ExamscheduleDetails = () => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ExamscheduleDetails
+export default ExamscheduleDetails;

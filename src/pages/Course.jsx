@@ -1,129 +1,129 @@
-import { useDispatch, useSelector } from "react-redux"
-import Sidebar from "../components/Layout/Sidebar"
-import { useEffect, useRef, useState } from "react"
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
-import ReactSelect from "react-select"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import { sizeOptions } from "../constants/commons/commons"
-import { Pagination } from "react-headless-pagination"
+import { useDispatch, useSelector } from "react-redux";
+import Sidebar from "../components/Layout/Sidebar";
+import { useEffect, useRef, useState } from "react";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
+import ReactSelect from "react-select";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import { sizeOptions } from "../constants/commons/commons";
+import { Pagination } from "react-headless-pagination";
 
-import courseTypes from "../constants/courseTypes"
+import courseTypes from "../constants/courseTypes";
 import {
   createCourse,
   deleteCourse,
   getAllCourses,
   updateCourse,
-} from "../store/thunks/course"
-import semesterTypes from "../constants/semesterTypes"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
-import { getAllSemesters } from "../store/thunks/semester"
-import { toast } from "react-toastify"
-import { getAllStudents } from "../store/thunks/student"
-import studentTypes from "../constants/studentTypes"
+} from "../store/thunks/course";
+import semesterTypes from "../constants/semesterTypes";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
+import { getAllSemesters } from "../store/thunks/semester";
+import { toast } from "react-toastify";
+import { getAllStudents } from "../store/thunks/student";
+import studentTypes from "../constants/studentTypes";
 const Course = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
 
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
-  const [currentCourse, setCurrentCourse] = useState({})
-  const [openStudentListId, setOpenStudentListId] = useState(false)
-  const dataco = useSelector((state) => state.course)
-  const datase = useSelector((state) => state.semester)
-  const datast = useSelector((state) => state.student)
-  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data
-  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data
-  const pagination = dataco?.paginations[courseTypes.GET_COURSES]
+  });
+  const [currentCourse, setCurrentCourse] = useState({});
+  const [openStudentListId, setOpenStudentListId] = useState(false);
+  const dataco = useSelector((state) => state.course);
+  const datase = useSelector((state) => state.semester);
+  const datast = useSelector((state) => state.student);
+  const students = datast?.contents[studentTypes.GET_STUDENTS]?.data.data;
+  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data?.data;
+  const pagination = dataco?.paginations[courseTypes.GET_COURSES];
 
-  const popupSelect = useRef(null)
-  const [openModalAdd, setOpenModalAdd] = useState(false)
+  const popupSelect = useRef(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
     courseId: "",
     courseName: "",
     semesterId: "",
     listStudentList: [],
-  })
-  const [loadings, setLoading] = useState(true)
-  const [selectedOption, setSelectedOption] = useState(null)
+  });
+  const [loadings, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const options = semesters?.map((semester) => ({
     value: semester.semesterId,
-    label: semester.semesterId + " : " + semester.semesterName,
-  }))
+    label: semester.semesterId,
+  }));
 
   const optionsListStudent = students?.map((item) => ({
     id: item.studentListId,
     value: item,
     label: item.studentListId,
-  }))
+  }));
 
   const UpdateCourse = () => {
     try {
-      dispatch(updateCourse(currentCourse))
-      toast.success("Course updated successfully")
+      dispatch(updateCourse(currentCourse));
+      toast.success("Course updated successfully");
     } catch (error) {
-      toast.error("Error update course")
+      toast.error("Error update course");
     }
 
-    setOpenModal(false)
-  }
+    setOpenModal(false);
+  };
 
   const AddCourse = () => {
     try {
-      dispatch(createCourse(addData))
-      toast.success("Course added successfully")
+      dispatch(createCourse(addData));
+      toast.success("Course added successfully");
     } catch (error) {
-      toast.error("Error adding course")
+      toast.error("Error adding course");
     }
 
-    setOpenModalAdd(false)
-  }
+    setOpenModalAdd(false);
+  };
 
   const onDeleteCourse = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    }
+    };
     try {
-      dispatch(deleteCourse(req))
-      toast.success("Course deleted successfully")
+      dispatch(deleteCourse(req));
+      toast.success("Course deleted successfully");
     } catch (error) {
-      toast.error("Error deleting course")
+      toast.error("Error deleting course");
     }
 
-    setOpenModalConfirm(false)
+    setOpenModalConfirm(false);
     try {
-      setTimeout(() => dispatch(getAllCourses(param)), 1000)
+      setTimeout(() => dispatch(getAllCourses(param)), 1000);
     } catch (error) {
-      toast.error("Error getting course")
+      toast.error("Error getting course");
     }
-  }
+  };
   const restoreCourse = (data) => {
     const req = {
       ...data,
       status: "Active",
+    };
+    try {
+      dispatch(deleteCourse(req));
+      toast.success("Course restored successfully");
+    } catch (error) {
+      toast.error("Error restore course");
     }
     try {
-      dispatch(deleteCourse(req))
-      toast.success("Course restored successfully")
+      setTimeout(() => dispatch(getAllCourses(param)), 1000);
     } catch (error) {
-      toast.error("Error restore course")
+      toast.error("Error getting course");
     }
-    try {
-      setTimeout(() => dispatch(getAllCourses(param)), 1000)
-    } catch (error) {
-      toast.error("Error getting course")
-    }
-  }
+  };
   useEffect(() => {
     if (
       dataco?.loadings[courseTypes.GET_COURSES] ||
@@ -131,33 +131,32 @@ const Course = () => {
       dataco?.loadings[courseTypes.UPDATE_COURSE] ||
       dataco?.loadings[courseTypes.DELETE_COURSE]
     )
-      setLoading(true)
-    else setLoading(false)
-  }, [dataco, param])
+      setLoading(true);
+    else setLoading(false);
+  }, [dataco, param]);
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllCourses(param))
-      dispatch(getAllSemesters({ page: 1, pageSize: 999 }))
-
-      }, 500)
-      return () => clearTimeout(delayDebounceFn)
+        dispatch(getAllCourses(param));
+        dispatch(getAllSemesters({ page: 1, pageSize: 999 }));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting course")
+      toast.error("Error getting course");
     }
-  }, [param.keyword, dispatch, param])
+  }, [param.keyword, dispatch, param]);
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents({ pagesize: 9999, page: 1 }))
-      }, 500)
+        dispatch(getAllStudents({ pagesize: 9999, page: 1 }));
+      }, 500);
 
-      return () => clearTimeout(delayDebounceFn)
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting students")
+      toast.error("Error getting students");
     }
-  }, [param.keyword, dispatch, param])
+  }, [param.keyword, dispatch, param]);
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -189,7 +188,7 @@ const Course = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -240,9 +239,9 @@ const Course = () => {
             </div>
           </header>
           <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
-              Course Management
-            </div>
-            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+            Course Management
+          </div>
+          <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
             <button
               type="button"
               id="Add"
@@ -273,14 +272,14 @@ const Course = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) })
-                          setIsShowSelect(false)
+                          setParam({ ...param, pageSize: Number(item.value) });
+                          setIsShowSelect(false);
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               )}
@@ -377,6 +376,20 @@ const Course = () => {
                                   <label className="mb-2 text-sm font-medium text-white flex">
                                     semester id
                                   </label>
+                                  <ReactSelect
+                                    isMulti={false}
+                                    options={options}
+                                    value={{
+                                      value: currentCourse?.semesterId,
+                                      label: currentCourse.semesterId,
+                                    }}
+                                    onChange={(data) =>
+                                      setCurrentCourse({
+                                        ...currentCourse,
+                                        semesterId: data.value,
+                                      })
+                                    }
+                                  />
                                 </div>
                                 <div>
                                   <label className="mb-2 text-sm font-medium  text-white flex">
@@ -391,7 +404,7 @@ const Course = () => {
                                           id: x.studentListId,
                                           value: x,
                                           label: x.studentListId,
-                                        }
+                                        };
                                       }
                                     )}
                                     // onChange={(data) => {
@@ -500,11 +513,11 @@ const Course = () => {
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      )
+                                      );
                                       setAddData({
                                         ...addData,
                                         semesterId: data.value,
-                                      })
+                                      });
                                     }}
 
                                     ////////////////////////////////
@@ -596,19 +609,20 @@ const Course = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{course.semesterId}</td>
-                    {/* <td className="px-6 py-4">
-                      {course.listStudentList
-                        ?.map((item) => item.studentListId)
-                        .join(". ")}
-                    </td> */}
-                    <td className="px-6 py-4">
-                        <a onClick={() => setOpenStudentListId(true)}>
-                         <div>
-                         View Student List ID</div> 
-                        </a>
 
-                        {openStudentListId ? (
-                          <div className="modal absolute translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                    <td className="px-6 py-4">
+                      <a
+                        onClick={() => {
+                          setOpenStudentListId(true);
+                          setCurrentCourse(course);
+                        }}
+                      >
+                        View Student List ID
+                      </a>
+
+                      {openStudentListId ? (
+                        <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
                             <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
@@ -633,35 +647,70 @@ const Course = () => {
                                 </svg>
                                 <span className="sr-only">Close modal</span>
                               </button>
-                              <div>
-                                <table className=" text-sm text-left text-gray-400">
-                                  <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 w-96 ">
-                                    <tr>
-                                      <th className="px-6 py-3">StudentListID</th>
-                                    </tr>
-                                  </thead>
-                                  <div className="overflow-x-auto max-h-[76vh] overflow-y-scroll w-96">
-                                    <tbody className="bg-white">
-                                      {course.listStudentList.map((item) => {
-                                        console.log(item); // Log item data to the console
-                                        return (
-                                          <tr key={item.studentListId}>
-                                            <td className="px-6 py-4 w-96">
-                                              {item.studentListId}
-                                            </td>
-                                          </tr>
-                                        );
-                                      })}
+                              <div className="px-6 py-6 lg:px-8 flex flex-col gap-y-4 w-full">
+                                <h3 className="mb-4 text-xl font-medium  text-white">
+                                  StudentList ID
+                                </h3>
+                                <div className="overflow-x-auto max-h-[76vh] overflow-y-scroll w-full mt-4">
+                                  {currentCourse.listStudentList.length ===
+                                  0 ? (
+                                    <div
+                                      className="font-regular relative block w-full rounded-lg bg-gradient-to-tr from-red-600 to-red-400 px-4 py-4 text-base text-white"
+                                      data-dismissible="alert"
+                                    >
+                                      <div className="absolute top-4 left-4">
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          viewBox="0 0 24 24"
+                                          fill="currentColor"
+                                          aria-hidden="true"
+                                          className="h-6 w-6"
+                                        >
+                                          <path
+                                            fillRule="evenodd"
+                                            d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                                            clipRule="evenodd"
+                                          ></path>
+                                        </svg>
+                                      </div>
+                                      <div className="ml-8 mr-12 over">
+                                        StudentList is empty
+                                      </div>
+                                      <div
+                                        className="absolute top-3 right-3 w-max rounded-lg transition-all hover:bg-white hover:bg-opacity-20"
+                                        data-dismissible-target="alert"
+                                      ></div>
+                                    </div>
+                                  ) : (
+                                    <></>
+                                  )}
+                                  <table className=" text-sm text-left justify-items-center text-gray-400 w-full">
+                                    <tbody className="bg-white w-full">
+                                      {currentCourse.listStudentList.map(
+                                        (item) => {
+                                          return (
+                                            <tr
+                                              key={item.studentListId}
+                                              className="w-full"
+                                            >
+                                              <td className="px-6 py-4">
+                                                {item.studentListId}
+                                              </td>
+                                            </tr>
+                                          );
+                                        }
+                                      )}
                                     </tbody>
-                                  </div>
-                                </table>
+                                  </table>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        ) : (
-                          <></>
-                        )}
-                      </td>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                    </td>
                     <td>
                       <>
                         {course.status.toLowerCase() === "active" ? (
@@ -693,8 +742,8 @@ const Course = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentCourse(course)
-                                  setOpenModalConfirm(true)
+                                  setCurrentCourse(course);
+                                  setOpenModalConfirm(true);
                                 }
                               }
                             >
@@ -705,9 +754,9 @@ const Course = () => {
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal)
-                                setSelectedOption(course.semesterId)
-                                setCurrentCourse(course)
+                                setOpenModal(!openModal);
+                                setSelectedOption(course.semesterId);
+                                setCurrentCourse(course);
                               }}
                             >
                               Edit
@@ -742,7 +791,7 @@ const Course = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -812,7 +861,7 @@ const Course = () => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Course
+export default Course;

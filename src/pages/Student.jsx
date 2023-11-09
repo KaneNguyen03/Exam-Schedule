@@ -330,58 +330,65 @@ const Student = () => {
                     >
                       <td className="px-6 py-4">{student.studentListId}</td>
                       <td className="px-6 py-4">
-                        <a onClick={() => setOpenStudentList(true)}>
+                        <a
+                          onClick={() => {
+                            setOpenStudentList(true);
+                            setCurrentStudent(student)
+                          }}
+                        >
                           View StudentID
                         </a>
 
                         {openStudentList ? (
-                          <div className="modal absolute translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                            <div className="relativerounded-lg shadow bg-gray-700">
-                              <button
-                                type="button"
-                                className="absolute top-2 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                                data-modal-hide="popup-modal"
-                                onClick={() => setOpenStudentList(false)}
-                              >
-                                <svg
-                                  className="w-3 h-3"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 14 14"
+                          <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
+                            <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                              <div className="relativerounded-lg shadow bg-gray-700">
+                                <button
+                                  type="button"
+                                  className="absolute top-2 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                  data-modal-hide="popup-modal"
+                                  onClick={() => setOpenStudentList(false)}
                                 >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                  />
-                                </svg>
-                                <span className="sr-only">Close modal</span>
-                              </button>
-                              <div>
-                                <table className=" text-sm text-left text-gray-400">
-                                  <thead className=" text-xs text-gray-300 uppercase  bg-gray-700 w-96 ">
-                                    <tr>
-                                      <th className="px-6 py-3">StudentID</th>
-                                    </tr>
-                                  </thead>
-                                  <div className="overflow-x-auto max-h-[76vh] overflow-y-scroll w-96">
-                                    <tbody className="bg-white">
-                                      {student.listStudent.map((item) => {
-                                        console.log(item); // Log item data to the console
-                                        return (
-                                          <tr key={item.username}>
-                                            <td className="px-6 py-4 w-96">
-                                              {item.username}
-                                            </td>
-                                          </tr>
-                                        );
-                                      })}
-                                    </tbody>
+                                  <svg
+                                    className="w-3 h-3"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 14 14"
+                                  >
+                                    <path
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                                    />
+                                  </svg>
+                                  <span className="sr-only">Close modal</span>
+                                </button>
+                                <div className="px-6 py-6 lg:px-8 flex flex-col gap-y-4 w-full">
+                                  <h3 className="mb-4 text-xl font-medium  text-white">
+                                    Student ID
+                                  </h3>
+                                  <div className="overflow-x-auto max-h-[76vh] overflow-y-scroll w-full mt-4">
+                                    <table className=" text-sm text-left justify-items-center text-gray-400 w-full">
+                                      <tbody className="bg-white w-full">
+                                        {currentStudent.listStudent.map((item) => {
+                                          return (
+                                            <tr
+                                              key={item.username}
+                                              className="w-full"
+                                            >
+                                              <td className="px-6 py-4">
+                                                {item.username}
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
                                   </div>
-                                </table>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -405,7 +412,7 @@ const Student = () => {
                               title="Inactive"
                             />
                           ) : (
-                            <>-</>
+                            <></>
                           )}
                         </>
                       </td>
@@ -542,7 +549,7 @@ const Student = () => {
               </div>
               {openModal ? (
                 <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                  <div className="modal absolute translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%]">
+                  <div className="modal absolute translate-x-[-50%] translate-y-[-50%] z-20 top-[50%] left-[50%] max-h-[76vh] overflow-y-auto">
                     <div className="relative rounded-lg shadow bg-gray-700">
                       <button
                         type="button"
