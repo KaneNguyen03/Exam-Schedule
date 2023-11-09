@@ -25,7 +25,7 @@ const studentSlice = createSlice({
     [getAllStudents.fulfilled]: (state, { payload }) => {
       state.loadings[studentTypes.GET_STUDENTS] = false;
       state.contents[studentTypes.GET_STUDENTS] = payload;
-      state.paginations[studentTypes.GET_STUDENTS] = payload.data.pagination;
+      state.paginations[studentTypes.GET_STUDENTS] = payload.data?.pagination;
     },
     [getAllStudents.rejected]: (state, { payload }) => {
       state.loadings[studentTypes.GET_STUDENTS] = false;
@@ -99,7 +99,7 @@ const studentSlice = createSlice({
       state.loadings[studentTypes.GET_ALL_STUDENTS] = false;
       state.contents[studentTypes.GET_ALL_STUDENTS] = payload;
       state.paginations[studentTypes.GET_ALL_STUDENTS] =
-        payload.data.pagination;
+        payload.data?.pagination;
     },
     [getStudents.rejected]: (state, { payload }) => {
       state.loadings[studentTypes.GET_ALL_STUDENTS] = false;
