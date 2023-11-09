@@ -1,68 +1,77 @@
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
 
-import { useEffect, useRef, useState } from "react"
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
-import useAuth from "../hooks/useAuth"
-import { sizeOptions, timeOptions } from "../constants/commons/commons"
-import { Pagination } from "react-headless-pagination"
-import ReactSelect from "react-select"
-import teacherTypes from "../constants/teacherTypes"
-import examslotTypes from "../constants/examslotTypes"
+import { useEffect, useRef, useState } from "react";
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
+import useAuth from "../hooks/useAuth";
+import { sizeOptions, timeOptions } from "../constants/commons/commons";
+import { Pagination } from "react-headless-pagination";
+import ReactSelect from "react-select";
+import teacherTypes from "../constants/teacherTypes";
+import examslotTypes from "../constants/examslotTypes";
 import {
   createExamslot,
   deleteExamslot,
   getAllExamslots,
   updateExamslot,
-} from "../store/thunks/examslot"
+} from "../store/thunks/examslot";
 
-import Sidebar from "../components/Layout/Sidebar"
-import { useDispatch, useSelector } from "react-redux"
-import { createTeacher, getAllTeachers } from "../store/thunks/teacher"
-import { color } from "../constants/commons/styled"
-import StatusButton from "../components/Status"
-import moment from "moment"
-import ReactDatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-import { createExamschedule } from "../store/thunks/examschedule"
-import classroomTypes from "../constants/classroomTypes"
-import { getAllClassrooms } from "../store/thunks/classroom"
-import { toast } from "react-toastify"
-import { differenceInDays, parseISO } from "date-fns"
-import courseTypes from "../constants/courseTypes"
-import { makeRoles } from "../utils/common"
-import { CSVLink } from "react-csv"
-import { getAllCourses } from "../store/thunks/course"
-import examslotApi from "../apis/examslot"
+import Sidebar from "../components/Layout/Sidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { createTeacher, getAllTeachers } from "../store/thunks/teacher";
+import { color } from "../constants/commons/styled";
+import StatusButton from "../components/Status";
+import moment from "moment";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { createExamschedule } from "../store/thunks/examschedule";
+import classroomTypes from "../constants/classroomTypes";
+import { getAllClassrooms } from "../store/thunks/classroom";
+import { toast } from "react-toastify";
+import { differenceInDays, parseISO } from "date-fns";
+import courseTypes from "../constants/courseTypes";
+import { makeRoles } from "../utils/common";
+import { CSVLink } from "react-csv";
+import { getAllCourses } from "../store/thunks/course";
+import examslotApi from "../apis/examslot";
 
 const ExamSlot = () => {
-  const dispatch = useDispatch()
-  const { user } = useAuth()
-  const [openModal, setOpenModal] = useState(false)
-  const [isShowSelect, setIsShowSelect] = useState(false)
-  const [openModalConfirm, setOpenModalConfirm] = useState(false)
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const [openModal, setOpenModal] = useState(false);
+  const [isShowSelect, setIsShowSelect] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  })
-  const [currentExamslot, setCurrentExamslot] = useState({})
+  });
+  const [currentExamslot, setCurrentExamslot] = useState({});
+  const handleExportCSV = async (e) => {
+    e.preventDefault();
+    const resultExport = await dispatch(
+      getAllExamslots({ page: 1, pageSize: 9999999 })
+    );
+    const allExamSlot = resultExport?.payload.data.data;
+    await setExportData(allExamSlot);
 
-  const handleExportCSV = (e) => {
-    e.preventDefault()
-    const element = document.getElementById("exportCSV")
-    element.click()
-  }
-  const dataexsl = useSelector((state) => state.examslot)
-  const datate = useSelector((state) => state.teacher)
-  const datacl = useSelector((state) => state.classroom)
-  const dataco = useSelector((state) => state.course)
-  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data
-  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data
-  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data
-  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data
-  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS]
-  const popupSelect = useRef(null)
-  const [openModalAdd, setOpenModalAdd] = useState(false)
+    // Sử dụng setTimeout để chắc chắn rằng dữ liệu đã được cập nhật trước khi tạo element
+    setTimeout(() => {
+      const element = document.getElementById("exportCSV");
+      element.click();
+    }, 200);
+    await dispatch(getAllExamslots(param));
+  };
+  const dataexsl = useSelector((state) => state.examslot);
+  const datate = useSelector((state) => state.teacher);
+  const datacl = useSelector((state) => state.classroom);
+  const dataco = useSelector((state) => state.course);
+  const courses = dataco?.contents[courseTypes.GET_COURSES]?.data.data;
+  const examslots = dataexsl?.contents[examslotTypes.GET_EXAMSLOTS]?.data;
+  const teachers = datate?.contents[teacherTypes.GET_TEACHERS]?.data.data;
+  const classrooms = datacl?.contents[classroomTypes.GET_CLASSROOMS]?.data.data;
+  const pagination = dataexsl?.paginations[examslotTypes.GET_EXAMSLOTS];
+  const popupSelect = useRef(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   const [addData, setAddData] = useState({
     examSlotId: "",
     examSlotName: "",
@@ -72,23 +81,23 @@ const ExamSlot = () => {
     listProctoring: [],
     status: "active",
     courseId: "",
-  })
+  });
 
-  const [loadings, setLoading] = useState(true)
-  const currentDate = new Date()
-  const [selectedOption, setSelectedOption] = useState(null)
-  const today = new Date()
-  const maxDate = new Date(today)
-  maxDate.setDate(today.getDate() + 7)
+  const [loadings, setLoading] = useState(true);
+  const currentDate = new Date();
+  const [selectedOption, setSelectedOption] = useState(null);
+  const today = new Date();
+  const maxDate = new Date(today);
+  maxDate.setDate(today.getDate() + 7);
   const optionCourses = courses?.map((course) => ({
     value: course.courseId,
     label: course.courseId,
-  }))
+  }));
   const options = teachers?.map((teacher) => ({
     value: teacher,
     label: teacher.proctoringName,
     key: teacher.proctoringName,
-  }))
+  }));
 
   const headers = [
     { label: "examSlotId", key: "examSlotId" },
@@ -98,7 +107,7 @@ const ExamSlot = () => {
     { label: "date", key: "date" },
     { label: "startTime", key: "startTime" },
     { label: "endTime", key: "endTime" },
-  ]
+  ];
   const [exportData, setExportData] = useState([
     {
       examSlotId: "",
@@ -109,95 +118,95 @@ const ExamSlot = () => {
       startTime: "",
       endTime: "",
     },
-  ])
+  ]);
   //setup DATE selection
-  const [selectedDate, setSelectedDate] = useState(null)
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const handleDateChange = (date) => {
-    const nextDay = new Date(date)
-    nextDay.setDate(nextDay.getDate() + 1)
+    const nextDay = new Date(date);
+    nextDay.setDate(nextDay.getDate() + 1);
     setCurrentExamslot({
       ...currentExamslot,
       date: nextDay,
-    })
-    setAddData({ ...addData, date: nextDay })
-    setSelectedDate(date)
-  }
+    });
+    setAddData({ ...addData, date: nextDay });
+    setSelectedDate(date);
+  };
   const UpdateExamslot = () => {
     try {
       const newListProctorings = currentExamslot.listProctoring.map((item) => ({
         ...item,
         listExamSlot: [],
-      }))
+      }));
       const submitData = {
         ...currentExamslot,
         listProctoring: newListProctorings,
-      }
-      dispatch(updateExamslot(submitData))
-      toast.success("Examslot updated successfully")
+      };
+      dispatch(updateExamslot(submitData));
+      toast.success("Examslot updated successfully");
     } catch (error) {
-      toast.error("Error updating examslot")
+      toast.error("Error updating examslot");
     }
 
-    setOpenModal(false)
-  }
+    setOpenModal(false);
+  };
 
   const AddExamslot = () => {
     try {
-      dispatch(createExamslot(addData))
-      toast.success("Examslot added successfully")
+      dispatch(createExamslot(addData));
+      toast.success("Examslot added successfully");
     } catch (error) {
-      toast.error("Error adding examslot")
+      toast.error("Error adding examslot");
     }
 
-    setOpenModalAdd(false)
-  }
+    setOpenModalAdd(false);
+  };
 
   const handleUpload = (file) => {
     try {
-      examslotApi.importExamSlot(file)
-      toast.success("Import successfully")
+      examslotApi.importExamSlot(file);
+      toast.success("Import successfully");
     } catch (error) {
-      toast.error("Error importing")
+      toast.error("Error importing");
     }
-  }
+  };
 
   const onDeleteExamslot = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    }
+    };
     try {
-      dispatch(deleteExamslot(req))
-      toast.success("Examslot deleted successfully")
+      dispatch(deleteExamslot(req));
+      toast.success("Examslot deleted successfully");
     } catch (error) {
-      toast.error("Error deleting examslot")
+      toast.error("Error deleting examslot");
     }
 
-    setOpenModalConfirm(false)
+    setOpenModalConfirm(false);
     try {
-      setTimeout(() => dispatch(getAllExamslots(param)), 1000)
+      setTimeout(() => dispatch(getAllExamslots(param)), 1000);
     } catch (error) {
-      toast.error("Error getting examslot")
+      toast.error("Error getting examslot");
     }
-  }
+  };
   const restoreExamslot = (data) => {
     const req = {
       ...data,
       status: "Active",
+    };
+    try {
+      dispatch(deleteExamslot(req));
+      toast.success("Exam slot restored successfully");
+    } catch (error) {
+      toast.error("Error restoring examslot");
     }
     try {
-      dispatch(deleteExamslot(req))
-      toast.success("Exam slot restored successfully")
+      setTimeout(() => dispatch(getAllExamslots(param)), 1000);
     } catch (error) {
-      toast.error("Error restoring examslot")
+      toast.error("Error getting examslot ");
     }
-    try {
-      setTimeout(() => dispatch(getAllExamslots(param)), 1000)
-    } catch (error) {
-      toast.error("Error getting examslot ")
-    }
-  }
+  };
   useEffect(() => {
     if (
       dataexsl?.loadings[examslotTypes.GET_EXAMSLOTS] ||
@@ -205,49 +214,49 @@ const ExamSlot = () => {
       dataexsl?.loadings[examslotTypes.UPDATE_EXAMSLOT] ||
       dataexsl?.loadings[examslotTypes.DELETE_EXAMSLOT]
     )
-      setLoading(true)
-    else setLoading(false)
+      setLoading(true);
+    else setLoading(false);
     if (examslots?.data !== undefined) {
       const preprocessedData = examslots?.data?.map((item) => ({
         ...item,
         listProctoring: item.listProctoring
           ?.map((proctoring) => proctoring.proctoringName)
           .join(", "),
-      }))
-      setExportData(preprocessedData)
+      }));
+      setExportData(preprocessedData);
     }
-  }, [dataexsl, param, examslots])
+  }, [dataexsl, param, examslots]);
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllExamslots(param))
-      }, 500)
-      return () => clearTimeout(delayDebounceFn)
+        dispatch(getAllExamslots(param));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting examslot")
+      toast.error("Error getting examslot");
     }
-  }, [dispatch, param])
+  }, [dispatch, param]);
 
   useEffect(() => {
     try {
       const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
-        dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
-        dispatch(getAllCourses({ page: 1, pageSize: 999 }))
-      }, 500)
+        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }));
+        dispatch(getAllTeachers({ page: 1, pageSize: 999 }));
+        dispatch(getAllCourses({ page: 1, pageSize: 999 }));
+      }, 500);
 
-      return () => clearTimeout(delayDebounceFn)
+      return () => clearTimeout(delayDebounceFn);
     } catch (error) {
-      toast.error("Error getting exam rooms")
+      toast.error("Error getting exam rooms");
     }
-  }, [dispatch])
+  }, [dispatch]);
 
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
-        <Sidebar/>
+        <Sidebar />
         <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
           <header className="header bg-white shadow py-4 px-4">
             <div className="header-content flex items-center flex-row">
@@ -274,7 +283,7 @@ const ExamSlot = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      })
+                      });
                     }}
                     value={param.keyword}
                   />
@@ -325,9 +334,9 @@ const ExamSlot = () => {
             </div>
           </header>
           <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
-              Exam Slot Management
-            </div>
-            {/* <div className="w-full flex justify-end">
+            Exam Slot Management
+          </div>
+          {/* <div className="w-full flex justify-end">
             {[...makeRoles([1, 2])].includes(user.roleId) && (
               <button
                 type="button"
@@ -369,9 +378,8 @@ const ExamSlot = () => {
                 <span className="ml-2">Export Exam Slot</span>
               </button>
             )}</div> */}
-            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
-              
-              {[...makeRoles([1, 2])].includes(user.roleId) && (
+          <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+            {[...makeRoles([1, 2])].includes(user.roleId) && (
               <button
                 type="button"
                 id="Add"
@@ -387,7 +395,7 @@ const ExamSlot = () => {
                   type="file"
                   accept=".xlsx"
                   onChange={(e) => {
-                    handleUpload(e.target.files[0])
+                    handleUpload(e.target.files[0]);
                   }}
                   className="hidden"
                 />
@@ -404,52 +412,51 @@ const ExamSlot = () => {
             )}
             {[...makeRoles([1, 2, 3])].includes(user.roleId) && (
               <button
-              className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
+                className="focus:outline-none text-white focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-[#1f2937] hover:bg-[#1f2937]"
                 onClick={(e) => {
-                  handleExportCSV(e)
+                  handleExportCSV(e);
                 }}
               >
                 <span className="ml-2">Export Exam Slot</span>
               </button>
-             
             )}
             <div>
-                <div
-                  className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
-                  onClick={() => setIsShowSelect(!isShowSelect)}
-                >
-                  <span className="pl-4">Show {pagination?.pageSize} item</span>
-                  <img
-                    src={DropdownSelectIcon}
-                    className="pointer-events-none leading-[16px] md:leading-[20px] md:mr-4"
-                    alt="drop icon"
-                  />
-                </div>
-                {isShowSelect && (
-                  <ul
-                    ref={popupSelect}
-                    className="text-left cursor-pointer absolute"
-                  >
-                    {sizeOptions?.map((item) => {
-                      return (
-                        <li
-                          className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
-                          onClick={() => {
-                            setParam({
-                              ...param,
-                              pageSize: Number(item.value),
-                            })
-                            setIsShowSelect(false)
-                          }}
-                          key={item.value}
-                        >
-                          Show {item.value} items
-                        </li>
-                      )
-                    })}
-                  </ul>
-                )}
+              <div
+                className=" text-primary flex items-center justify-between  font-semibold h-8 md:h-10 w-32 md:w-44 text-xs md:text-sm border-solid border border-primary  rounded-2xl cursor-pointer"
+                onClick={() => setIsShowSelect(!isShowSelect)}
+              >
+                <span className="pl-4">Show {pagination?.pageSize} item</span>
+                <img
+                  src={DropdownSelectIcon}
+                  className="pointer-events-none leading-[16px] md:leading-[20px] md:mr-4"
+                  alt="drop icon"
+                />
               </div>
+              {isShowSelect && (
+                <ul
+                  ref={popupSelect}
+                  className="text-left cursor-pointer absolute"
+                >
+                  {sizeOptions?.map((item) => {
+                    return (
+                      <li
+                        className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
+                        onClick={() => {
+                          setParam({
+                            ...param,
+                            pageSize: Number(item.value),
+                          });
+                          setIsShowSelect(false);
+                        }}
+                        key={item.value}
+                      >
+                        Show {item.value} items
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
             {openModalAdd ? (
               <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
                 <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
@@ -518,15 +525,15 @@ const ExamSlot = () => {
                           onChange={(data) => {
                             const newListProctoring = data?.map(
                               (item) => item.value
-                            )
+                            );
                             // Update the selectedOption state
                             setSelectedOption(
                               selectedOption ? selectedOption.value : null
-                            )
+                            );
                             setAddData({
                               ...addData,
                               listProctoring: newListProctoring,
-                            })
+                            });
                           }}
                         />
                       </div>
@@ -556,7 +563,7 @@ const ExamSlot = () => {
                           setAddData({
                             ...addData,
                             courseId: selectedOption.value,
-                          })
+                          });
                         }}
                       />
 
@@ -594,35 +601,22 @@ const ExamSlot = () => {
                               startTime: selectedOption
                                 ? selectedOption.value
                                 : null,
-                            }))
+                            }));
 
                             // Update the selectedOption state
                             setSelectedOption(
                               selectedOption ? selectedOption.value : null
-                            )
+                            );
 
                             setAddData({
                               ...addData,
                               startTime: selectedOption.value[0],
                               endTime: selectedOption.value[1],
-                            })
+                            });
                           }}
                         />
                       </div>
-                      {/* <div>
-                                  <label className="mb-2 text-sm font-medium  text-white flex">
-                                    End Time
-                                  </label>
-                                  <input
-                                    onChange={(e) =>
-                                      setAddData({
-                                        ...addData,
-                                        endTime: e.target.value,
-                                      })
-                                    }
-                                    className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
-                                  />
-                                </div> */}
+                 
 
                       <div className="flex justify-between">
                         <div className="flex items-start"></div>
@@ -792,18 +786,18 @@ const ExamSlot = () => {
                                     proctoring name
                                   </label>
                                   <ReactSelect
-                                    options={options.filter((option) => {
+                                    options={options?.filter((option) => {
                                       const listExamSlot =
-                                        option.value.listExamSlot
+                                        option.value.listExamSlot;
                                       for (const examSlot of listExamSlot) {
                                         if (
                                           examSlot.examSlotId ===
                                           currentExamslot.examSlotId
                                         ) {
-                                          return false // Giữ lại phần tử này nếu tìm thấy examSlotId tương tự
+                                          return false; // Giữ lại phần tử này nếu tìm thấy examSlotId tương tự
                                         }
                                       }
-                                      return true // Lọc ra các phần tử không có examSlotId tương tự
+                                      return true; // Lọc ra các phần tử không có examSlotId tương tự
                                     })}
                                     isMulti={true}
                                     value={currentExamslot?.listProctoring?.map(
@@ -816,11 +810,13 @@ const ExamSlot = () => {
                                     )}
                                     onChange={(selectedOption) => {
                                       const newListProctoring =
-                                        selectedOption.map((item) => item.value)
+                                        selectedOption.map(
+                                          (item) => item.value
+                                        );
                                       setCurrentExamslot({
                                         ...currentExamslot,
                                         listProctoring: newListProctoring,
-                                      })
+                                      });
                                     }}
                                   />
                                 </div>
@@ -839,7 +835,7 @@ const ExamSlot = () => {
                                       setCurrentExamslot({
                                         ...currentExamslot,
                                         courseId: selectedOption.value,
-                                      })
+                                      });
                                     }}
                                   />
                                 </div>
@@ -882,14 +878,14 @@ const ExamSlot = () => {
                                         endTime: selectedOption
                                           ? selectedOption.value[1]
                                           : null,
-                                      }))
+                                      }));
 
                                       // Update the selectedOption state
                                       setSelectedOption(
                                         selectedOption
                                           ? selectedOption.value
                                           : null
-                                      )
+                                      );
                                     }}
                                   />
                                 </div>
@@ -998,22 +994,22 @@ const ExamSlot = () => {
                         // Split the startTime into hours and minutes
                         const [hours, minutes] = examslot.startTime
                           .split(":")
-                          .map(Number)
+                          .map(Number);
 
                         // Add 90 minutes
-                        const newMinutes = minutes + 90
-                        const newHours = hours + Math.floor(newMinutes / 60)
-                        const formattedHours = newHours % 24 // Handle overflow if necessary
-                        const formattedMinutes = newMinutes % 60
+                        const newMinutes = minutes + 90;
+                        const newHours = hours + Math.floor(newMinutes / 60);
+                        const formattedHours = newHours % 24; // Handle overflow if necessary
+                        const formattedMinutes = newMinutes % 60;
 
                         // Format the result as "HH:mm"
                         const formattedTime = `${formattedHours
                           .toString()
                           .padStart(2, "0")}:${formattedMinutes
                           .toString()
-                          .padStart(2, "0")}`
+                          .padStart(2, "0")}`;
 
-                        return formattedTime
+                        return formattedTime;
                       })()}
                     </td>
                     {[...makeRoles([1, 2])].includes(user.roleId) && (
@@ -1070,8 +1066,8 @@ const ExamSlot = () => {
                                   onClick={() =>
                                     // onDeleteClassroom(classroom)
                                     {
-                                      setCurrentExamslot(examslot)
-                                      setOpenModalConfirm(true)
+                                      setCurrentExamslot(examslot);
+                                      setOpenModalConfirm(true);
                                     }
                                   }
                                 >
@@ -1082,9 +1078,9 @@ const ExamSlot = () => {
                                   id="Edit"
                                   className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                                   onClick={() => {
-                                    setOpenModal(!openModal)
-                                    setSelectedOption(examslot.proctoringId)
-                                    setCurrentExamslot(examslot)
+                                    setOpenModal(!openModal);
+                                    setSelectedOption(examslot.proctoringId);
+                                    setCurrentExamslot(examslot);
                                   }}
                                 >
                                   Edit
@@ -1122,7 +1118,7 @@ const ExamSlot = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 })
+                    setParam({ ...param, page: page + 1 });
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -1198,7 +1194,7 @@ const ExamSlot = () => {
         id="exportCSV"
       />
     </div>
-  )
-}
+  );
+};
 
-export default ExamSlot
+export default ExamSlot;
