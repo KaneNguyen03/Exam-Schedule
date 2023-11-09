@@ -140,25 +140,17 @@ const Student = () => {
       setLoading(true)
     else setLoading(false)
   }, [datast, param])
-  useEffect(() => {
-    try {
-      const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents(param))
-        dispatch(getAllCourses({ pagesize: 9999, page: 1 }))
-      }, 500)
 
-      return () => clearTimeout(delayDebounceFn)
-    } catch (error) {
-      toast.error("Error getting students")
-    }
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(getAllStudents(param))
+      dispatch(getAllCourses({ pagesize: 9999, page: 1 }))
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
   }, [param.keyword, dispatch, param])
 
   useEffect(() => {
-    try {
-      dispatch(getStudents(param))
-    } catch (error) {
-      toast.error("Error getting Student")
-    }
+    dispatch(getStudents(param))
   }, [dispatch, param])
   return (
     <div>

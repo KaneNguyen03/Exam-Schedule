@@ -151,26 +151,18 @@ const Reproctoring = () => {
     else setLoading(false)
   }, [datast, param])
   useEffect(() => {
-    try {
-      const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllStudents({ pagesize: 9999, page: 1 }))
-      }, 500)
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(getAllStudents({ pagesize: 9999, page: 1 }))
+    }, 500)
 
-      return () => clearTimeout(delayDebounceFn)
-    } catch (error) {
-      toast.error("Error getting students")
-    }
-  }, [param.keyword, dispatch, param])
+    return () => clearTimeout(delayDebounceFn)
+  }, [dispatch, param])
   useEffect(() => {
-    try {
-      const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllExamslots(param))
-        dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
-      }, 500)
-      return () => clearTimeout(delayDebounceFn)
-    } catch (error) {
-      toast.error("Error getting examsot")
-    }
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(getAllExamslots(param))
+      dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
   }, [dispatch, param])
 
   return (

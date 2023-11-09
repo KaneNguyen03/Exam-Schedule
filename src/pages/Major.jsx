@@ -1,54 +1,54 @@
-import { useDispatch, useSelector } from "react-redux";
-import Sidebar from "../components/Layout/Sidebar";
-import majorTypes from "../constants/majorTypes";
-import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux"
+import Sidebar from "../components/Layout/Sidebar"
+import majorTypes from "../constants/majorTypes"
+import { useEffect, useRef, useState } from "react"
 import {
   getAllMajors,
   createMajor,
   updateMajor,
   deleteMajor,
-} from "../store/thunks/major";
+} from "../store/thunks/major"
 //
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
-import { Pagination } from "react-headless-pagination";
-import { sizeOptions } from "../constants/commons/commons";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { getAllSemesters } from "../store/thunks/semester";
-import major from "../store/slices/major";
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import { Pagination } from "react-headless-pagination"
+import { sizeOptions } from "../constants/commons/commons"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import useAuth from "../hooks/useAuth"
+import { getAllSemesters } from "../store/thunks/semester"
+import major from "../store/slices/major"
 //
 // import { getAllSemesters } from "../store/thunks/semester";
-import { color } from "../constants/commons/styled";
-import StatusButton from "../components/Status";
-import { toast } from "react-toastify";
+import { color } from "../constants/commons/styled"
+import StatusButton from "../components/Status"
+import { toast } from "react-toastify"
 // import semesterTypes from "../constants/semesterTypes";
 
 const MajorDashboard = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const { user } = useAuth();
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  const { user } = useAuth()
+  const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
 
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keyword: "",
-  });
+  })
   //
-  const [currentMajor, setCurrentMajor] = useState({});
+  const [currentMajor, setCurrentMajor] = useState({})
 
-  const datamj = useSelector((state) => state.major);
+  const datamj = useSelector((state) => state.major)
   //const datasep = useSelector((state) => state.semesters);
 
   // const datase = useSelector((state) => state.semester);
   // const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
-  const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data;
+  const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data
 
-  const pagination = datamj?.paginations[majorTypes.GET_MAJORS];
-  const popupSelect = useRef(null);
-  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const pagination = datamj?.paginations[majorTypes.GET_MAJORS]
+  const popupSelect = useRef(null)
+  const [openModalAdd, setOpenModalAdd] = useState(false)
   // const [selectedOption, setSelectedOption] = useState(null);
   // const options = semesters?.map((semester) => ({
   //   value: semester.semesterId,
@@ -57,70 +57,68 @@ const MajorDashboard = () => {
   const [addData, setAddData] = useState({
     majorId: "",
     majorName: "",
-  });
+  })
 
-  const [loadings, setLoading] = useState(true);
+  const [loadings, setLoading] = useState(true)
 
   const UpdateMajor = () => {
     try {
-        dispatch(updateMajor(currentMajor));
-        toast.success("Major updated successfully")
+      dispatch(updateMajor(currentMajor))
+      toast.success("Major updated successfully")
     } catch (error) {
       toast.error("Error updating majors")
     }
-  
-    setOpenModal(false);
-  };
+
+    setOpenModal(false)
+  }
 
   const AddMajor = () => {
     try {
-       dispatch(createMajor(addData));
-       toast.success("Major added successfully")
+      dispatch(createMajor(addData))
+      toast.success("Major added successfully")
     } catch (error) {
       toast.error("Error adding major")
     }
-   
-    setOpenModalAdd(false);
-  };
+
+    setOpenModalAdd(false)
+  }
 
   const onDeleteMajor = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    };
+    }
     try {
-        dispatch(deleteMajor(req));
-        toast.success("Major deleted successfully")
+      dispatch(deleteMajor(req))
+      toast.success("Major deleted successfully")
     } catch (error) {
       toast.error("Error deleting major")
     }
-  
-    setOpenModalConfirm(false);
+
+    setOpenModalConfirm(false)
     try {
-        setTimeout(() => dispatch(getAllMajors(param)), 1000);
+      setTimeout(() => dispatch(getAllMajors(param)), 1000)
     } catch (error) {
       toast.error("Error getting major")
     }
-  
-  };
+  }
   const restoreMajor = (data) => {
     const req = {
       ...data,
       status: "Active",
-    };
-   try {
-       dispatch(deleteMajor(req));
-       toast.success("Major restored successfully")
-   } catch (error) {
-    toast.error("Error restoring major")
-   } 
- try {
-   setTimeout(() => dispatch(getAllMajors(param)), 1000);
- } catch (error) {
-  toast.error("Error getting majors ")
- }
-   
-  };
+    }
+    try {
+      dispatch(deleteMajor(req))
+      toast.success("Major restored successfully")
+    } catch (error) {
+      toast.error("Error restoring major")
+    }
+    try {
+      setTimeout(() => dispatch(getAllMajors(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting majors ")
+    }
+  }
 
   useEffect(() => {
     if (
@@ -129,22 +127,17 @@ const MajorDashboard = () => {
       datamj?.loadings[majorTypes.DELETE_MAJOR] ||
       datamj?.loadings[majorTypes.CREATE_MAJOR]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [datamj, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [datamj, param])
 
- useEffect(() => {
-  try {
+  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(getAllMajors(param));
-    }, 500);
-    
-    return () => clearTimeout(delayDebounceFn);
-  } catch (error) {
-    toast.error("Error getting major")
-  }
-    
-  }, [param.keyword, dispatch, param]);
+      dispatch(getAllMajors(param))
+    }, 500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [dispatch, param])
 
   return (
     <div className="relative">
@@ -177,7 +170,7 @@ const MajorDashboard = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      });
+                      })
                     }}
                     value={param.keyword}
                   />
@@ -279,9 +272,9 @@ const MajorDashboard = () => {
             </div>
           </div> */}
           <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
-             Major
-            </div>
-            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+            Major
+          </div>
+          <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
             <button
               type="button"
               id="Add"
@@ -312,14 +305,14 @@ const MajorDashboard = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) });
-                          setIsShowSelect(false);
+                          setParam({ ...param, pageSize: Number(item.value) })
+                          setIsShowSelect(false)
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               )}
@@ -337,7 +330,7 @@ const MajorDashboard = () => {
                   <th scope="col" className="px-6 py-3">
                     MajorName
                   </th>
-                   <th scope="col" className="px-6 py-3">
+                  <th scope="col" className="px-6 py-3">
                     Status
                   </th>
                   <th scope="col" className="px-6 py-3">
@@ -358,8 +351,8 @@ const MajorDashboard = () => {
 
                       {openModal ? (
                         <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                  <div className="relativerounded-lg shadow bg-gray-700">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                            <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -410,7 +403,6 @@ const MajorDashboard = () => {
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                               
 
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
@@ -440,8 +432,8 @@ const MajorDashboard = () => {
                       )}
                       {openModalAdd ? (
                         <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                  <div className="relativerounded-lg shadow bg-gray-700">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                            <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -494,7 +486,6 @@ const MajorDashboard = () => {
                                     className=" border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 border-gray-500 placeholder-gray-400 text-white"
                                   />
                                 </div>
-                                
 
                                 <div className="flex justify-between">
                                   <div className="flex items-start"></div>
@@ -552,16 +543,13 @@ const MajorDashboard = () => {
                                 </button>
                                 <div className="p-10 text-center">
                                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to delete this
-                                    major?
+                                    Are you sure you want to delete this major?
                                   </h3>
                                   <button
                                     data-modal-hide="popup-modal"
                                     type="button"
                                     className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-                                    onClick={() =>
-                                      onDeleteMajor(currentMajor)
-                                    }
+                                    onClick={() => onDeleteMajor(currentMajor)}
                                   >
                                     Delete
                                   </button>
@@ -582,7 +570,7 @@ const MajorDashboard = () => {
                         <></>
                       )}
                     </td>
-                    
+
                     <td>
                       <>
                         {major.status.toLowerCase() === "active" ? (
@@ -603,7 +591,7 @@ const MajorDashboard = () => {
                       </>
                     </td>
                     <td>
-                    <div className="">
+                      <div className="">
                         {major.status.toLowerCase() === "active" ? (
                           <>
                             {" "}
@@ -614,8 +602,8 @@ const MajorDashboard = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentMajor(major);
-                                  setOpenModalConfirm(true);
+                                  setCurrentMajor(major)
+                                  setOpenModalConfirm(true)
                                 }
                               }
                             >
@@ -626,9 +614,9 @@ const MajorDashboard = () => {
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal);
-                                
-                                setCurrentMajor(major);
+                                setOpenModal(!openModal)
+
+                                setCurrentMajor(major)
                               }}
                             >
                               Edit
@@ -664,7 +652,7 @@ const MajorDashboard = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 });
+                    setParam({ ...param, page: page + 1 })
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -734,7 +722,7 @@ const MajorDashboard = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MajorDashboard;
+export default MajorDashboard

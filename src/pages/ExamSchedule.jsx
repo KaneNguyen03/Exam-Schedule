@@ -279,19 +279,11 @@ const ExamscheduleDashboard = () => {
   }, [dataexsl, param])
 
   useEffect(() => {
-    try {
-      const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
-      }, 500)
-      return () => clearTimeout(delayDebounceFn)
-    } catch (error) {
-      toast.error("Error getting exam rooms")
-    }
-    try {
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(getAllClassrooms({ pageSize: 999, page: 1 }))
       dispatch(getAllTeachers({ page: 1, pageSize: 999 }))
-    } catch (error) {
-      toast.error("Error getting proctoring")
-    }
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
   }, [dispatch])
 
   useEffect(() => {
@@ -304,15 +296,11 @@ const ExamscheduleDashboard = () => {
   }, [dataexs, param, examschedules])
 
   useEffect(() => {
-    try {
-      const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllCourses({ page: 1, pageSize: 999 }))
-      }, 500)
-      return () => clearTimeout(delayDebounceFn)
-    } catch (error) {
-      toast.error("Error getting course")
-    }
-  }, [param.keyword, dispatch, param])
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(getAllCourses({ page: 1, pageSize: 999 }))
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [dispatch, param])
 
   useEffect(() => {
     dispatch(getAllExamschedules(param))

@@ -116,15 +116,13 @@ const AlluserDashboard = () => {
     else setLoading(false);
   }, [datauser, param]);
   useEffect(() => {
-    try {
+
       const delayDebounceFn = setTimeout(() => {
         dispatch(getAllusers(param));
         return () => clearTimeout(delayDebounceFn);
       }, 500);
-    } catch (error) {
-      toast.error("Error getting user");
-    }
-  }, [param.keyword, dispatch, param]);
+
+  }, [ dispatch, param]);
 
   return (
     <div className="relative">

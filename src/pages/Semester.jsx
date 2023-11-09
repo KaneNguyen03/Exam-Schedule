@@ -1,37 +1,36 @@
-import Sidebar from "../components/Layout/Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
-import semesterTypes from "../constants/semesterTypes";
-import { Pagination } from "react-headless-pagination";
-import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg";
-import { sizeOptions } from "../constants/commons/commons";
-import ReactSelect from "react-select";
-import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { color } from "../constants/commons/styled";
-import StatusButton from "../components/Status";
+import Sidebar from "../components/Layout/Sidebar"
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect, useRef, useState } from "react"
+import semesterTypes from "../constants/semesterTypes"
+import { Pagination } from "react-headless-pagination"
+import DropdownSelectIcon from "../assets/svg/select_dropdown_icon.svg"
+import { sizeOptions } from "../constants/commons/commons"
+import ReactSelect from "react-select"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
+import useAuth from "../hooks/useAuth"
+import { color } from "../constants/commons/styled"
+import StatusButton from "../components/Status"
 import {
   getAllSemesters,
   createSemester,
   updateSemester,
   deleteSemester,
-} from "../store/thunks/semester";
+} from "../store/thunks/semester"
 
-import majorTypes from "../constants/majorTypes";
-import { getAllMajors } from "../store/thunks/major";
-import { toast } from "react-toastify";
+import majorTypes from "../constants/majorTypes"
+import { getAllMajors } from "../store/thunks/major"
+import { toast } from "react-toastify"
 const SemesterDashboard = () => {
-  const dispatch = useDispatch();
-  const { user } = useAuth();
-  const datase = useSelector((state) => state.semester);
-  const datamj = useSelector((state) => state.major);
-  const [openModal, setOpenModal] = useState(false);
-  const [isShowSelect, setIsShowSelect] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const dispatch = useDispatch()
+  const { user } = useAuth()
+  const datase = useSelector((state) => state.semester)
+  const datamj = useSelector((state) => state.major)
+  const [openModal, setOpenModal] = useState(false)
+  const [isShowSelect, setIsShowSelect] = useState(false)
+  const [selectedOption, setSelectedOption] = useState(null)
+  const [openModalAdd, setOpenModalAdd] = useState(false)
   //const [selectedOptionAdd, setSelectedOptionAdd] = useState(null);
-  const [openModalConfirm, setOpenModalConfirm] = useState(false);
- 
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
 
   const [currentSemester, setCurrentSemester] = useState({
     semesterId: "",
@@ -39,90 +38,86 @@ const SemesterDashboard = () => {
     course: "",
     majorId: "",
     listMajor: [],
-  });
+  })
 
   const [param, setParam] = useState({
     page: 1,
     pageSize: 10,
     keywords: "",
-  });
-  const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data;
-  const popupSelect = useRef(null);
-  const [loadings, setLoading] = useState(true);
+  })
+  const majors = datamj?.contents[majorTypes.GET_MAJORS]?.data.data
+  const popupSelect = useRef(null)
+  const [loadings, setLoading] = useState(true)
   const options = majors?.map((major) => ({
     value: major,
     label: major.majorId + " : " + major.majorName,
-  }));
+  }))
 
-  const pagination = datase?.paginations[semesterTypes.GET_SEMESTERS];
-  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data;
+  const pagination = datase?.paginations[semesterTypes.GET_SEMESTERS]
+  const semesters = datase?.contents[semesterTypes.GET_SEMESTERS]?.data.data
 
   const UpdateSemester = () => {
     try {
       const newListMajor = currentSemester.listMajor.map((item) => ({
         ...item,
-      }));
-      dispatch(updateSemester(currentSemester));
-      toast.success("Semester updated successfully");
+      }))
+      dispatch(updateSemester(currentSemester))
+      toast.success("Semester updated successfully")
     } catch (error) {
-      toast.error("Error updating semester");
+      toast.error("Error updating semester")
     }
 
-    setOpenModal(false);
-  };
+    setOpenModal(false)
+  }
   const AddSemester = () => {
     try {
-      dispatch(createSemester(currentSemester));
-      toast.success("Semester added successfully");
+      dispatch(createSemester(currentSemester))
+      toast.success("Semester added successfully")
     } catch (error) {
-      toast.error("Error adding semester");
+      toast.error("Error adding semester")
     }
 
-    setOpenModalAdd(false);
-  };
+    setOpenModalAdd(false)
+  }
   const onDeleteSemester = (data) => {
     const req = {
       ...data,
       status: "Inactive",
-    };
+    }
     try {
-      dispatch(deleteSemester(req));
-      toast.success("Semester deleted successfully");
+      dispatch(deleteSemester(req))
+      toast.success("Semester deleted successfully")
     } catch (error) {
-      toast.error("Error deleting semester");
+      toast.error("Error deleting semester")
     }
 
-    setOpenModalConfirm(false);
+    setOpenModalConfirm(false)
     try {
-      setTimeout(() => dispatch(getAllSemesters(param)), 1000);
+      setTimeout(() => dispatch(getAllSemesters(param)), 1000)
     } catch (error) {
-      toast.error("Error getting semester");
+      toast.error("Error getting semester")
     }
-  };
+  }
   const restoreSemester = (data) => {
     const req = {
       ...data,
       status: "Active",
-    };
-    try {
-      dispatch(deleteSemester(req));
-      toast.success("Semester restored successfully");
-    } catch (error) {
-      toast.error("Error restoring semester");
     }
     try {
-      setTimeout(() => dispatch(getAllSemesters(param)), 1000);
+      dispatch(deleteSemester(req))
+      toast.success("Semester restored successfully")
     } catch (error) {
-      toast.error("Error getting semester ");
+      toast.error("Error restoring semester")
     }
-  };
+    try {
+      setTimeout(() => dispatch(getAllSemesters(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting semester ")
+    }
+  }
   useEffect(() => {
-    try {
-      dispatch(getAllSemesters(param));
-    } catch (error) {
-      toast.error("Error getting semester");
-    }
-  }, [dispatch, param]);
+    dispatch(getAllSemesters(param))
+  }, [dispatch, param])
 
   useEffect(() => {
     if (
@@ -131,20 +126,16 @@ const SemesterDashboard = () => {
       datase?.loadings[semesterTypes.DELETE_SEMESTER] ||
       datase?.loadings[semesterTypes.CREATE_SEMESTER]
     )
-      setLoading(true);
-    else setLoading(false);
-  }, [datase, param]);
+      setLoading(true)
+    else setLoading(false)
+  }, [datase, param])
   useEffect(() => {
-    try {
-      const delayDebounceFn = setTimeout(() => {
-        dispatch(getAllSemesters(param));
-        dispatch(getAllMajors({ page: 1, pageSize: 999 }));
-      }, 500);
-      return () => clearTimeout(delayDebounceFn);
-    } catch (error) {
-      toast.error("Error getting semester");
-    }
-  }, [param.keyword, dispatch, param]);
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(getAllSemesters(param))
+      dispatch(getAllMajors({ page: 1, pageSize: 999 }))
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [param, dispatch])
   return (
     <div className="relative">
       {loadings && <LoadingSpinner />}
@@ -176,7 +167,7 @@ const SemesterDashboard = () => {
                       setParam({
                         ...param,
                         keyword: e.target.value,
-                      });
+                      })
                     }}
                     value={param.keyword}
                   />
@@ -230,10 +221,10 @@ const SemesterDashboard = () => {
            * <SubHeader></SubHeader> in header
            *
            */}
-           <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
-             Semester
-            </div>
-            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+          <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
+            Semester
+          </div>
+          <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
             <button
               type="button"
               id="Add"
@@ -264,14 +255,14 @@ const SemesterDashboard = () => {
                       <li
                         className="px-4 py-2 text-xs md:text-sm bg-gray-100 first:rounded-t-lg last:rounded-b-lg border-b last:border-b-0 z-10 hover:bg-gray-200"
                         onClick={() => {
-                          setParam({ ...param, pageSize: Number(item.value) });
-                          setIsShowSelect(false);
+                          setParam({ ...param, pageSize: Number(item.value) })
+                          setIsShowSelect(false)
                         }}
                         key={item.value}
                       >
                         Show {item.value} items
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               )}
@@ -313,8 +304,8 @@ const SemesterDashboard = () => {
                       {/**select module */}
                       {openModal ? (
                         <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                  <div className="relativerounded-lg shadow bg-gray-700">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                            <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -382,20 +373,20 @@ const SemesterDashboard = () => {
                                             major.majorId +
                                             " - " +
                                             major.majorName,
-                                        };
+                                        }
                                       }
                                     )}
                                     onChange={(selectedOption) => {
                                       // Update the selectedOption state
                                       const newListMajor = selectedOption.map(
                                         (item) => item.value
-                                      );
+                                      )
                                       setCurrentSemester((prevSemester) => ({
                                         ...prevSemester,
                                         listMajor: newListMajor
                                           ? newListMajor
                                           : null,
-                                      }));
+                                      }))
                                     }}
                                   />
                                 </div>
@@ -428,8 +419,8 @@ const SemesterDashboard = () => {
                       )}
                       {openModalAdd ? (
                         <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                  <div className="relativerounded-lg shadow bg-gray-700">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                            <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -489,19 +480,23 @@ const SemesterDashboard = () => {
                                   </label>
                                   <ReactSelect
                                     options={options}
-                                    isMulti={true  }
-                                   onChange={(data)=>{
-                                    const newListMajor = data.map((item) =>item.value);
-                                   
-                                   setSelectedOption(
-                                      selectedOption ? selectedOption.value: null
-                                   );
-                                   setCurrentSemester({
-                                    ...currentSemester,
-                                    listMajor: newListMajor,
-                                   });
-                                   }}
-                                   />
+                                    isMulti={true}
+                                    onChange={(data) => {
+                                      const newListMajor = data.map(
+                                        (item) => item.value
+                                      )
+
+                                      setSelectedOption(
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : null
+                                      )
+                                      setCurrentSemester({
+                                        ...currentSemester,
+                                        listMajor: newListMajor,
+                                      })
+                                    }}
+                                  />
                                 </div>
 
                                 <div className="flex justify-between">
@@ -590,7 +585,11 @@ const SemesterDashboard = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-6 py-4">{semester.listMajor.map((item)=>item.majorId ) .join(", ")}</td>
+                    <td className="px-6 py-4">
+                      {semester.listMajor
+                        .map((item) => item.majorId)
+                        .join(", ")}
+                    </td>
 
                     <td>
                       <>
@@ -623,8 +622,8 @@ const SemesterDashboard = () => {
                               onClick={() =>
                                 // onDeleteClassroom(classroom)
                                 {
-                                  setCurrentSemester(semester);
-                                  setOpenModalConfirm(true);
+                                  setCurrentSemester(semester)
+                                  setOpenModalConfirm(true)
                                 }
                               }
                             >
@@ -635,9 +634,9 @@ const SemesterDashboard = () => {
                               id="Edit"
                               className="text-white  focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800"
                               onClick={() => {
-                                setOpenModal(!openModal);
-                                setSelectedOption(semester.majorId);
-                                setCurrentSemester(semester);
+                                setOpenModal(!openModal)
+                                setSelectedOption(semester.majorId)
+                                setCurrentSemester(semester)
                               }}
                             >
                               Edit
@@ -673,7 +672,7 @@ const SemesterDashboard = () => {
                 <Pagination
                   currentPage={pagination.currentPage - 1}
                   setCurrentPage={(page) => {
-                    setParam({ ...param, page: page + 1 });
+                    setParam({ ...param, page: page + 1 })
                   }}
                   totalPages={pagination.totalPage}
                   edgePageCount={3}
@@ -743,7 +742,7 @@ const SemesterDashboard = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SemesterDashboard;
+export default SemesterDashboard

@@ -48,23 +48,23 @@ const Room = () => {
 
   const UpdateClassroom = () => {
     try {
-       dispatch(updateClassroom(currentClassroom))
-       toast.success("Exam room updated successfully")
+      dispatch(updateClassroom(currentClassroom))
+      toast.success("Exam room updated successfully")
     } catch (error) {
       toast.error("Error updating classroom")
     }
-   
+
     setOpenModal(false)
   }
 
   const AddClassroom = () => {
     try {
-       dispatch(createClassroom(addData))
-       toast.success("Exam room added successfully")
+      dispatch(createClassroom(addData))
+      toast.success("Exam room added successfully")
     } catch (error) {
       toast.error("Error adding exam room")
     }
-   
+
     setOpenModalAdd(false)
   }
 
@@ -74,19 +74,18 @@ const Room = () => {
       status: "Inactive",
     }
     try {
-        dispatch(deleteClassroom(req))
-        toast.success("Exam room deleted successfully")
+      dispatch(deleteClassroom(req))
+      toast.success("Exam room deleted successfully")
     } catch (error) {
       toast.error("Error deleting examroom")
     }
-  
+
     setOpenModalConfirm(false)
     try {
-        setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
+      setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
     } catch (error) {
       toast.error("Error getting examroom ")
     }
-  
   }
 
   const restoreClassroom = (data) => {
@@ -95,17 +94,16 @@ const Room = () => {
       status: "Active",
     }
     try {
-       dispatch(deleteClassroom(req))
-       toast.success("Exam room restored successfully")
+      dispatch(deleteClassroom(req))
+      toast.success("Exam room restored successfully")
     } catch (error) {
       toast.error("Error restoring classroom")
     }
-   try {
-        setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
-   } catch (error) {
-    toast.error("Error getting examrooms")
-   }
-
+    try {
+      setTimeout(() => dispatch(getAllClassrooms(param)), 1000)
+    } catch (error) {
+      toast.error("Error getting examrooms")
+    }
   }
 
   useEffect(() => {
@@ -120,16 +118,11 @@ const Room = () => {
   }, [datacl, param])
 
   useEffect(() => {
-    try {
-          const delayDebounceFn = setTimeout(() => {
+    const delayDebounceFn = setTimeout(() => {
       dispatch(getAllClassrooms(param))
     }, 500)
 
     return () => clearTimeout(delayDebounceFn)
-    } catch (error) {
-      toast.error("Error getting classrooms")
-    }
-
   }, [param.keyword, dispatch, param])
 
   return (
@@ -214,9 +207,9 @@ const Room = () => {
           </header>
 
           <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
-              Classroom Management
-            </div>
-            <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
+            Classroom Management
+          </div>
+          <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
             <button
               type="button"
               id="Add"
@@ -293,8 +286,8 @@ const Room = () => {
                       {classroom.name}
                       {openModal ? (
                         <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                  <div className="relativerounded-lg shadow bg-gray-700">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                            <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
@@ -388,8 +381,8 @@ const Room = () => {
                       )}
                       {openModalAdd ? (
                         <div className="fixed top-0 left-0  w-full h-full bg-black bg-opacity-20 z-[1000]">
-                <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
-                  <div className="relativerounded-lg shadow bg-gray-700">
+                          <div className="modal absolute w-[28%] translate-x-[-50%] translate-y-[-50%]  z-20 top-[50%] left-[50%]">
+                            <div className="relativerounded-lg shadow bg-gray-700">
                               <button
                                 type="button"
                                 className="absolute top-3 right-2.5 text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
