@@ -450,7 +450,7 @@ const ExamscheduleDashboard = () => {
                     handleExportCSV(e)
                   }}
                 >
-                  <span className="ml-2">Export Exam Slot</span>
+                  <span className="ml-2">Export Exam Schedule</span>
                 </button>
               )}
             </div>
@@ -828,7 +828,7 @@ const ExamscheduleDashboard = () => {
                     handleExportCSV(e)
                   }}
                 >
-                  <span className="ml-2">Export Exam Slot</span>
+                  <span className="ml-2">Export Exam Schedule</span>
                 </button>
               </div>
               <div className="grid gap-4 p-8 pt-2 m-1 overflow-x-auto max-h-[76vh] overflow-y-scroll">
@@ -1056,13 +1056,13 @@ const ExamscheduleDashboard = () => {
                           </td>
                         )}
                         <td className="px-6 py-4">
-                          {examschedule.startTime.substring(0, 5)}
+                          {examschedule?.startTime?.substring(0, 5)}
                         </td>
                         <td className="px-6 py-4">
-                          {examschedule.endTime.substring(0, 5)}
+                          {examschedule?.endTime?.substring(0, 5)}
                         </td>
                         <td className="px-6 py-4">
-                          {moment(examschedule.date).format("DD/MM/YYYY")}
+                          {moment(examschedule?.date).format("DD/MM/YYYY")}
                         </td>
                       </tr>
                     ))}

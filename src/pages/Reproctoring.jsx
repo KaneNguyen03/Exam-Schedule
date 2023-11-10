@@ -699,7 +699,7 @@ const Reproctoring = () => {
                   </Pagination.PrevButton>
 
                   <div className="flex items-center justify-center mx-6 list-none ">
-                    {pagination > 0 ? (
+                    {pagination ? (
                       <Pagination.PageButton
                         activeClassName="bg-blue-button border-0 text-white "
                         inactiveClassName="border"

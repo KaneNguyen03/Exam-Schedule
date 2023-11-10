@@ -28,6 +28,7 @@ import { Link } from "react-router-dom"
 import { makeRoles } from "../utils/common"
 import { Bar, Line, Pie } from "react-chartjs-2"
 import "chart.js/auto"
+import LoadingSpinner from "../constants/commons/loading-spinner/LoadingSpinner"
 
 const AdminDashboard = () => {
   const dispatch = useDispatch()
@@ -61,7 +62,8 @@ const AdminDashboard = () => {
   const [loadings, setLoading] = useState(true)
 
   const currentTeacher = teachers?.find(
-    (teacher) => teacher.proctoringName === user.username.toLowerCase()
+    (teacher) =>
+      teacher.proctoringName.toLowerCase() === user.username.toLowerCase()
   )
 
   const examSlotData = {
@@ -241,6 +243,7 @@ const AdminDashboard = () => {
 
   return (
     <div>
+      {/* {loadings && <LoadingSpinner />} */}
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
         <div className="main min-h-screen flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in max-h-screen">
@@ -353,7 +356,7 @@ const AdminDashboard = () => {
               {[...makeRoles([4])].includes(user.roleId) && (
                 <>
                   <>
-                    <Link to="/proctoring" className="dashboard-card">
+                    <Link to="/" className="dashboard-card">
                       <div className="bg-white rounded-lg shadow-md p-6">
                         <h2 className="text-inherit font-bold">Proctoring</h2>
                         <p className="mt-4">{teachers?.length}</p>
