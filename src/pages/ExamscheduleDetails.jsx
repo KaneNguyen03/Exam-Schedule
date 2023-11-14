@@ -202,7 +202,7 @@ const ExamscheduleDetails = () => {
             </div>
           </header>
           <div className=" text-slate-800 font-semibold text-3xl pt-8 pb-4 m-3">
-            Exam Slot Management
+            Exam Schedule Details
           </div>
           <div className="flex justify-end text-slate-800 font-semibold text-3xl p-10 pb-0 pt-0">
             <button
