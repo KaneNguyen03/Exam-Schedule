@@ -1018,7 +1018,8 @@ const ExamSlot = () => {
                                 bgColor={color.greenLight}
                                 title="Active"
                               />
-                            ) : examslot?.status?.toLowerCase() === "inactive" ? (
+                            ) : examslot?.status?.toLowerCase() ===
+                              "inactive" ? (
                               <StatusButton
                                 color={color.red}
                                 bgColor={color.redLight}
@@ -1038,7 +1039,14 @@ const ExamSlot = () => {
                                 title="Completed"
                               />
                             ) : (
-                              <>-</>
+                              <>
+                                {" "}
+                                <StatusButton
+                                  color={color.blue}
+                                  bgColor={color.blueLight}
+                                  title="pending"
+                                />
+                              </>
                             )}
                           </>
                         </td>
