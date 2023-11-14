@@ -1018,7 +1018,7 @@ const ExamSlot = () => {
                                 bgColor={color.greenLight}
                                 title="Active"
                               />
-                            ) : examslot?.status === "Inactive" ? (
+                            ) : examslot?.status?.toLowerCase() === "inactive" ? (
                               <StatusButton
                                 color={color.red}
                                 bgColor={color.redLight}

@@ -220,6 +220,10 @@ const AdminDashboard = () => {
       setLoading(true)
     else setLoading(false)
   }, [datast])
+  useEffect(() => {
+    if (!teachers) setLoading(true)
+    else setLoading(false)
+  }, [teachers])
 
   useEffect(() => {
     dispatch(getAllClassrooms({ page: 1, pageSize: 999 }))
@@ -239,11 +243,11 @@ const AdminDashboard = () => {
     dispatch(getAllMajors({ page: 1, pageSize: 999 }))
 
     dispatch(getAllSemesters({ page: 1, pageSize: 999 }))
-  }, [])
+  }, [dispatch])
 
   return (
     <div>
-      {/* {loadings && <LoadingSpinner />} */}
+      {loadings && <LoadingSpinner />}
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
         <div className="main min-h-screen flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in max-h-screen">
