@@ -1146,7 +1146,7 @@ const ExamscheduleDashboard = () => {
       </div>
       <CSVLink
         data={exportData} // data truyen vao
-        filename={`${"ExamSlotExport"}.csv`}
+        filename={`${"ExamScheduleExport"}.csv`}
         headers={headers}
         id="exportCSV"
       />
